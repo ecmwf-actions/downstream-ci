@@ -19,8 +19,7 @@ on:
 jobs:
   eccodes:
     if: |
-      !inputs.eccodes &&
-      ${{ inputs.ecbuild }}
+      !inputs.eccodes
     name: eccodes
     runs-on: ubuntu-latest
     steps:
