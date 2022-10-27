@@ -1,0 +1,30 @@
+name: upstream ci
+
+on:
+  workflow_call:
+    inputs:
+      ecbuild:
+        default: ecmwf/ecbuild@develop
+        required: false
+        type: string
+      eccodes:
+        default: ecmwf-enterprise-sandbox/eccodes@develop
+        required: false
+        type: string
+
+jobs:
+  eccodes:
+    if: ${{ inputs.ecbuild }}
+    name: eccodes
+    run: echo "Pretending to build eccodes"
+
+  pgen:
+    needs: [eccodes]
+    if: |
+      always() &&
+      (needs.eccodes.result == 'success' || needs.eccodes.result == 'skipped')
+    name: pgen
+    uses: ecmwf-enterprise-sandbox/pgen/.github/workflows/ci.yml@ci
+    with:
+      eccodes: ${{ inputs.eccodes }}
+      secrets: inherit
