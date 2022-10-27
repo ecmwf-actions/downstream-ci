@@ -11,6 +11,10 @@ on:
         default: ecmwf-enterprise-sandbox/eccodes@develop
         required: false
         type: string
+      metkit:
+        default: ecmwf-enterprise-sandbox/metkit@develop
+        required: false
+        type: string
 
 jobs:
   eccodes:
@@ -20,13 +24,28 @@ jobs:
     steps:
       - run: echo "Pretending to build eccodes"
 
-  pgen:
+  metkit:
     needs: [eccodes]
     if: |
       always() &&
       (needs.eccodes.result == 'success' || needs.eccodes.result == 'skipped')
+    name: eccodes
+    runs-on: ubuntu-latest
+    uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/ci.yml@reusable-ci
+    with:
+      prevent_upstream: true
+      eccodes: ${{ inputs.eccodes }}
+    secrets: inherit
+
+  pgen:
+    needs: [metkit, eccodes]
+    if: |
+      always() &&
+      (needs.eccodes.result == 'success' || needs.eccodes.result == 'skipped')
+      (needs.metkit.result == 'success' || needs.metkit.result == 'skipped')
     name: pgen
     uses: ecmwf-enterprise-sandbox/pgen/.github/workflows/ci.yml@ci
     with:
       eccodes: ${{ inputs.eccodes }}
+      metkit: ${{ inputs.metkit }}
     secrets: inherit
