@@ -18,7 +18,9 @@ on:
 
 jobs:
   eccodes:
-    if: ${{ inputs.ecbuild }}
+    if: |
+      !inputs.eccodes &&
+      ${{ inputs.ecbuild }}
     name: eccodes
     runs-on: ubuntu-latest
     steps:
@@ -32,9 +34,8 @@ jobs:
       (needs.eccodes.result == 'success' || needs.eccodes.result == 'skipped')
     name: metkit
     runs-on: ubuntu-latest
-    uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/ci.yml@reusable-ci
+    uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/reusable-ci.yml@reusable-ci
     with:
-      prevent_upstream: true
       eccodes: ${{ inputs.eccodes }}
     secrets: inherit
 
