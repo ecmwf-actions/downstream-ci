@@ -16,7 +16,8 @@ on:
 jobs:
   eccodes:
     if: |
-      !inputs.eccodes
+      !inputs.eccodes &&
+      inputs.ecbuild
     name: eccodes
     runs-on: ubuntu-latest
     steps:
@@ -27,6 +28,7 @@ jobs:
     if: |
       always() &&
       !inputs.metkit &&
+      (inputs.ecbuild || inputs.eccodes) &&
       (needs.eccodes.result == 'success' || needs.eccodes.result == 'skipped')
     name: metkit
     uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/reusable-ci.yml@reusable-ci
@@ -35,9 +37,10 @@ jobs:
     secrets: inherit
 
   pgen:
-    needs: [metkit, eccodes]
+    needs: [eccodes, metkit]
     if: |
       always() &&
+      (inputs.ecbuild || inputs.eccodes || inputs.metkit) &&
       (needs.eccodes.result == 'success' || needs.eccodes.result == 'skipped') &&
       (needs.metkit.result == 'success' || needs.metkit.result == 'skipped')
     name: pgen
