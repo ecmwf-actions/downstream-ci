@@ -16,7 +16,9 @@ jobs:
   eccodes:
     if: ${{ inputs.ecbuild }}
     name: eccodes
-    run: echo "Pretending to build eccodes"
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Pretending to build eccodes"
 
   pgen:
     needs: [eccodes]
