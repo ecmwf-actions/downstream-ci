@@ -33,7 +33,6 @@ jobs:
       !inputs.metkit &&
       (needs.eccodes.result == 'success' || needs.eccodes.result == 'skipped')
     name: metkit
-    runs-on: ubuntu-latest
     uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/reusable-ci.yml@reusable-ci
     with:
       eccodes: ${{ inputs.eccodes }}
