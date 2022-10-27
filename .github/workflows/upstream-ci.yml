@@ -29,4 +29,4 @@ jobs:
     uses: ecmwf-enterprise-sandbox/pgen/.github/workflows/ci.yml@ci
     with:
       eccodes: ${{ inputs.eccodes }}
-      secrets: inherit
+    secrets: inherit
