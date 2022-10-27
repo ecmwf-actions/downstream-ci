@@ -4,15 +4,12 @@ on:
   workflow_call:
     inputs:
       ecbuild:
-        default: ecmwf/ecbuild@develop
         required: false
         type: string
       eccodes:
-        default: ecmwf-enterprise-sandbox/eccodes@develop
         required: false
         type: string
       metkit:
-        default: ecmwf-enterprise-sandbox/metkit@develop
         required: false
         type: string
 
