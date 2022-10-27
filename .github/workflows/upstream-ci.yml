@@ -42,7 +42,7 @@ jobs:
     needs: [metkit, eccodes]
     if: |
       always() &&
-      (needs.eccodes.result == 'success' || needs.eccodes.result == 'skipped')
+      (needs.eccodes.result == 'success' || needs.eccodes.result == 'skipped') &&
       (needs.metkit.result == 'success' || needs.metkit.result == 'skipped')
     name: pgen
     uses: ecmwf-enterprise-sandbox/pgen/.github/workflows/ci.yml@ci
