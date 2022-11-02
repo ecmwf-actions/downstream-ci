@@ -3,10 +3,10 @@ name: upstream ci
 on:
   workflow_call:
     inputs:
-      eckit:
+      eccodes:
         required: false
         type: string
-      eccodes:
+      eckit:
         required: false
         type: string
       metkit:
