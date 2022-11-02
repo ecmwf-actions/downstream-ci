@@ -37,8 +37,16 @@ jobs:
       eckit: ${{ inputs.eckit }}
     secrets: inherit
 
+  atlas:
+    needs: [eckit]
+    name: atlas
+    uses: ecmwf-enterprise-sandbox/atlas/.github/workflows/reusable-ci.yml@reusable-ci
+    with:
+      eckit: ${{ inputs.eckit }}
+    secrets: inherit
+
   pgen:
-    needs: [metkit]
+    needs: [metkit, atlas]
     name: pgen
     uses: ecmwf-enterprise-sandbox/pgen/.github/workflows/reusable-ci.yml@ci
     with:
