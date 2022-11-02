@@ -44,7 +44,7 @@ jobs:
       (needs.eccodes.result == 'success' || needs.eccodes.result == 'skipped') &&
       (needs.metkit.result == 'success' || needs.metkit.result == 'skipped')
     name: pgen
-    uses: ecmwf-enterprise-sandbox/pgen/.github/workflows/ci.yml@ci
+    uses: ecmwf-enterprise-sandbox/pgen/.github/workflows/reusable-ci.yml@ci
     with:
       eccodes: ${{ inputs.eccodes }}
       metkit: ${{ inputs.metkit }}
