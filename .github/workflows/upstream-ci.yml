@@ -23,10 +23,12 @@ jobs:
   eccodes:
     name: eccodes
     uses: ecmwf-enterprise-sandbox/eccodes/.github/workflows/reusable-ci.yml@trigger-reusable-upstream-ci
+    secrets: inherit
 
   eckit:
     name: eckit
     uses: ecmwf-enterprise-sandbox/eckit/.github/workflows/reusable-ci.yml@reusable-ci
+    secrets: inherit
 
   metkit:
     needs: [eccodes, eckit]
