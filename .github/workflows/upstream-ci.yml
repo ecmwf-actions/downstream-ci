@@ -3,7 +3,7 @@ name: upstream ci
 on:
   workflow_call:
     inputs:
-      ecbuild:
+      eckit:
         required: false
         type: string
       eccodes:
@@ -15,37 +15,28 @@ on:
 
 jobs:
   eccodes:
-    if: |
-      !inputs.eccodes &&
-      inputs.ecbuild
     name: eccodes
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Pretending to build eccodes"
+    uses: ecmwf-enterprise-sandbox/eccodes/.github/workflows/reusable-ci.yml@trigger-reusable-upstream-ci
+
+  eckit:
+    name: eckit
+    uses: ecmwf-enterprise-sandbox/eckit/.github/workflows/reusable-ci.yml@trigger-reusable-upstream-ci
 
   metkit:
-    needs: [eccodes]
-    if: |
-      always() &&
-      !inputs.metkit &&
-      (inputs.ecbuild || inputs.eccodes) &&
-      (needs.eccodes.result == 'success' || needs.eccodes.result == 'skipped')
+    needs: [eccodes, eckit]
     name: metkit
     uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/reusable-ci.yml@reusable-ci
     with:
       eccodes: ${{ inputs.eccodes }}
+      eckit: ${{ inputs.eckit }}
     secrets: inherit
 
   pgen:
-    needs: [eccodes, metkit]
-    if: |
-      always() &&
-      (inputs.ecbuild || inputs.eccodes || inputs.metkit) &&
-      (needs.eccodes.result == 'success' || needs.eccodes.result == 'skipped') &&
-      (needs.metkit.result == 'success' || needs.metkit.result == 'skipped')
+    needs: [metkit]
     name: pgen
     uses: ecmwf-enterprise-sandbox/pgen/.github/workflows/reusable-ci.yml@ci
     with:
       eccodes: ${{ inputs.eccodes }}
+      eckit: ${{ inputs.eckit }}
       metkit: ${{ inputs.metkit }}
     secrets: inherit
