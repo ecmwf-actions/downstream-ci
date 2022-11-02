@@ -12,6 +12,12 @@ on:
       metkit:
         required: false
         type: string
+      atlas:
+        required: false
+        type: string
+      mir:
+        required: false
+        type: string
 
 jobs:
   eccodes:
