@@ -20,7 +20,7 @@ jobs:
 
   eckit:
     name: eckit
-    uses: ecmwf-enterprise-sandbox/eckit/.github/workflows/reusable-ci.yml@trigger-reusable-upstream-ci
+    uses: ecmwf-enterprise-sandbox/eckit/.github/workflows/reusable-ci.yml@reusable-ci
 
   metkit:
     needs: [eccodes, eckit]
