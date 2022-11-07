@@ -40,6 +40,14 @@ jobs:
       method: '["build-package"]'
     secrets: inherit
 
+  ecmwflibs:
+    needs: [eccodes]
+    name: ecmwflibs
+    uses: ecmwf-enterprise-sandbox/ecmwflibs/.github/workflows/reusable-ci.yml@reusable-ci
+    with:
+      eccodes: ${{ inputs.eccodes }}
+    secrets: inherit
+
   metkit:
     needs: [eccodes, eckit]
     name: metkit
