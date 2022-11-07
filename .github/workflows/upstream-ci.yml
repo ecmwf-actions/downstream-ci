@@ -22,11 +22,13 @@ on:
 jobs:
   eccodes:
     name: eccodes
+    if: ${{ inputs.eccodes }}
     uses: ecmwf-enterprise-sandbox/eccodes/.github/workflows/reusable-ci.yml@trigger-reusable-upstream-ci
     secrets: inherit
 
   eckit:
     name: eckit
+    if: ${{ inputs.eckit }}
     uses: ecmwf-enterprise-sandbox/eckit/.github/workflows/reusable-ci.yml@reusable-ci
     secrets: inherit
 
@@ -50,6 +52,7 @@ jobs:
 
   metkit:
     needs: [eccodes, eckit]
+    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
     name: metkit
     uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/reusable-ci.yml@reusable-ci
     with:
@@ -59,6 +62,7 @@ jobs:
 
   atlas:
     needs: [eckit]
+    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.atlas) }}
     name: atlas
     uses: ecmwf-enterprise-sandbox/atlas/.github/workflows/reusable-ci.yml@reusable-ci
     with:
@@ -67,6 +71,7 @@ jobs:
 
   mir:
     needs: [metkit, atlas]
+    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.mir) }}
     name: mir
     uses: ecmwf-enterprise-sandbox/mir/.github/workflows/reusable-ci.yml@reusable-ci
     with:
@@ -78,6 +83,7 @@ jobs:
 
   pgen:
     needs: [mir]
+    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.pgen) }}
     name: pgen
     uses: ecmwf-enterprise-sandbox/pgen/.github/workflows/reusable-ci.yml@ci
     with:
