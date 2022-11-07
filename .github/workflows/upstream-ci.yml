@@ -50,6 +50,14 @@ jobs:
       eccodes: ${{ inputs.eccodes }}
     secrets: inherit
 
+  skinnywms:
+    needs: [ecmwflibs]
+    name: skinnywms
+    uses: ecmwf-enterprise-sandbox/skinnywms/.github/workflows/reusable-ci.yml@reusable-ci
+    with:
+      wheel-artifact: 'wheel-manylinux2014-3.8'
+    secrets: inherit
+
   metkit:
     needs: [eccodes, eckit]
     if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
