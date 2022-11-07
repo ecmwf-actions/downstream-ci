@@ -49,7 +49,7 @@ jobs:
 
   mir:
     needs: [metkit, atlas]
-    name: atlas
+    name: mir
     uses: ecmwf-enterprise-sandbox/mir/.github/workflows/reusable-ci.yml@reusable-ci
     with:
       eccodes: ${{ inputs.eccodes }}
