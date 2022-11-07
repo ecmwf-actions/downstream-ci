@@ -30,6 +30,16 @@ jobs:
     uses: ecmwf-enterprise-sandbox/eckit/.github/workflows/reusable-ci.yml@reusable-ci
     secrets: inherit
 
+  eccodes-python:
+    needs: [eccodes]
+    name: eccodes-python
+    uses: ecmwf-enterprise-sandbox/eccodes-python/.github/workflows/reusable-ci.yml@reusable-ci
+    with:
+      eccodes: ${{ inputs.eccodes }}
+      platform: '["ubuntu-latest"]'
+      method: '["build-package"]'
+    secrets: inherit
+
   metkit:
     needs: [eccodes, eckit]
     name: metkit
