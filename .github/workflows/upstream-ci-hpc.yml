@@ -25,5 +25,5 @@ jobs:
     needs: [eccodes, eckit]
     if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
     name: metkit
-    uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/self-hosted.yml@self-hosted-ci
+    uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/self-hosted.yml@upstream-ci-hpc
     secrets: inherit
