@@ -1,4 +1,4 @@
-name: upstream ci hpc
+name: upstream-ci-hpc
 
 on:
   workflow_call:
@@ -6,24 +6,21 @@ on:
       eccodes:
         required: false
         type: string
+      metkit:
+        required: false
+        type: string
 
 jobs:
   eccodes:
     name: eccodes
     if: ${{ inputs.eccodes }}
-    uses: ecmwf-enterprise-sandbox/eccodes/.github/workflows/self-hosted-python.yml@self-hosted-python
-    secrets: inherit
-
-  eckit:
-    name: eckit
-    if: ${{ inputs.eckit }}
-    uses: ecmwf-enterprise-sandbox/eckit/.github/workflows/reusable-ci-hpc.yml@reusable-ci-hpc # does not exists yet
+    uses: ecmwf-enterprise-sandbox/eccodes/.github/workflows/reusable-ci-hpc.yml@upstream-ci-hpc
     secrets: inherit
 
   metkit:
     # needs eccodes and eckit to complete first, always() ensures that it will run regardless of whether they were successfull and at least one job in needs was successful, or the inputs.metkit is populated
-    needs: [eccodes, eckit]
+    needs: [eccodes]
     if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
     name: metkit
-    uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/self-hosted.yml@upstream-ci-hpc
+    uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/reusable-ci-hpc.yml@upstream-ci-hpc
     secrets: inherit
