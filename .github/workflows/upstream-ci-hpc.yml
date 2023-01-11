@@ -23,4 +23,6 @@ jobs:
     if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
     name: metkit
     uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/reusable-ci-hpc.yml@upstream-ci-hpc
+    with:
+      ref: ${{ inputs.metkit || 'upstream-ci-hpc' }}
     secrets: inherit
