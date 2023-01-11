@@ -24,5 +24,5 @@ jobs:
     name: metkit
     uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/reusable-ci-hpc.yml@upstream-ci-hpc
     with:
-      ref: ${{ inputs.metkit || 'upstream-ci-hpc' }}
+      metkit: ${{ inputs.metkit || 'ecmwf-enterprise-sandbox/metkit@upstream-ci-hpc' }}
     secrets: inherit
