@@ -60,7 +60,7 @@ jobs:
     secrets: inherit
 
   mir:
-    needs: [metkit]
+    needs: [metkit, atlas]
     if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.mir) }}
     name: mir
     uses: ecmwf-enterprise-sandbox/mir/.github/workflows/reusable-ci-hpc.yml@upstream-ci-hpc
