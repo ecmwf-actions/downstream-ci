@@ -33,6 +33,8 @@ jobs:
     name: eckit
     if: ${{ inputs.eckit }}
     uses: ecmwf-enterprise-sandbox/eckit/.github/workflows/reusable-ci-hpc.yml@upstream-ci-hpc
+    with:
+      eckit: ${{ inputs.eckit }}
     secrets: inherit
 
   metkit:
