@@ -18,6 +18,9 @@ on:
       mir:
         required: false
         type: string
+    secrets:
+      PAT:
+        required: true
 
 jobs:
   eccodes:
