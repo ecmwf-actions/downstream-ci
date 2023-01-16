@@ -23,81 +23,55 @@ jobs:
   eccodes:
     name: eccodes
     if: ${{ inputs.eccodes }}
-    uses: ecmwf-enterprise-sandbox/eccodes/.github/workflows/reusable-ci.yml@trigger-reusable-upstream-ci
+    uses: ecmwf-enterprise-sandbox/eccodes/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
     secrets: inherit
 
   eckit:
     name: eckit
     if: ${{ inputs.eckit }}
-    uses: ecmwf-enterprise-sandbox/eckit/.github/workflows/reusable-ci.yml@reusable-ci
-    secrets: inherit
-
-  eccodes-python:
-    needs: [eccodes]
-    name: eccodes-python
-    uses: ecmwf-enterprise-sandbox/eccodes-python/.github/workflows/reusable-ci.yml@reusable-ci
-    with:
-      eccodes: ${{ inputs.eccodes }}
-      platform: '["ubuntu-latest"]'
-      method: '["build-package"]'
-    secrets: inherit
-
-  ecmwflibs:
-    needs: [eccodes]
-    name: ecmwflibs
-    uses: ecmwf-enterprise-sandbox/ecmwflibs/.github/workflows/reusable-ci.yml@reusable-ci
-    with:
-      eccodes: ${{ inputs.eccodes }}
-    secrets: inherit
-
-  skinnywms:
-    needs: [ecmwflibs]
-    name: skinnywms
-    uses: ecmwf-enterprise-sandbox/skinnywms/.github/workflows/reusable-ci.yml@reusable-ci
-    with:
-      wheel-artifact: 'wheel-manylinux2014-3.8'
+    uses: ecmwf-enterprise-sandbox/eckit/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
     secrets: inherit
 
   metkit:
     needs: [eccodes, eckit]
     if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
     name: metkit
-    uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/reusable-ci.yml@reusable-ci
+    uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
     with:
       eccodes: ${{ inputs.eccodes }}
       eckit: ${{ inputs.eckit }}
     secrets: inherit
 
-  atlas:
-    needs: [eckit]
-    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.atlas) }}
-    name: atlas
-    uses: ecmwf-enterprise-sandbox/atlas/.github/workflows/reusable-ci.yml@reusable-ci
-    with:
-      eckit: ${{ inputs.eckit }}
-    secrets: inherit
+  # atlas:
+  #   needs: [eckit]
+  #   if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.atlas) }}
+  #   name: atlas
+  #   uses: ecmwf-enterprise-sandbox/atlas/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
+  #   with:
+  #     eckit: ${{ inputs.eckit }}
+  #   secrets: inherit
 
-  mir:
-    needs: [metkit, atlas]
-    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.mir) }}
-    name: mir
-    uses: ecmwf-enterprise-sandbox/mir/.github/workflows/reusable-ci.yml@reusable-ci
-    with:
-      eccodes: ${{ inputs.eccodes }}
-      eckit: ${{ inputs.eckit }}
-      metkit: ${{ inputs.metkit }}
-      atlas: ${{ inputs.atlas }}
-    secrets: inherit
+  # mir:
+  #   needs: [metkit, atlas]
+  #   if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.mir) }}
+  #   name: mir
+  #   uses: ecmwf-enterprise-sandbox/mir/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
+  #   with:
+  #     eccodes: ${{ inputs.eccodes }}
+  #     eckit: ${{ inputs.eckit }}
+  #     metkit: ${{ inputs.metkit }}
+  #     atlas: ${{ inputs.atlas }}
+  #   secrets: inherit
 
-  pgen:
-    needs: [mir]
-    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.pgen) }}
-    name: pgen
-    uses: ecmwf-enterprise-sandbox/pgen/.github/workflows/reusable-ci.yml@ci
-    with:
-      eccodes: ${{ inputs.eccodes }}
-      eckit: ${{ inputs.eckit }}
-      metkit: ${{ inputs.metkit }}
-      atlas: ${{ inputs.atlas }}
-      mir: ${{ inputs.mir }}
-    secrets: inherit
+  # pgen:
+  #   needs: [mir]
+  #   if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.pgen) }}
+  #   name: pgen
+  #   uses: ecmwf-enterprise-sandbox/pgen/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
+  #   with:
+  #     eccodes: ${{ inputs.eccodes }}
+  #     eckit: ${{ inputs.eckit }}
+  #     metkit: ${{ inputs.metkit }}
+  #     atlas: ${{ inputs.atlas }}
+  #     mir: ${{ inputs.mir }}
+  #   secrets: inherit
