@@ -23,20 +23,20 @@ on:
         required: true
 
 jobs:
-  # eccodes:
-  #   name: eccodes
-  #   if: ${{ inputs.eccodes }}
-  #   uses: ecmwf-enterprise-sandbox/eccodes/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
-  #   secrets: inherit
+  eccodes:
+    name: eccodes
+    if: ${{ inputs.eccodes }}
+    uses: ecmwf-enterprise-sandbox/eccodes/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
+    secrets: inherit
 
-  # eckit:
-  #   name: eckit
-  #   if: ${{ inputs.eckit }}
-  #   uses: ecmwf-enterprise-sandbox/eckit/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
-  #   secrets: inherit
+  eckit:
+    name: eckit
+    if: ${{ inputs.eckit }}
+    uses: ecmwf-enterprise-sandbox/eckit/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
+    secrets: inherit
 
   metkit:
-    # needs: [eccodes, eckit]
+    needs: [eccodes, eckit]
     if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
     name: metkit
     uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
