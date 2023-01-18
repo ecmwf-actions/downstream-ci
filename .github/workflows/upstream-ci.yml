@@ -54,17 +54,17 @@ jobs:
       eckit: ${{ inputs.eckit }}
     secrets: inherit
 
-  # mir:
-  #   needs: [metkit, atlas]
-  #   if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.mir) }}
-  #   name: mir
-  #   uses: ecmwf-enterprise-sandbox/mir/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
-  #   with:
-  #     eccodes: ${{ inputs.eccodes }}
-  #     eckit: ${{ inputs.eckit }}
-  #     metkit: ${{ inputs.metkit }}
-  #     atlas: ${{ inputs.atlas }}
-  #   secrets: inherit
+  mir:
+    needs: [metkit, atlas]
+    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.mir) }}
+    name: mir
+    uses: ecmwf-enterprise-sandbox/mir/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
+    with:
+      eccodes: ${{ inputs.eccodes }}
+      eckit: ${{ inputs.eckit }}
+      metkit: ${{ inputs.metkit }}
+      atlas: ${{ inputs.atlas }}
+    secrets: inherit
 
   # pgen:
   #   needs: [mir]
