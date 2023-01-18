@@ -44,7 +44,7 @@ jobs:
     name: metkit
     uses: ecmwf-enterprise-sandbox/metkit/.github/workflows/reusable-ci-hpc.yml@upstream-ci-hpc
     with:
-      metkit: ${{ inputs.metkit || 'ecmwf-enterprise-sandbox/metkit@upstream-ci-hpc' }}
+      metkit: ${{ inputs.metkit }}
       eckit: ${{ inputs.eckit }}
       eccodes: ${{ inputs.eccodes }}
     secrets: inherit
@@ -55,7 +55,7 @@ jobs:
     name: atlas
     uses: ecmwf-enterprise-sandbox/atlas/.github/workflows/reusable-ci-hpc.yml@upstream-ci-hpc
     with:
-      atlas: ${{ inputs.atlas || 'ecmwf-enterprise-sandbox/atlas@upstream-ci-hpc' }}
+      atlas: ${{ inputs.atlas }}
       eckit: ${{ inputs.eckit }}
     secrets: inherit
 
@@ -65,7 +65,7 @@ jobs:
     name: mir
     uses: ecmwf-enterprise-sandbox/mir/.github/workflows/reusable-ci-hpc.yml@upstream-ci-hpc
     with:
-      mir: ${{ inputs.mir || 'ecmwf-enterprise-sandbox/mir@upstream-ci-hpc' }}
+      mir: ${{ inputs.mir }}
       eccodes: ${{ inputs.eccodes }}
       eckit: ${{ inputs.eckit }}
       metkit: ${{ inputs.metkit }}
@@ -78,7 +78,7 @@ jobs:
     name: pgen
     uses: ecmwf-enterprise-sandbox/pgen/.github/workflows/reusable-ci-hpc.yml@upstream-ci-hpc
     with:
-      pgen: ${{ inputs.pgen || 'ecmwf-enterprise-sandbox/pgen@upstream-ci-hpc' }}
+      pgen: ${{ inputs.pgen }}
       eccodes: ${{ inputs.eccodes }}
       eckit: ${{ inputs.eckit }}
       metkit: ${{ inputs.metkit }}
