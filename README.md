@@ -1,5 +1,7 @@
-# Upstream CI Action
+# Downstream CI Workflows
 
-A GitHub Action to run CI for upstream repos.
+GitHub workflows to run CI for downstream repos.
 
-Motivation is the have the dependency tree all in once place.
+Motivation is to have the dependency tree all in once place.
+
+Split into trees for self-hosted runners and HPC.
