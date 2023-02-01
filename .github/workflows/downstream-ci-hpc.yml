@@ -1,4 +1,4 @@
-name: upstream-ci-hpc
+name: downstream ci hpc
 
 on:
   workflow_call:
