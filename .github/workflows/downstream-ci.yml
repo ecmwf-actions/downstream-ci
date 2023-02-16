@@ -12,21 +12,9 @@ on:
       metkit:
         required: false
         type: string
-      metkit_sha:
-        required: false
-        type: string
       atlas:
         required: false
         type: string
-      mir:
-        required: false
-        type: string
-      pgen:
-        required: false
-        type: string
-    secrets:
-      PAT:
-        required: true
 
 jobs:
   # eccodes:
@@ -35,19 +23,19 @@ jobs:
   #   uses: ecmwf-enterprise-sandbox/eccodes/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
   #   secrets: inherit
 
-  # eckit:
-  #   name: eckit
-  #   if: ${{ inputs.eckit }}
-  #   uses: ecmwf-enterprise-sandbox/eckit/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
-  #   secrets: inherit
+  eckit:
+    name: eckit
+    if: ${{ inputs.eckit }}
+    uses: ecmwf/eckit/.github/workflows/reusable-ci.yml@develop
+    secrets: inherit
 
   metkit:
-    # needs: [eccodes, eckit]
+    needs: [eckit] # eccodes
     if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
     name: metkit
-    uses: ecmwf/metkit/.github/workflows/reusable-ci.yml@${{ inputs.metkit_sha }}
+    uses: ecmwf/metkit/.github/workflows/reusable-ci.yml@develop
     with:
-      metkit_sha: ${{ inputs.metkit_sha }}
+      metkit: ${{ inputs.metkit }}
       eccodes: ${{ inputs.eccodes }}
       eckit: ${{ inputs.eckit }}
     secrets: inherit
@@ -59,29 +47,4 @@ jobs:
   #   uses: ecmwf-enterprise-sandbox/atlas/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
   #   with:
   #     eckit: ${{ inputs.eckit }}
-  #   secrets: inherit
-
-  # mir:
-  #   needs: [metkit, atlas]
-  #   if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.mir) }}
-  #   name: mir
-  #   uses: ecmwf-enterprise-sandbox/mir/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
-  #   with:
-  #     eccodes: ${{ inputs.eccodes }}
-  #     eckit: ${{ inputs.eckit }}
-  #     metkit: ${{ inputs.metkit }}
-  #     atlas: ${{ inputs.atlas }}
-  #   secrets: inherit
-
-  # pgen:
-  #   needs: [mir]
-  #   if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.pgen) }}
-  #   name: pgen
-  #   uses: ecmwf-enterprise-sandbox/pgen/.github/workflows/reusable-ci.yml@upstream-ci-self-hosted
-  #   with:
-  #     eccodes: ${{ inputs.eccodes }}
-  #     eckit: ${{ inputs.eckit }}
-  #     metkit: ${{ inputs.metkit }}
-  #     atlas: ${{ inputs.atlas }}
-  #     mir: ${{ inputs.mir }}
   #   secrets: inherit
