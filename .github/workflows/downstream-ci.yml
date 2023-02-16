@@ -12,9 +12,6 @@ on:
       metkit:
         required: false
         type: string
-      metkit_sha:
-        required: false
-        type: string
       atlas:
         required: false
         type: string
@@ -36,9 +33,9 @@ jobs:
     # needs: [eccodes, eckit]
     if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
     name: metkit
-    uses: ecmwf/metkit/.github/workflows/reusable-ci.yml@${{ inputs.metkit_sha }}
+    uses: ecmwf/metkit/.github/workflows/reusable-ci.yml@develop
     with:
-      metkit_sha: ${{ inputs.metkit_sha }}
+      metkit: ${{ inputs.metkit }}
       eccodes: ${{ inputs.eccodes }}
       eckit: ${{ inputs.eckit }}
     secrets: inherit

@@ -12,9 +12,6 @@ on:
       metkit:
         required: false
         type: string
-      metkit_sha:
-        required: false
-        type: string
       atlas:
         required: false
         type: string
@@ -35,11 +32,10 @@ jobs:
   #   secrets: inherit
 
   metkit:
-    # needs eccodes and eckit to complete first, always() ensures that it will run regardless of whether they were successfull and at least one job in needs was successful, or the inputs.metkit is populated
     # needs: [eccodes, eckit]
     if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
     name: metkit
-    uses: ecmwf/metkit/.github/workflows/reusable-ci-hpc.yml@${{ inputs.metkit_sha }}
+    uses: ecmwf/metkit/.github/workflows/reusable-ci-hpc.yml@develop
     with:
       metkit: ${{ inputs.metkit }}
       eckit: ${{ inputs.eckit }}
