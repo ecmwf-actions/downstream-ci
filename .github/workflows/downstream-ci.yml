@@ -27,6 +27,8 @@ jobs:
     name: eckit
     if: ${{ inputs.eckit }}
     uses: ecmwf/eckit/.github/workflows/reusable-ci.yml@develop
+    with:
+      eckit: ${{ inputs.eckit }}
     secrets: inherit
 
   metkit:
