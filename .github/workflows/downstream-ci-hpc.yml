@@ -18,12 +18,6 @@ on:
       atlas:
         required: false
         type: string
-      mir:
-        required: false
-        type: string
-      pgen:
-        required: false
-        type: string
 
 jobs:
   # eccodes:
@@ -60,31 +54,4 @@ jobs:
   #   with:
   #     atlas: ${{ inputs.atlas }}
   #     eckit: ${{ inputs.eckit }}
-  #   secrets: inherit
-
-  # mir:
-  #   needs: [metkit, atlas]
-  #   if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.mir) }}
-  #   name: mir
-  #   uses: ecmwf-enterprise-sandbox/mir/.github/workflows/reusable-ci-hpc.yml@upstream-ci-hpc
-  #   with:
-  #     mir: ${{ inputs.mir }}
-  #     eccodes: ${{ inputs.eccodes }}
-  #     eckit: ${{ inputs.eckit }}
-  #     metkit: ${{ inputs.metkit }}
-  #     atlas: ${{ inputs.atlas }}
-  #   secrets: inherit
-
-  # pgen:
-  #   needs: [mir]
-  #   if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.pgen) }}
-  #   name: pgen
-  #   uses: ecmwf-enterprise-sandbox/pgen/.github/workflows/reusable-ci-hpc.yml@upstream-ci-hpc
-  #   with:
-  #     pgen: ${{ inputs.pgen }}
-  #     eccodes: ${{ inputs.eccodes }}
-  #     eckit: ${{ inputs.eckit }}
-  #     metkit: ${{ inputs.metkit }}
-  #     atlas: ${{ inputs.atlas }}
-  #     mir: ${{ inputs.mir }}
   #   secrets: inherit
