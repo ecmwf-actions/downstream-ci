@@ -26,7 +26,7 @@ jobs:
   eckit:
     name: eckit
     if: ${{ inputs.eckit }}
-    uses: ecmwf/eckit/.github/workflows/reusable-ci.yml@develop
+    uses: ecmwf/eckit/.github/workflows/reusable-ci.yml@feature/downstream-ci
     with:
       eckit: ${{ inputs.eckit }}
     secrets: inherit
