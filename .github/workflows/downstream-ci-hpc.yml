@@ -17,11 +17,13 @@ on:
         type: string
 
 jobs:
-  # eccodes:
-  #   name: eccodes
-  #   if: ${{ inputs.eccodes }}
-  #   uses: ecmwf-enterprise-sandbox/eccodes/.github/workflows/reusable-ci-hpc.yml@upstream-ci-hpc
-  #   secrets: inherit
+  eccodes:
+    name: eccodes
+    if: ${{ inputs.eccodes }}
+    uses: ecmwf/eccodes/.github/workflows/reusable-ci-hpc.yml@feature/ci
+    with:
+      eccodes: ${{ inputs.eccodes }}
+    secrets: inherit
 
   eckit:
     name: eckit
@@ -32,7 +34,7 @@ jobs:
     secrets: inherit
 
   metkit:
-    needs: [eckit] # eccodes
+    needs: [eckit, eccodes]
     if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
     name: metkit
     uses: ecmwf/metkit/.github/workflows/reusable-ci-hpc.yml@develop
