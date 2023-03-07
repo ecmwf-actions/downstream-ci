@@ -44,12 +44,12 @@ jobs:
       eccodes: ${{ inputs.eccodes }}
     secrets: inherit
 
-  # atlas:
-  #   needs: [eckit]
-  #   if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.atlas) }}
-  #   name: atlas
-  #   uses: ecmwf-enterprise-sandbox/atlas/.github/workflows/reusable-ci-hpc.yml@upstream-ci-hpc
-  #   with:
-  #     atlas: ${{ inputs.atlas }}
-  #     eckit: ${{ inputs.eckit }}
-  #   secrets: inherit
+  atlas:
+    needs: [eckit]
+    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.atlas) }}
+    name: atlas
+    uses: ecmwf/atlas/.github/workflows/reusable-ci-hpc.yml@feature/ci
+    with:
+      atlas: ${{ inputs.atlas }}
+      eckit: ${{ inputs.eckit }}
+    secrets: inherit
