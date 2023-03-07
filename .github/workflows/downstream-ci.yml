@@ -48,7 +48,7 @@ jobs:
     needs: [eckit]
     if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.atlas) }}
     name: atlas
-    uses: ecmwf/atlas/.github/workflows/reusable-ci.yml@feature/ci
+    uses: ecmwf/atlas/.github/workflows/reusable-ci.yml@develop
     with:
       atlas: ${{ inputs.atlas }}
       eckit: ${{ inputs.eckit }}
