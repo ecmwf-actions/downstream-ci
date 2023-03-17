@@ -20,7 +20,7 @@ jobs:
   eccodes:
     name: eccodes
     if: ${{ inputs.eccodes }}
-    uses: ecmwf/eccodes/.github/workflows/reusable-ci-hpc.yml@feature/ci
+    uses: ecmwf/eccodes/.github/workflows/reusable-ci-hpc.yml@develop
     with:
       eccodes: ${{ inputs.eccodes }}
     secrets: inherit
