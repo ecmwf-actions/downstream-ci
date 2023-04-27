@@ -3,6 +3,10 @@ name: downstream ci hpc
 on:
   workflow_call:
     inputs:
+      dev-runner:
+        description: Whether to use runner with dev version of build-package-hpc .
+        required: false
+        type: boolean
       eccodes:
         required: false
         type: string
@@ -20,36 +24,13 @@ jobs:
   eccodes:
     name: eccodes
     if: ${{ inputs.eccodes }}
-    uses: ecmwf/eccodes/.github/workflows/reusable-ci-hpc.yml@develop
-    with:
-      eccodes: ${{ inputs.eccodes }}
-    secrets: inherit
-
-  eckit:
-    name: eckit
-    if: ${{ inputs.eckit }}
-    uses: ecmwf/eckit/.github/workflows/reusable-ci-hpc.yml@develop
-    with:
-      eckit: ${{ inputs.eckit }}
-    secrets: inherit
-
-  metkit:
-    needs: [eckit, eccodes]
-    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
-    name: metkit
-    uses: ecmwf/metkit/.github/workflows/reusable-ci-hpc.yml@develop
-    with:
-      metkit: ${{ inputs.metkit }}
-      eckit: ${{ inputs.eckit }}
-      eccodes: ${{ inputs.eccodes }}
-    secrets: inherit
-
-  atlas:
-    needs: [eckit]
-    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.atlas) }}
-    name: atlas
-    uses: ecmwf/atlas/.github/workflows/reusable-ci-hpc.yml@develop
-    with:
-      atlas: ${{ inputs.atlas }}
-      eckit: ${{ inputs.eckit }}
-    secrets: inherit
+    runs-on:
+      [self-hosted, linux, "${{ inputs.dev-runner && 'hpc-dev' || 'hpc' }}"]
+    steps:
+      - uses: ecmwf-actions/build-package-hpc@feature/config-file
+        with:
+          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+          repository: ${{ inputs.eccodes }}
+          build_config: .github/ci-hpc-config.yml
