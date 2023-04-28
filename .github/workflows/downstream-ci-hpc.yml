@@ -3,7 +3,7 @@ name: downstream ci hpc
 on:
   workflow_call:
     inputs:
-      dev-runner:
+      dev_runner:
         description: Whether to use runner with dev version of build-package-hpc .
         required: false
         type: boolean
@@ -70,7 +70,7 @@ jobs:
     needs: [setup]
     if: ${{ inputs.eccodes }}
     runs-on:
-      [self-hosted, linux, "${{ inputs.dev-runner && 'hpc-dev' || 'hpc' }}"]
+      [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
     steps:
       - uses: ecmwf-actions/build-package-hpc@feature/config-file
         with:
