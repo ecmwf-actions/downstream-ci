@@ -101,13 +101,22 @@ jobs:
               print(f"matrix<<EOF", file=f)
               print(json.dumps(matrix, separators=(',', ':')), file=f)
               print("EOF", file=f)
+
   eccodes:
     name: eccodes
+    needs: [setup]
     if: ${{ inputs.eccodes }}
-    uses: ecmwf/eccodes/.github/workflows/reusable-ci.yml@develop
-    with:
-      eccodes: ${{ inputs.eccodes }}
-    secrets: inherit
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-action@feature/build-package-action
+        with:
+          repository: ${{ inputs.eccodes }}
+          build_package_inputs: |
+            repository: ${{ inputs.eccodes }}
+          build_config: .github/ci-config.yml
 
   eckit:
     name: eckit
