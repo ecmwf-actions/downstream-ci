@@ -135,15 +135,23 @@ jobs:
           build_config: .github/ci-config.yml
 
   metkit:
-    needs: [eckit, eccodes]
-    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
     name: metkit
-    uses: ecmwf/metkit/.github/workflows/reusable-ci.yml@develop
-    with:
-      metkit: ${{ inputs.metkit }}
-      eccodes: ${{ inputs.eccodes }}
-      eckit: ${{ inputs.eckit }}
-    secrets: inherit
+    needs: [setup, eckit, eccodes]
+    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-action@feature/build-package-action
+        with:
+          repository: ${{ inputs.metkit }}
+          build_package_inputs: |
+            repository: ${{ inputs.metkit }}
+          build_config: .github/ci-config.yml
+          build_dependencies: |
+            ${{ inputs.eccodes }}
+            ${{ inputs.eckit }}
 
   atlas:
     needs: [eckit]
