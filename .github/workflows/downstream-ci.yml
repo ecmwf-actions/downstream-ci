@@ -154,11 +154,19 @@ jobs:
             ${{ inputs.eckit }}
 
   atlas:
-    needs: [eckit]
-    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.atlas) }}
     name: atlas
-    uses: ecmwf/atlas/.github/workflows/reusable-ci.yml@develop
-    with:
-      atlas: ${{ inputs.atlas }}
-      eckit: ${{ inputs.eckit }}
-    secrets: inherit
+    needs: [setup, eckit]
+    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.atlas) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-action@feature/build-package-action
+        with:
+          repository: ${{ inputs.atlas }}
+          build_package_inputs: |
+            repository: ${{ inputs.atlas }}
+          build_config: .github/ci-config.yml
+          build_dependencies: |
+            ${{ inputs.eckit }}
