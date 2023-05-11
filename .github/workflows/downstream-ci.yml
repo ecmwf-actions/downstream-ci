@@ -120,11 +120,19 @@ jobs:
 
   eckit:
     name: eckit
+    needs: [setup]
     if: ${{ inputs.eckit }}
-    uses: ecmwf/eckit/.github/workflows/reusable-ci.yml@develop
-    with:
-      eckit: ${{ inputs.eckit }}
-    secrets: inherit
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-action@feature/build-package-action
+        with:
+          repository: ${{ inputs.eckit }}
+          build_package_inputs: |
+            repository: ${{ inputs.eckit }}
+          build_config: .github/ci-config.yml
 
   metkit:
     needs: [eckit, eccodes]

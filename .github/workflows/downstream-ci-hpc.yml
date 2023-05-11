@@ -85,11 +85,21 @@ jobs:
 
   eckit:
     name: eckit
+    needs: [setup]
     if: ${{ inputs.eckit }}
-    uses: ecmwf/eckit/.github/workflows/reusable-ci-hpc.yml@develop
-    with:
-      eckit: ${{ inputs.eckit }}
-    secrets: inherit
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    runs-on:
+      [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@feature/hpc-action
+        with:
+          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+          repository: ${{ inputs.eckit }}
+          build_config: .github/ci-hpc-config.yml
 
   metkit:
     needs: [eckit, eccodes]
