@@ -19,6 +19,9 @@ on:
       atlas:
         required: false
         type: string
+      mir:
+        required: false
+        type: string
 
 jobs:
   setup:
