@@ -170,3 +170,24 @@ jobs:
           build_config: .github/ci-config.yml
           build_dependencies: |
             ${{ inputs.eckit }}
+
+  mir:
+    name: mir
+    needs: [setup, eckit, eccodes, metkit, atlas]
+    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.mir) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-action@feature/build-package-action
+        with:
+          repository: ${{ inputs.mir }}
+          build_package_inputs: |
+            repository: ${{ inputs.mir }}
+          build_config: .github/ci-config.yml
+          build_dependencies: |
+            ${{ inputs.eccodes }}
+            ${{ inputs.eckit }}
+            ${{ inputs.metkit }}
+            ${{ inputs.atlas }}
