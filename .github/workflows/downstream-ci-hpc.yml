@@ -106,7 +106,7 @@ jobs:
   metkit:
     name: metkit
     needs: [setup, eckit, eccodes]
-    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.eccodes || inputs.metkit) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
@@ -127,7 +127,7 @@ jobs:
   atlas:
     name: atlas
     needs: [setup, eckit]
-    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.atlas) }}
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.atlas) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
@@ -147,7 +147,7 @@ jobs:
   mir:
     name: mir
     needs: [setup, eckit, eccodes, atlas]
-    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.mir) }}
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.eccodes || inputs.atlas || inputs.mir) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
