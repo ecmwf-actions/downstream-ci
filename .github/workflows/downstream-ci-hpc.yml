@@ -82,7 +82,7 @@ jobs:
           github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
           github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
           troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
-          repository: ${{ inputs.eccodes }}
+          repository: ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}
           build_config: .github/ci-hpc-config.yml
 
   eckit:
@@ -100,7 +100,7 @@ jobs:
           github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
           github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
           troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
-          repository: ${{ inputs.eckit }}
+          repository: ${{ inputs.eckit || 'ecmwf/eckit@develop' }}
           build_config: .github/ci-hpc-config.yml
 
   metkit:
@@ -118,7 +118,7 @@ jobs:
           github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
           github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
           troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
-          repository: ${{ inputs.metkit }}
+          repository: ${{ inputs.metkit || 'ecmwf/metkit@develop' }}
           build_config: .github/ci-hpc-config.yml
           dependencies: |
             ${{ inputs.eckit }}
@@ -139,7 +139,7 @@ jobs:
           github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
           github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
           troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
-          repository: ${{ inputs.atlas }}
+          repository: ${{ inputs.atlas || 'ecmwf/atlas@develop' }}
           build_config: .github/ci-hpc-config.yml
           dependencies: |
             ${{ inputs.eckit }}
@@ -159,7 +159,7 @@ jobs:
           github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
           github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
           troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
-          repository: ${{ inputs.mir }}
+          repository: ${{ inputs.mir || 'ecmwf/mir@develop' }}
           build_config: .github/ci-hpc-config.yml
           dependencies: |
             ${{ inputs.eckit }}
