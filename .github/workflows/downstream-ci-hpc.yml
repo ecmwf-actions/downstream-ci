@@ -146,7 +146,7 @@ jobs:
 
   mir:
     name: mir
-    needs: [setup, eckit, eccodes, metkit, atlas]
+    needs: [setup, eckit, eccodes, atlas]
     if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.mir) }}
     strategy:
       fail-fast: false
@@ -164,5 +164,4 @@ jobs:
           dependencies: |
             ${{ inputs.eckit }}
             ${{ inputs.eccodes }}
-            ${{ inputs.metkit }}
             ${{ inputs.atlas }}
