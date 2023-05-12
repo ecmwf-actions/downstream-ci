@@ -3,6 +3,10 @@ name: downstream ci
 on:
   workflow_call:
     inputs:
+      skip_matrix_jobs:
+        description: List of matrix jobs to be skipped.
+        required: false
+        type: string
       eccodes:
         required: false
         type: string
@@ -15,41 +19,178 @@ on:
       atlas:
         required: false
         type: string
+      mir:
+        required: false
+        type: string
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Set Matrix
+        id: set-matrix
+        shell: python
+        run: |
+          import os
+          import json
+          import yaml
+
+          matrix_yaml = """
+          name:
+          - gnu@debian-11
+          - gnu@centos-7.9
+          - gnu@rocky-8.6
+          - clang@rocky-8.6
+          - gnu@ubuntu-22.04
+          - gnu@fedora-37
+          include:
+          - name: gnu@debian-11
+            labels: [self-hosted, platform-builder-debian-11]
+            os: debian-11
+            compiler: gnu
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+          - name: gnu@centos-7.9
+            labels: [self-hosted, platform-builder-centos-7.9]
+            os: centos-7.9
+            compiler: gnu
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+          - name: gnu@rocky-8.6
+            labels: [self-hosted, platform-builder-rocky-8.6]
+            os: rocky-8.6
+            compiler: gnu
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+          - name: clang@rocky-8.6
+            labels: [self-hosted, platform-builder-rocky-8.6]
+            os: rocky-8.6
+            compiler: clang
+            compiler_cc: clang
+            compiler_cxx: clang++
+            compiler_fc: gfortran
+          - name: gnu@ubuntu-22.04
+            labels: [self-hosted, platform-builder-ubuntu-22.04]
+            os: ubuntu-22.04
+            compiler: gnu
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+          - name: gnu@fedora-37
+            labels: [self-hosted, platform-builder-fedora-37]
+            os: fedora-37
+            compiler: gnu
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+          """
+
+          matrix = yaml.safe_load(matrix_yaml)
+
+          skip_jobs = """${{ inputs.skip_matrix_jobs }}""".splitlines()
+          if skip_jobs:
+            matrix['name'] = [name for name in matrix['name'] if name not in skip_jobs]
+            matrix['include'] = [d for d in matrix['include'] if d['name'] not in skip_jobs]
+
+          print("Build matrix:")
+          print(yaml.dump(matrix, sort_keys=False))
+
+          with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
+              print(f"matrix<<EOF", file=f)
+              print(json.dumps(matrix, separators=(',', ':')), file=f)
+              print("EOF", file=f)
+
   eccodes:
     name: eccodes
+    needs: [setup]
     if: ${{ inputs.eccodes }}
-    uses: ecmwf/eccodes/.github/workflows/reusable-ci.yml@develop
-    with:
-      eccodes: ${{ inputs.eccodes }}
-    secrets: inherit
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ inputs.eccodes }}
+          build_package_inputs: |
+            repository: ${{ inputs.eccodes }}
+          build_config: .github/ci-config.yml
 
   eckit:
     name: eckit
+    needs: [setup]
     if: ${{ inputs.eckit }}
-    uses: ecmwf/eckit/.github/workflows/reusable-ci.yml@develop
-    with:
-      eckit: ${{ inputs.eckit }}
-    secrets: inherit
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ inputs.eckit }}
+          build_package_inputs: |
+            repository: ${{ inputs.eckit }}
+          build_config: .github/ci-config.yml
 
   metkit:
-    needs: [eckit, eccodes]
-    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
     name: metkit
-    uses: ecmwf/metkit/.github/workflows/reusable-ci.yml@develop
-    with:
-      metkit: ${{ inputs.metkit }}
-      eccodes: ${{ inputs.eccodes }}
-      eckit: ${{ inputs.eckit }}
-    secrets: inherit
+    needs: [setup, eckit, eccodes]
+    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.metkit) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ inputs.metkit }}
+          build_package_inputs: |
+            repository: ${{ inputs.metkit }}
+          build_config: .github/ci-config.yml
+          build_dependencies: |
+            ${{ inputs.eccodes }}
+            ${{ inputs.eckit }}
 
   atlas:
-    needs: [eckit]
-    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.atlas) }}
     name: atlas
-    uses: ecmwf/atlas/.github/workflows/reusable-ci.yml@develop
-    with:
-      atlas: ${{ inputs.atlas }}
-      eckit: ${{ inputs.eckit }}
-    secrets: inherit
+    needs: [setup, eckit]
+    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.atlas) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ inputs.atlas }}
+          build_package_inputs: |
+            repository: ${{ inputs.atlas }}
+          build_config: .github/ci-config.yml
+          build_dependencies: |
+            ${{ inputs.eckit }}
+
+  mir:
+    name: mir
+    needs: [setup, eckit, eccodes, metkit, atlas]
+    if: ${{ always() && (contains(join(needs.*.result, ','), 'success') || inputs.mir) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ inputs.mir }}
+          build_package_inputs: |
+            repository: ${{ inputs.mir }}
+          build_config: .github/ci-config.yml
+          build_dependencies: |
+            ${{ inputs.eccodes }}
+            ${{ inputs.eckit }}
+            ${{ inputs.metkit }}
+            ${{ inputs.atlas }}
