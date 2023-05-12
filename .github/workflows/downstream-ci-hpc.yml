@@ -77,7 +77,7 @@ jobs:
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
     steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@feature/hpc-action
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:
           github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
           github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
@@ -95,7 +95,7 @@ jobs:
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
     steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@feature/hpc-action
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:
           github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
           github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
@@ -113,7 +113,7 @@ jobs:
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
     steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@feature/hpc-action
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:
           github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
           github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
@@ -134,7 +134,7 @@ jobs:
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
     steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@feature/hpc-action
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:
           github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
           github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
@@ -154,7 +154,7 @@ jobs:
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
     steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@feature/hpc-action
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:
           github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
           github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
