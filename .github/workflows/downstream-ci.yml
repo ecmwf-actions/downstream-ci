@@ -27,83 +27,81 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      eccodes: ${{ steps.setup.outputs.eccodes }}
+      eckit: ${{ steps.setup.outputs.eckit }}
+      metkit: ${{ steps.setup.outputs.metkit }}
+      atlas: ${{ steps.setup.outputs.atlas }}
+      mir: ${{ steps.setup.outputs.mir }}
     steps:
-      - name: Set Matrix
-        id: set-matrix
-        shell: python
-        run: |
-          import os
-          import json
-          import yaml
+      - name: checkout reusable wfs repo
+        uses: actions/checkout@v3
+        with:
+          repository: 'ecmwf-actions/downstream-ci'
+          ref: 'feature/matrix-options'
 
-          matrix_yaml = """
-          name:
-          - gnu@debian-11
-          - gnu@centos-7.9
-          - gnu@rocky-8.6
-          - clang@rocky-8.6
-          - gnu@ubuntu-22.04
-          - gnu@fedora-37
-          include:
-          - name: gnu@debian-11
-            labels: [self-hosted, platform-builder-debian-11]
-            os: debian-11
-            compiler: gnu
-            compiler_cc: gcc
-            compiler_cxx: g++
-            compiler_fc: gfortran
-          - name: gnu@centos-7.9
-            labels: [self-hosted, platform-builder-centos-7.9]
-            os: centos-7.9
-            compiler: gnu
-            compiler_cc: gcc
-            compiler_cxx: g++
-            compiler_fc: gfortran
-          - name: gnu@rocky-8.6
-            labels: [self-hosted, platform-builder-rocky-8.6]
-            os: rocky-8.6
-            compiler: gnu
-            compiler_cc: gcc
-            compiler_cxx: g++
-            compiler_fc: gfortran
-          - name: clang@rocky-8.6
-            labels: [self-hosted, platform-builder-rocky-8.6]
-            os: rocky-8.6
-            compiler: clang
-            compiler_cc: clang
-            compiler_cxx: clang++
-            compiler_fc: gfortran
-          - name: gnu@ubuntu-22.04
-            labels: [self-hosted, platform-builder-ubuntu-22.04]
-            os: ubuntu-22.04
-            compiler: gnu
-            compiler_cc: gcc
-            compiler_cxx: g++
-            compiler_fc: gfortran
-          - name: gnu@fedora-37
-            labels: [self-hosted, platform-builder-fedora-37]
-            os: fedora-37
-            compiler: gnu
-            compiler_cc: gcc
-            compiler_cxx: g++
-            compiler_fc: gfortran
-          """
-
-          matrix = yaml.safe_load(matrix_yaml)
-
-          skip_jobs = """${{ inputs.skip_matrix_jobs }}""".splitlines()
-          if skip_jobs:
-            matrix['name'] = [name for name in matrix['name'] if name not in skip_jobs]
-            matrix['include'] = [d for d in matrix['include'] if d['name'] not in skip_jobs]
-
-          print("Build matrix:")
-          print(yaml.dump(matrix, sort_keys=False))
-
-          with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
-              print(f"matrix<<EOF", file=f)
-              print(json.dumps(matrix, separators=(',', ':')), file=f)
-              print("EOF", file=f)
+      - name: Run setup script
+        id: setup
+        env:
+          TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
+          INPUTS: ${{ toJSON(inputs) }}
+          CONFIG_PATHS: |
+            ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}: .github/ci-config.yml
+            ${{ inputs.eckit || 'ecmwf/eckit@develop' }}: .github/ci-config.yml
+            ${{ inputs.metkit || 'ecmwf/metkit@develop' }}: .github/ci-config.yml
+            ${{ inputs.atlas || 'ecmwf/atlas@develop' }}: .github/ci-config.yml
+            ${{ inputs.mir || 'ecmwf/mir@develop' }}: .github/ci-config.yml
+          MATRIX: |
+            name:
+            - gnu@debian-11
+            - gnu@centos-7.9
+            - gnu@rocky-8.6
+            - clang@rocky-8.6
+            - gnu@ubuntu-22.04
+            - gnu@fedora-37
+            include:
+            - name: gnu@debian-11
+              labels: [self-hosted, platform-builder-debian-11]
+              os: debian-11
+              compiler: gnu
+              compiler_cc: gcc
+              compiler_cxx: g++
+              compiler_fc: gfortran
+            - name: gnu@centos-7.9
+              labels: [self-hosted, platform-builder-centos-7.9]
+              os: centos-7.9
+              compiler: gnu
+              compiler_cc: gcc
+              compiler_cxx: g++
+              compiler_fc: gfortran
+            - name: gnu@rocky-8.6
+              labels: [self-hosted, platform-builder-rocky-8.6]
+              os: rocky-8.6
+              compiler: gnu
+              compiler_cc: gcc
+              compiler_cxx: g++
+              compiler_fc: gfortran
+            - name: clang@rocky-8.6
+              labels: [self-hosted, platform-builder-rocky-8.6]
+              os: rocky-8.6
+              compiler: clang
+              compiler_cc: clang
+              compiler_cxx: clang++
+              compiler_fc: gfortran
+            - name: gnu@ubuntu-22.04
+              labels: [self-hosted, platform-builder-ubuntu-22.04]
+              os: ubuntu-22.04
+              compiler: gnu
+              compiler_cc: gcc
+              compiler_cxx: g++
+              compiler_fc: gfortran
+            - name: gnu@fedora-37
+              labels: [self-hosted, platform-builder-fedora-37]
+              os: fedora-37
+              compiler: gnu
+              compiler_cc: gcc
+              compiler_cxx: g++
+              compiler_fc: gfortran
+        run: python setup_downstream_ci.py
 
   eccodes:
     name: eccodes
@@ -111,7 +109,7 @@ jobs:
     if: ${{ inputs.eccodes }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.eccodes) }}
     runs-on: ${{ matrix.labels }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
@@ -127,7 +125,7 @@ jobs:
     if: ${{ inputs.eckit }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.eckit) }}
     runs-on: ${{ matrix.labels }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
@@ -143,7 +141,7 @@ jobs:
     if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.eccodes || inputs.metkit) }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.metkit) }}
     runs-on: ${{ matrix.labels }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
@@ -162,7 +160,7 @@ jobs:
     if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.atlas) }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.atlas) }}
     runs-on: ${{ matrix.labels }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
@@ -180,7 +178,7 @@ jobs:
     if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.eccodes || inputs.atlas || inputs.mir) }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.mir) }}
     runs-on: ${{ matrix.labels }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
