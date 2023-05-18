@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: 'ecmwf-actions/downstream-ci'
-          ref: 'feature/matrix-options'
+          ref: 'main'
 
       - name: Run setup script
         id: setup
