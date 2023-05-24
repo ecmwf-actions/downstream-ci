@@ -42,14 +42,28 @@ jobs:
 
           matrix_yaml = """
             name:
-            - gnu
+            - gnu-12.2.0
+            - gnu-8.5.0
+            - gnu-10.3.0
             include:
-            - name: gnu
-              os: ubuntu-latest
-              compiler: gnu
+            - name: gnu-12.2.0
+              compiler: gnu-12.2.0
               compiler_cc: gcc
               compiler_cxx: g++
               compiler_fc: gfortran
+              compiler_modules: gcc/12.2.0
+            - name: gnu-8.5.0
+              compiler: gnu-8.5.0
+              compiler_cc: gcc
+              compiler_cxx: g++
+              compiler_fc: gfortran
+              compiler_modules: gcc/8.5.0
+            - name: gnu-10.3.0
+              compiler: gnu-10.3.0
+              compiler_cc: gcc
+              compiler_cxx: g++
+              compiler_fc: gfortran
+              compiler_modules: gcc/10.3.0
           """
 
           matrix = yaml.safe_load(matrix_yaml)

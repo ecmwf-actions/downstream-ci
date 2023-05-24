@@ -43,7 +43,6 @@ jobs:
         id: setup
         env:
           TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
-          INPUTS: ${{ toJSON(inputs) }}
           CONFIG_PATHS: |
             ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}: .github/ci-config.yml
             ${{ inputs.eckit || 'ecmwf/eckit@develop' }}: .github/ci-config.yml
