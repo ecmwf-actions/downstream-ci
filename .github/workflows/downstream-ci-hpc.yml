@@ -45,6 +45,7 @@ jobs:
             - gnu-12.2.0
             - gnu-8.5.0
             - gnu-10.3.0
+            - nvidia-22.11
             include:
             - name: gnu-12.2.0
               compiler: gnu-12.2.0
@@ -58,12 +59,19 @@ jobs:
               compiler_cxx: g++
               compiler_fc: gfortran
               compiler_modules: gcc/8.5.0
-            - name: gnu-10.3.0
-              compiler: gnu-10.3.0
-              compiler_cc: gcc
-              compiler_cxx: g++
-              compiler_fc: gfortran
-              compiler_modules: gcc/10.3.0
+            # some modules are missing for this version
+            # - name: gnu-10.3.0
+            #   compiler: gnu-10.3.0
+            #   compiler_cc: gcc
+            #   compiler_cxx: g++
+            #   compiler_fc: gfortran
+            #   compiler_modules: gcc/10.3.0
+            - name: nvidia-22.11
+              compiler: nvidia-22.11
+              compiler_cc: nvc
+              compiler_cxx: nvc++
+              compiler_fc: nvfortran
+              compiler_modules: prgenv/nvidia,nvidia/22.11
           """
 
           matrix = yaml.safe_load(matrix_yaml)
