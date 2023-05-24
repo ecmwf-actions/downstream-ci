@@ -44,8 +44,9 @@ jobs:
             name:
             - gnu-12.2.0
             - gnu-8.5.0
-            - gnu-10.3.0
+            # - gnu-10.3.0
             - nvidia-22.11
+            - intel-2021.4.0
             include:
             - name: gnu-12.2.0
               compiler: gnu-12.2.0
@@ -72,6 +73,12 @@ jobs:
               compiler_cxx: nvc++
               compiler_fc: nvfortran
               compiler_modules: prgenv/nvidia,nvidia/22.11
+            - name: intel-2021.4.0
+              compiler: intel-2021.4.0
+              compiler_cc: icc
+              compiler_cxx: icpc
+              compiler_fc: ifort
+              compiler_modules: prgenv/intel,intel/2021.4.0
           """
 
           matrix = yaml.safe_load(matrix_yaml)
