@@ -5,7 +5,6 @@ import requests
 import yaml
 
 # Load inputs
-inputs = os.getenv("INPUTS")
 config_paths: dict = yaml.safe_load(os.getenv("CONFIG_PATHS", ""))
 matrix = yaml.safe_load(os.getenv("MATRIX", ""))
 skip_jobs = os.getenv("SKIP_MATRIX_JOBS", "").splitlines()
