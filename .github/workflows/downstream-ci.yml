@@ -10,6 +10,9 @@ on:
       eccodes:
         required: false
         type: string
+      eccodes-python:
+        required: false
+        type: string
       eckit:
         required: false
         type: string
@@ -28,6 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       eccodes: ${{ steps.setup.outputs.eccodes }}
+      eccodes-python: ${{ steps.setup.outputs.eccodes-python }}
       eckit: ${{ steps.setup.outputs.eckit }}
       metkit: ${{ steps.setup.outputs.metkit }}
       atlas: ${{ steps.setup.outputs.atlas }}
@@ -45,6 +49,7 @@ jobs:
           TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
           CONFIG_PATHS: |
             ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}: .github/ci-config.yml
+            ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}: .github/ci-config.yml
             ${{ inputs.eckit || 'ecmwf/eckit@develop' }}: .github/ci-config.yml
             ${{ inputs.metkit || 'ecmwf/metkit@develop' }}: .github/ci-config.yml
             ${{ inputs.atlas || 'ecmwf/atlas@develop' }}: .github/ci-config.yml
@@ -117,6 +122,28 @@ jobs:
           build_package_inputs: |
             repository: ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}
           build_config: .github/ci-config.yml
+
+  eccodes-python:
+    name: eccodes-python
+    needs: [setup, eccodes]
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eccodes || inputs.eccodes-python) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.eccodes-python) }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - name: Build dependencies
+        id: build-deps
+        uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}
+          build_package_inputs: |
+            repository: ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}
+          build_config: .github/ci-config.yml
+
+      - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+        with:
+          lib_path: ${{ steps.build-deps.outputs.lib_path }}
 
   eckit:
     name: eckit
