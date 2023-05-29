@@ -14,6 +14,9 @@ on:
       eccodes:
         required: false
         type: string
+      eccodes-python:
+        required: false
+        type: string
       eckit:
         required: false
         type: string
@@ -111,6 +114,26 @@ jobs:
           troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
           repository: ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}
           build_config: .github/ci-hpc-config.yml
+
+  eccodes-python:
+    name: eccodes-python
+    needs: [setup, eccodes]
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eccodes || inputs.eccodes-python) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    runs-on:
+      [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+        with:
+          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+          repository: ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}
+          build_config: .github/ci-hpc-config.yml
+          dependencies: |
+            ${{ inputs.eccodes }}
 
   eckit:
     name: eckit
