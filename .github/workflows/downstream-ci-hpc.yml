@@ -130,7 +130,7 @@ jobs:
           github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
           github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
           troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
-          repository: ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}
+          repository: ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@feature/downstream-ci' }}
           build_config: .github/ci-hpc-config.yml
           dependencies: |
             ${{ inputs.eccodes }}
