@@ -30,21 +30,35 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      eccodes: ${{ steps.setup.outputs.eccodes }}
+      eckit: ${{ steps.setup.outputs.eckit }}
+      metkit: ${{ steps.setup.outputs.metkit }}
+      atlas: ${{ steps.setup.outputs.atlas }}
+      mir: ${{ steps.setup.outputs.mir }}
     steps:
-      - name: Set Matrix
-        id: set-matrix
-        shell: python
-        run: |
-          import os
-          import json
-          import yaml
+      - name: checkout reusable wfs repo
+        uses: actions/checkout@v3
+        with:
+          repository: 'ecmwf-actions/downstream-ci'
+          ref: 'main'
 
-          matrix_yaml = """
+      - name: Run setup script
+        id: setup
+        env:
+          TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
+          CONFIG_PATHS: |
+            ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}: .github/ci-hpc-config.yml
+            ${{ inputs.eckit || 'ecmwf/eckit@develop' }}: .github/ci-hpc-config.yml
+            ${{ inputs.metkit || 'ecmwf/metkit@develop' }}: .github/ci-hpc-config.yml
+            ${{ inputs.atlas || 'ecmwf/atlas@develop' }}: .github/ci-hpc-config.yml
+            ${{ inputs.mir || 'ecmwf/mir@develop' }}: .github/ci-hpc-config.yml
+          SKIP_MATRIX_JOBS: |
+            gnu-10.3.0
+          MATRIX: |
             name:
             - gnu-12.2.0
             - gnu-8.5.0
-            # - gnu-10.3.0
+            - gnu-10.3.0
             - nvidia-22.11
             - intel-2021.4.0
             include:
@@ -60,13 +74,12 @@ jobs:
               compiler_cxx: g++
               compiler_fc: gfortran
               compiler_modules: gcc/8.5.0
-            # some modules are missing for this version
-            # - name: gnu-10.3.0
-            #   compiler: gnu-10.3.0
-            #   compiler_cc: gcc
-            #   compiler_cxx: g++
-            #   compiler_fc: gfortran
-            #   compiler_modules: gcc/10.3.0
+            - name: gnu-10.3.0
+              compiler: gnu-10.3.0
+              compiler_cc: gcc
+              compiler_cxx: g++
+              compiler_fc: gfortran
+              compiler_modules: gcc/10.3.0
             - name: nvidia-22.11
               compiler: nvidia-22.11
               compiler_cc: nvc
@@ -79,22 +92,7 @@ jobs:
               compiler_cxx: icpc
               compiler_fc: ifort
               compiler_modules: prgenv/intel,intel/2021.4.0
-          """
-
-          matrix = yaml.safe_load(matrix_yaml)
-
-          skip_jobs = """${{ inputs.skip_matrix_jobs }}""".splitlines()
-          if skip_jobs:
-            matrix['name'] = [name for name in matrix['name'] if name not in skip_jobs]
-            matrix['include'] = [d for d in matrix['include'] if d['name'] not in skip_jobs]
-
-          print("Build matrix:")
-          print(yaml.dump(matrix, sort_keys=False))
-
-          with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
-              print(f"matrix<<EOF", file=f)
-              print(json.dumps(matrix, separators=(',', ':')), file=f)
-              print("EOF", file=f)
+        run: python setup_downstream_ci.py
 
   eccodes:
     name: eccodes
@@ -102,7 +100,7 @@ jobs:
     if: ${{ inputs.eccodes }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.eccodes) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
     steps:
@@ -120,7 +118,7 @@ jobs:
     if: ${{ inputs.eckit }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.eckit) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
     steps:
@@ -138,7 +136,7 @@ jobs:
     if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.eccodes || inputs.metkit) }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.metkit) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
     steps:
@@ -159,7 +157,7 @@ jobs:
     if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.atlas) }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.atlas) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
     steps:
@@ -179,7 +177,7 @@ jobs:
     if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.eccodes || inputs.atlas || inputs.mir) }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.mir) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
     steps:
