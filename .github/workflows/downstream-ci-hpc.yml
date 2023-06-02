@@ -59,6 +59,7 @@ jobs:
             ${{ inputs.mir || 'ecmwf/mir@develop' }}: .github/ci-hpc-config.yml
           SKIP_MATRIX_JOBS: |
             gnu-10.3.0
+            ${{ inputs.skip_matrix_jobs }}
           MATRIX: |
             name:
             - gnu-12.2.0
