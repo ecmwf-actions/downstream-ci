@@ -34,6 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       eccodes: ${{ steps.setup.outputs.eccodes }}
+      eccodes-python: ${{ steps.setup.outputs.eccodes-python }}
       eckit: ${{ steps.setup.outputs.eckit }}
       metkit: ${{ steps.setup.outputs.metkit }}
       atlas: ${{ steps.setup.outputs.atlas }}
@@ -51,6 +52,7 @@ jobs:
           TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
           CONFIG_PATHS: |
             ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}: .github/ci-hpc-config.yml
+            ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}: .github/ci-hpc-config.yml
             ${{ inputs.eckit || 'ecmwf/eckit@develop' }}: .github/ci-hpc-config.yml
             ${{ inputs.metkit || 'ecmwf/metkit@develop' }}: .github/ci-hpc-config.yml
             ${{ inputs.atlas || 'ecmwf/atlas@develop' }}: .github/ci-hpc-config.yml
@@ -121,7 +123,7 @@ jobs:
     if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eccodes || inputs.eccodes-python) }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.eccodes-python) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
     steps:
