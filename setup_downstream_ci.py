@@ -29,7 +29,7 @@ def get_config(repo, path):
         config = yaml.safe_load(content)
 
         return (repo, config.get("matrix", []))
-    return
+    return (repo, [])
 
 
 if skip_jobs:
