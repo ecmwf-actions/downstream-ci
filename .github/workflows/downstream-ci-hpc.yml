@@ -83,7 +83,7 @@ jobs:
           PYTHON_VERSIONS: |
             - "3.10"
           PYTHON_JOBS: |
-            - gnu-12.2.0
+            - gnu-8.5.0
           MATRIX: |
             name:
             - gnu-12.2.0
