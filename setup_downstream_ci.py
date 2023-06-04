@@ -46,7 +46,7 @@ for k, v in ci_config.items():
         matrices[config[0]] = {**matrix, "config": config[1]}
     else:
         matrices[config[0]] = {**matrix}
-    if v.get("python", ""):
+    if type(v) == dict and v.get("python", ""):
         matrices[config[0]]["python_version"] = python_versions
         if python_jobs:
             matrices[config[0]]["name"] = [
