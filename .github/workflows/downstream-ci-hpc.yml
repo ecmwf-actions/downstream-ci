@@ -50,16 +50,27 @@ jobs:
         id: setup
         env:
           TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
-          CONFIG_PATHS: |
-            ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}: .github/ci-hpc-config.yml
-            ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}: .github/ci-hpc-config.yml
-            ${{ inputs.eckit || 'ecmwf/eckit@develop' }}: .github/ci-hpc-config.yml
-            ${{ inputs.metkit || 'ecmwf/metkit@develop' }}: .github/ci-hpc-config.yml
-            ${{ inputs.atlas || 'ecmwf/atlas@develop' }}: .github/ci-hpc-config.yml
-            ${{ inputs.mir || 'ecmwf/mir@develop' }}: .github/ci-hpc-config.yml
+          CONFIG: |
+            ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}:
+              path: .github/ci-hpc-config.yml
+            ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}:
+              path: .github/ci-hpc-config.yml
+              python: true
+            ${{ inputs.eckit || 'ecmwf/eckit@develop' }}:
+              path: .github/ci-hpc-config.yml
+            ${{ inputs.metkit || 'ecmwf/metkit@develop' }}:
+              path: .github/ci-hpc-config.yml
+            ${{ inputs.atlas || 'ecmwf/atlas@develop' }}:
+              path: .github/ci-hpc-config.yml
+            ${{ inputs.mir || 'ecmwf/mir@develop' }}:
+              path: .github/ci-hpc-config.yml
           SKIP_MATRIX_JOBS: |
             gnu-10.3.0
             ${{ inputs.skip_matrix_jobs }}
+          PYTHON_VERSIONS: |
+            - "3.10"
+          PYTHON_JOBS: |
+            - gnu-12.2.0
           MATRIX: |
             name:
             - gnu-12.2.0

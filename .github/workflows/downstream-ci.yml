@@ -47,13 +47,22 @@ jobs:
         id: setup
         env:
           TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
-          CONFIG_PATHS: |
-            ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}: .github/ci-config.yml
-            ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}: .github/ci-config.yml
-            ${{ inputs.eckit || 'ecmwf/eckit@develop' }}: .github/ci-config.yml
-            ${{ inputs.metkit || 'ecmwf/metkit@develop' }}: .github/ci-config.yml
-            ${{ inputs.atlas || 'ecmwf/atlas@develop' }}: .github/ci-config.yml
-            ${{ inputs.mir || 'ecmwf/mir@develop' }}: .github/ci-config.yml
+          CONFIG: |
+            ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}:
+              path: .github/ci-config.yml
+            ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}:
+              path: .github/ci-config.yml
+              python: true
+            ${{ inputs.eckit || 'ecmwf/eckit@develop' }}:
+              path: .github/ci-config.yml
+            ${{ inputs.metkit || 'ecmwf/metkit@develop' }}:
+              path: .github/ci-config.yml
+            ${{ inputs.atlas || 'ecmwf/atlas@develop' }}:
+              path: .github/ci-config.yml
+            ${{ inputs.mir || 'ecmwf/mir@develop' }}:
+              path: .github/ci-config.yml
+          PYTHON_VERSIONS: |
+            - "3.10"
           MATRIX: |
             name:
             - gnu@debian-11

@@ -6,9 +6,15 @@ import yaml
 
 # Load inputs
 config_paths: dict = yaml.safe_load(os.getenv("CONFIG_PATHS", ""))
+ci_config: dict = yaml.safe_load(os.getenv("CONFIG", ""))
+python_versions = yaml.safe_load(os.getenv("PYTHON_VERSIONS", ""))
+python_jobs = yaml.safe_load(os.getenv("PYTHON_JOBS", ""))
 matrix = yaml.safe_load(os.getenv("MATRIX", ""))
 skip_jobs = os.getenv("SKIP_MATRIX_JOBS", "").splitlines()
 token = os.getenv("TOKEN", "")
+
+if not ci_config:
+    ci_config = config_paths
 
 
 # Get config for each repo
@@ -26,6 +32,10 @@ def get_config(repo, path):
     return
 
 
+if python_jobs:
+    matrix["name"] = [name for name in matrix["name"] if name in python_jobs]
+    matrix["include"] = [d for d in matrix["include"] if d["name"] in python_jobs]
+
 if skip_jobs:
     matrix["name"] = [name for name in matrix["name"] if name not in skip_jobs]
     matrix["include"] = [d for d in matrix["include"] if d["name"] not in skip_jobs]
@@ -33,12 +43,15 @@ if skip_jobs:
 
 matrices = {}
 
-for k, v in config_paths.items():
-    config = get_config(k, v)
+for k, v in ci_config.items():
+    path = v["path"] if type(v) == dict else v
+    config = get_config(k, path)
     if config[1]:
         matrices[config[0]] = {**matrix, "config": config[1]}
     else:
         matrices[config[0]] = {**matrix}
+    if v.get("python", ""):
+        matrices[config[0]]["python_version"] = python_versions
 
 
 print("Build matrices:")
