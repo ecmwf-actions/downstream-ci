@@ -149,6 +149,8 @@ jobs:
           build_package_inputs: |
             repository: ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}
           build_config: .github/ci-config.yml
+          build_dependencies: |
+            ${{ inputs.eccodes }}
 
       - uses: ecmwf-actions/reusable-workflows/ci-python@v2
         with:
