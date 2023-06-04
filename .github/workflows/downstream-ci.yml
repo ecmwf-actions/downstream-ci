@@ -19,6 +19,9 @@ on:
       odc:
         required: false
         type: string
+      pyodc:
+        required: false
+        type: string
       metkit:
         required: false
         type: string
@@ -37,6 +40,7 @@ jobs:
       eccodes-python: ${{ steps.setup.outputs.eccodes-python }}
       eckit: ${{ steps.setup.outputs.eckit }}
       odc: ${{ steps.setup.outputs.odc }}
+      pyodc: ${{ steps.setup.outputs.pyodc }}
       metkit: ${{ steps.setup.outputs.metkit }}
       atlas: ${{ steps.setup.outputs.atlas }}
       mir: ${{ steps.setup.outputs.mir }}
@@ -61,6 +65,9 @@ jobs:
               path: .github/ci-config.yml
             ${{ inputs.odc || 'ecmwf/odc@develop' }}:
               path: .github/ci-config.yml
+            ${{ inputs.pyodc || 'ecmwf/odc@develop' }}:
+              path: .github/ci-config.yml
+              python: true
             ${{ inputs.metkit || 'ecmwf/metkit@develop' }}:
               path: .github/ci-config.yml
             ${{ inputs.atlas || 'ecmwf/atlas@develop' }}:
@@ -195,6 +202,31 @@ jobs:
           build_config: .github/ci-config.yml
           build_dependencies: |
             ${{ inputs.eckit }}
+
+  pyodc:
+    name: pyodc
+    needs: [setup, eckit, odc]
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.odc || inputs.pyodc) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.pyodc) }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - name: Build dependencies
+        id: build-deps
+        uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ inputs.pyodc || 'ecmwf/pyodc@develop' }}
+          build_package_inputs: |
+            repository: ${{ inputs.pyodc || 'ecmwf/pyodc@develop' }}
+          build_config: .github/ci-config.yml
+          build_dependencies: |
+            ${{ inputs.eckit }}
+            ${{ inputs.odc}}
+
+      - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+        with:
+          lib_path: ${{ steps.build-deps.outputs.lib_path }}
 
   metkit:
     name: metkit
