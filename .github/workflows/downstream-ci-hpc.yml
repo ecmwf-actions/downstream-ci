@@ -23,6 +23,9 @@ on:
       odc:
         required: false
         type: string
+      pyodc:
+        required: false
+        type: string
       metkit:
         required: false
         type: string
@@ -40,6 +43,7 @@ jobs:
       eccodes-python: ${{ steps.setup.outputs.eccodes-python }}
       eckit: ${{ steps.setup.outputs.eckit }}
       odc: ${{ steps.setup.outputs.odc }}
+      pyodc: ${{ steps.setup.outputs.pyodc }}
       metkit: ${{ steps.setup.outputs.metkit }}
       atlas: ${{ steps.setup.outputs.atlas }}
       mir: ${{ steps.setup.outputs.mir }}
@@ -64,6 +68,9 @@ jobs:
               path: .github/ci-hpc-config.yml
             ${{ inputs.odc || 'ecmwf/odc@develop' }}:
               path: .github/ci-hpc-config.yml
+            ${{ inputs.pyodc || 'ecmwf/pyodc@develop' }}:
+              path: .github/ci-hpc-config.yml
+              python: true
             ${{ inputs.metkit || 'ecmwf/metkit@develop' }}:
               path: .github/ci-hpc-config.yml
             ${{ inputs.atlas || 'ecmwf/atlas@develop' }}:
@@ -192,6 +199,27 @@ jobs:
           build_config: .github/ci-hpc-config.yml
           dependencies: |
             ${{ inputs.eckit }}
+
+  pyodc:
+    name: pyodc
+    needs: [setup, eckit, odc]
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.odc || inputs.pyodc) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.pyodc) }}
+    runs-on:
+      [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+        with:
+          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+          repository: ${{ inputs.pyodc || 'ecmwf/pyodc@develop' }}
+          build_config: .github/ci-hpc-config.yml
+          dependencies: |
+            ${{ inputs.eckit }}
+            ${{ inputs.odc}}
 
   metkit:
     name: metkit
