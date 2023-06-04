@@ -32,10 +32,6 @@ def get_config(repo, path):
     return
 
 
-if python_jobs:
-    matrix["name"] = [name for name in matrix["name"] if name in python_jobs]
-    matrix["include"] = [d for d in matrix["include"] if d["name"] in python_jobs]
-
 if skip_jobs:
     matrix["name"] = [name for name in matrix["name"] if name not in skip_jobs]
     matrix["include"] = [d for d in matrix["include"] if d["name"] not in skip_jobs]
@@ -52,6 +48,13 @@ for k, v in ci_config.items():
         matrices[config[0]] = {**matrix}
     if v.get("python", ""):
         matrices[config[0]]["python_version"] = python_versions
+        if python_jobs:
+            matrices[config[0]]["name"] = [
+                name for name in matrices[config[0]]["name"] if name in python_jobs
+            ]
+            matrices[config[0]]["include"] = [
+                d for d in matrices[config[0]]["include"] if d["name"] in python_jobs
+            ]
 
 
 print("Build matrices:")
