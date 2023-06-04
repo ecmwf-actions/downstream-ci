@@ -16,6 +16,9 @@ on:
       eckit:
         required: false
         type: string
+      odc:
+        required: false
+        type: string
       metkit:
         required: false
         type: string
@@ -33,6 +36,7 @@ jobs:
       eccodes: ${{ steps.setup.outputs.eccodes }}
       eccodes-python: ${{ steps.setup.outputs.eccodes-python }}
       eckit: ${{ steps.setup.outputs.eckit }}
+      odc: ${{ steps.setup.outputs.odc }}
       metkit: ${{ steps.setup.outputs.metkit }}
       atlas: ${{ steps.setup.outputs.atlas }}
       mir: ${{ steps.setup.outputs.mir }}
@@ -54,6 +58,8 @@ jobs:
               path: .github/ci-config.yml
               python: true
             ${{ inputs.eckit || 'ecmwf/eckit@develop' }}:
+              path: .github/ci-config.yml
+            ${{ inputs.odc || 'ecmwf/odc@develop' }}:
               path: .github/ci-config.yml
             ${{ inputs.metkit || 'ecmwf/metkit@develop' }}:
               path: .github/ci-config.yml
@@ -171,6 +177,24 @@ jobs:
           build_package_inputs: |
             repository: ${{ inputs.eckit || 'ecmwf/eckit@develop' }}
           build_config: .github/ci-config.yml
+
+  odc:
+    name: odc
+    needs: [setup, eckit]
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.odc) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.odc) }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ inputs.odc || 'ecmwf/odc@develop' }}
+          build_package_inputs: |
+            repository: ${{ inputs.odc || 'ecmwf/odc@develop' }}
+          build_config: .github/ci-config.yml
+          build_dependencies: |
+            ${{ inputs.eckit }}
 
   metkit:
     name: metkit
