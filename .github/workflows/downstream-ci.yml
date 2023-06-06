@@ -25,6 +25,9 @@ on:
       metkit:
         required: false
         type: string
+      fdb:
+        required: false
+        type: string
       atlas:
         required: false
         type: string
@@ -42,6 +45,7 @@ jobs:
       odc: ${{ steps.setup.outputs.odc }}
       pyodc: ${{ steps.setup.outputs.pyodc }}
       metkit: ${{ steps.setup.outputs.metkit }}
+      fdb: ${{ steps.setup.outputs.fdb }}
       atlas: ${{ steps.setup.outputs.atlas }}
       mir: ${{ steps.setup.outputs.mir }}
     steps:
@@ -69,6 +73,8 @@ jobs:
               path: .github/ci-config.yml
               python: true
             ${{ inputs.metkit || 'ecmwf/metkit@develop' }}:
+              path: .github/ci-config.yml
+            ${{ inputs.fdb || 'ecmwf/fdb@develop' }}:
               path: .github/ci-config.yml
             ${{ inputs.atlas || 'ecmwf/atlas@develop' }}:
               path: .github/ci-config.yml
@@ -247,6 +253,26 @@ jobs:
           build_dependencies: |
             ${{ inputs.eccodes }}
             ${{ inputs.eckit }}
+
+  fdb:
+    name: fdb
+    needs: [setup, eckit, eccodes, metkit]
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.eccodes || inputs.metkit || inputs.fdb) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.fdb) }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ inputs.fdb || 'ecmwf/fdb@develop' }}
+          build_package_inputs: |
+            repository: ${{ inputs.fdb || 'ecmwf/fdb@develop' }}
+          build_config: .github/ci-config.yml
+          build_dependencies: |
+            ${{ inputs.eccodes }}
+            ${{ inputs.eckit }}
+            ${{ inputs.metkit }}
 
   atlas:
     name: atlas
