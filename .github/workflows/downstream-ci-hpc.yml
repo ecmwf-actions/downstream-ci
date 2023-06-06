@@ -29,6 +29,9 @@ on:
       metkit:
         required: false
         type: string
+      fdb:
+        required: false
+        type: string
       atlas:
         required: false
         type: string
@@ -45,6 +48,7 @@ jobs:
       odc: ${{ steps.setup.outputs.odc }}
       pyodc: ${{ steps.setup.outputs.pyodc }}
       metkit: ${{ steps.setup.outputs.metkit }}
+      fdb: ${{ steps.setup.outputs.fdb }}
       atlas: ${{ steps.setup.outputs.atlas }}
       mir: ${{ steps.setup.outputs.mir }}
     steps:
@@ -72,6 +76,8 @@ jobs:
               path: .github/ci-hpc-config.yml
               python: true
             ${{ inputs.metkit || 'ecmwf/metkit@develop' }}:
+              path: .github/ci-hpc-config.yml
+            ${{ inputs.fdb || 'ecmwf/fdb@develop' }}:
               path: .github/ci-hpc-config.yml
             ${{ inputs.atlas || 'ecmwf/atlas@develop' }}:
               path: .github/ci-hpc-config.yml
@@ -241,6 +247,28 @@ jobs:
           dependencies: |
             ${{ inputs.eckit }}
             ${{ inputs.eccodes }}
+
+  fdb:
+    name: fdb
+    needs: [setup, eckit, eccodes, metkit]
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.eccodes || inputs.metkit || inputs.fdb) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.fdb) }}
+    runs-on:
+      [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+        with:
+          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+          repository: ${{ inputs.fdb || 'ecmwf/fdb@develop' }}
+          build_config: .github/ci-hpc-config.yml
+          dependencies: |
+            ${{ inputs.eckit }}
+            ${{ inputs.eccodes }}
+            ${{ inputs.metkit }}
 
   atlas:
     name: atlas
