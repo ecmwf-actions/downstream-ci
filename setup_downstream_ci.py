@@ -13,6 +13,10 @@ matrix = yaml.safe_load(os.getenv("MATRIX", ""))
 skip_jobs = os.getenv("SKIP_MATRIX_JOBS", "").splitlines()
 token = os.getenv("TOKEN", "")
 
+github_repository = os.getenv("GITHUB_REPOSITORY", "")
+_, trigger_repo = github_repository.split("/")
+print(f"Triggered from: {trigger_repo}")
+
 if not ci_config:
     ci_config = config_paths
 
@@ -62,6 +66,7 @@ yaml.Dumper.ignore_aliases = lambda *args: True
 print(yaml.dump(matrices, sort_keys=False))
 
 with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
+    print("trigger_repo", trigger_repo, sep="=", file=f)
     for key, value in matrices.items():
         print(f"{key}<<EOF", file=f)
         print(json.dumps(value, separators=(",", ":")), file=f)
