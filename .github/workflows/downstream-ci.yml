@@ -7,6 +7,10 @@ on:
         description: List of matrix jobs to be skipped.
         required: false
         type: string
+      codecov_upload:
+        description: Whether to upload code coverage
+        type: boolean
+        required: false
       eccodes:
         required: false
         type: string
@@ -48,6 +52,7 @@ jobs:
       fdb: ${{ steps.setup.outputs.fdb }}
       atlas: ${{ steps.setup.outputs.atlas }}
       mir: ${{ steps.setup.outputs.mir }}
+      trigger_repo: ${{ steps.setup.outputs.trigger_repo}}
     steps:
       - name: checkout reusable wfs repo
         uses: actions/checkout@v3
@@ -147,6 +152,7 @@ jobs:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
           repository: ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
             repository: ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}
           build_config: .github/ci-config.yml
@@ -165,6 +171,7 @@ jobs:
         uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
           repository: ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
             repository: ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}
           build_config: .github/ci-config.yml
@@ -187,6 +194,7 @@ jobs:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
           repository: ${{ inputs.eckit || 'ecmwf/eckit@develop' }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
             repository: ${{ inputs.eckit || 'ecmwf/eckit@develop' }}
           build_config: .github/ci-config.yml
@@ -203,6 +211,7 @@ jobs:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
           repository: ${{ inputs.odc || 'ecmwf/odc@develop' }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
             repository: ${{ inputs.odc || 'ecmwf/odc@develop' }}
           build_config: .github/ci-config.yml
@@ -223,6 +232,7 @@ jobs:
         uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
           repository: ${{ inputs.pyodc || 'ecmwf/pyodc@develop' }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
             repository: ${{ inputs.pyodc || 'ecmwf/pyodc@develop' }}
           build_config: .github/ci-config.yml
@@ -247,6 +257,7 @@ jobs:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
           repository: ${{ inputs.metkit || 'ecmwf/metkit@develop' }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
             repository: ${{ inputs.metkit || 'ecmwf/metkit@develop' }}
           build_config: .github/ci-config.yml
@@ -266,6 +277,7 @@ jobs:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
           repository: ${{ inputs.fdb || 'ecmwf/fdb@develop' }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
             repository: ${{ inputs.fdb || 'ecmwf/fdb@develop' }}
           build_config: .github/ci-config.yml
@@ -286,6 +298,7 @@ jobs:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
           repository: ${{ inputs.atlas || 'ecmwf/atlas@develop' }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
             repository: ${{ inputs.atlas || 'ecmwf/atlas@develop' }}
           build_config: .github/ci-config.yml
@@ -304,6 +317,7 @@ jobs:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
           repository: ${{ inputs.mir || 'ecmwf/mir@develop' }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
             repository: ${{ inputs.mir || 'ecmwf/mir@develop' }}
           build_config: .github/ci-config.yml
