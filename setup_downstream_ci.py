@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 
 import requests
 import yaml
@@ -28,12 +29,22 @@ def get_config(repo, path):
     owner, repo = owner_repo.split("/")
     url = f"https://raw.githubusercontent.com/{owner_repo}/{ref}/{path}"
     response = requests.get(url, headers={"Authorization": f"token {token}"})
+    return_obj = {"repo": repo, "matrix": [], "config_found": False}
+
     if response.status_code == 200:
         content = response.content.decode()
         config = yaml.safe_load(content)
+        return_obj["matrix"] = config.get("matrix", [])
+        return_obj["config_found"] = True
+        return return_obj
 
-        return (repo, config.get("matrix", []))
-    return (repo, [])
+    print(f"::warning::Config for {repo} not found.")
+
+    if trigger_repo == return_obj["repo"]:
+        print("::error::Config file for triggering repository not found")
+        sys.exit(1)
+
+    return return_obj
 
 
 if skip_jobs:
@@ -46,18 +57,22 @@ matrices = {}
 for k, v in ci_config.items():
     path = v["path"] if type(v) == dict else v
     config = get_config(k, path)
-    if config[1]:
-        matrices[config[0]] = {**matrix, "config": config[1]}
-    else:
-        matrices[config[0]] = {**matrix}
+
+    if config["config_found"] and config["matrix"]:
+        matrices[config["repo"]] = {**matrix, "config": config["matrix"]}
+    elif config["config_found"]:
+        matrices[config["repo"]] = {**matrix}
+
     if type(v) == dict and v.get("python", ""):
-        matrices[config[0]]["python_version"] = python_versions
+        matrices[config["repo"]]["python_version"] = python_versions
         if python_jobs:
-            matrices[config[0]]["name"] = [
-                name for name in matrices[config[0]]["name"] if name in python_jobs
+            matrices[config["repo"]]["name"] = [
+                name for name in matrices[config["repo"]]["name"] if name in python_jobs
             ]
-            matrices[config[0]]["include"] = [
-                d for d in matrices[config[0]]["include"] if d["name"] in python_jobs
+            matrices[config["repo"]]["include"] = [
+                d
+                for d in matrices[config["repo"]]["include"]
+                if d["name"] in python_jobs
             ]
 
 
