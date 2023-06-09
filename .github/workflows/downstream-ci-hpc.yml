@@ -35,6 +35,9 @@ on:
       atlas:
         required: false
         type: string
+      plume:
+        required: false
+        type: string
       mir:
         required: false
         type: string
@@ -50,6 +53,7 @@ jobs:
       metkit: ${{ steps.setup.outputs.metkit }}
       fdb: ${{ steps.setup.outputs.fdb }}
       atlas: ${{ steps.setup.outputs.atlas }}
+      plume: ${{ steps.setup.outputs.plume }}
       mir: ${{ steps.setup.outputs.mir }}
     steps:
       - name: checkout reusable wfs repo
@@ -80,6 +84,8 @@ jobs:
             ${{ inputs.fdb || 'ecmwf/fdb@develop' }}:
               path: .github/ci-hpc-config.yml
             ${{ inputs.atlas || 'ecmwf/atlas@develop' }}:
+              path: .github/ci-hpc-config.yml
+            ${{ inputs.plume || 'ecmwf/plume@develop' }}:
               path: .github/ci-hpc-config.yml
             ${{ inputs.mir || 'ecmwf/mir@develop' }}:
               path: .github/ci-hpc-config.yml
@@ -289,6 +295,27 @@ jobs:
           build_config: .github/ci-hpc-config.yml
           dependencies: |
             ${{ inputs.eckit }}
+
+  plume:
+    name: plume
+    needs: [setup, eckit, atlas]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.plume && (inputs.eckit || inputs.atlas || inputs.plume) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.plume) }}
+    runs-on:
+      [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+        with:
+          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+          repository: ${{ inputs.plume || 'ecmwf/plume@develop' }}
+          build_config: .github/ci-hpc-config.yml
+          dependencies: |
+            ${{ inputs.eckit }}
+            ${{ inputs.atlas }}
 
   mir:
     name: mir
