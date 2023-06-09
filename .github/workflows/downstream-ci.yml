@@ -74,7 +74,7 @@ jobs:
               path: .github/ci-config.yml
             ${{ inputs.odc || 'ecmwf/odc@develop' }}:
               path: .github/ci-config.yml
-            ${{ inputs.pyodc || 'ecmwf/odc@develop' }}:
+            ${{ inputs.pyodc || 'ecmwf/pyodc@develop' }}:
               path: .github/ci-config.yml
               python: true
             ${{ inputs.metkit || 'ecmwf/metkit@develop' }}:
