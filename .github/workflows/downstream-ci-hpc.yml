@@ -133,7 +133,7 @@ jobs:
   eccodes:
     name: eccodes
     needs: [setup]
-    if: ${{ inputs.eccodes }}
+    if: ${{ inputs.eccodes && needs.setup.outputs.eccodes }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.eccodes) }}
@@ -151,7 +151,7 @@ jobs:
   eccodes-python:
     name: eccodes-python
     needs: [setup, eccodes]
-    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eccodes || inputs.eccodes-python) }}
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.eccodes-python && (inputs.eccodes || inputs.eccodes-python) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.eccodes-python) }}
@@ -171,7 +171,7 @@ jobs:
   eckit:
     name: eckit
     needs: [setup]
-    if: ${{ inputs.eckit }}
+    if: ${{ inputs.eckit && needs.setup.outputs.eckit }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.eckit) }}
@@ -189,7 +189,7 @@ jobs:
   odc:
     name: odc
     needs: [setup, eckit]
-    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.odc) }}
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.odc && (inputs.eckit || inputs.odc) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.odc) }}
@@ -209,7 +209,7 @@ jobs:
   pyodc:
     name: pyodc
     needs: [setup, eckit, odc]
-    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.odc || inputs.pyodc) }}
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pyodc && (inputs.eckit || inputs.odc || inputs.pyodc) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.pyodc) }}
@@ -230,7 +230,7 @@ jobs:
   metkit:
     name: metkit
     needs: [setup, eckit, eccodes]
-    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.eccodes || inputs.metkit) }}
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.metkit && (inputs.eckit || inputs.eccodes || inputs.metkit) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.metkit) }}
@@ -251,7 +251,7 @@ jobs:
   fdb:
     name: fdb
     needs: [setup, eckit, eccodes, metkit]
-    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.eccodes || inputs.metkit || inputs.fdb) }}
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.fdb && (inputs.eckit || inputs.eccodes || inputs.metkit || inputs.fdb) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.fdb) }}
@@ -273,7 +273,7 @@ jobs:
   atlas:
     name: atlas
     needs: [setup, eckit]
-    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.atlas) }}
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.atlas && (inputs.eckit || inputs.atlas) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.atlas) }}
@@ -293,7 +293,7 @@ jobs:
   mir:
     name: mir
     needs: [setup, eckit, eccodes, atlas]
-    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && (inputs.eckit || inputs.eccodes || inputs.atlas || inputs.mir) }}
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.mir && (inputs.eckit || inputs.eccodes || inputs.atlas || inputs.mir) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.mir) }}
