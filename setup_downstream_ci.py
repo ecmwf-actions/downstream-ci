@@ -39,6 +39,7 @@ def get_config(repo, path):
         return return_obj
 
     print(f"::warning::Config for {repo} not found.")
+    print(response.status_code, response.content)
 
     if trigger_repo == return_obj["repo"]:
         print("::error::Config file for triggering repository not found")
