@@ -58,9 +58,12 @@ for k, v in ci_config.items():
     path = v["path"] if type(v) == dict else v
     config = get_config(k, path)
 
-    if config["config_found"] and config["matrix"]:
+    if not config["config_found"]:
+        continue
+
+    if config["matrix"]:
         matrices[config["repo"]] = {**matrix, "config": config["matrix"]}
-    elif config["config_found"]:
+    else:
         matrices[config["repo"]] = {**matrix}
 
     if type(v) == dict and v.get("python", ""):
