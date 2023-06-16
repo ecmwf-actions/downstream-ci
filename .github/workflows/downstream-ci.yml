@@ -136,6 +136,7 @@ jobs:
               compiler_cc: clang
               compiler_cxx: clang++
               compiler_fc: gfortran
+              toolchain_file: /opt/actions-runner/files/toolchain-clang-rocky-8.6.cmake
             - name: gnu@ubuntu-22.04
               labels: [self-hosted, platform-builder-ubuntu-22.04]
               os: ubuntu-22.04
