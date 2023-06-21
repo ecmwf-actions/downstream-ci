@@ -35,6 +35,9 @@ on:
       atlas:
         required: false
         type: string
+      fckit:
+        required: false
+        type: string
       plume:
         required: false
         type: string
@@ -54,6 +57,7 @@ jobs:
       metkit: ${{ steps.setup.outputs.metkit }}
       fdb: ${{ steps.setup.outputs.fdb }}
       atlas: ${{ steps.setup.outputs.atlas }}
+      fckit: ${{ steps.setup.outputs.fckit }}
       plume: ${{ steps.setup.outputs.plume }}
       mir: ${{ steps.setup.outputs.mir }}
       trigger_repo: ${{ steps.setup.outputs.trigger_repo}}
@@ -86,6 +90,8 @@ jobs:
             ${{ inputs.fdb || 'ecmwf/fdb@develop' }}:
               path: .github/ci-config.yml
             ${{ inputs.atlas || 'ecmwf/atlas@develop' }}:
+              path: .github/ci-config.yml
+            ${{ inputs.fckit || 'ecmwf/fckit@develop' }}:
               path: .github/ci-config.yml
             ${{ inputs.plume || 'ecmwf/plume@develop' }}:
               path: .github/ci-config.yml
@@ -311,10 +317,29 @@ jobs:
           build_dependencies: |
             ${{ inputs.eckit }}
 
+  fckit:
+    name: fckit
+    needs: [setup, eckit]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.fckit && (inputs.eckit || inputs.fckit) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.fckit) }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ inputs.fckit || 'ecmwf/fckit@develop' }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+          build_package_inputs: |
+            repository: ${{ inputs.fckit || 'ecmwf/fckit@develop' }}
+          build_config: .github/ci-config.yml
+          build_dependencies: |
+            ${{ inputs.eckit }}
+
   plume:
     name: plume
-    needs: [setup, eckit, atlas]
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.plume && (inputs.eckit || inputs.atlas || inputs.plume) }}
+    needs: [setup, eckit, fckit, atlas]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.plume && (inputs.eckit || inputs.fckit || inputs.atlas || inputs.plume) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.plume) }}
@@ -329,6 +354,7 @@ jobs:
           build_config: .github/ci-config.yml
           build_dependencies: |
             ${{ inputs.eckit }}
+            ${{ inputs.fckit }}
             ${{ inputs.atlas }}
 
   mir:
