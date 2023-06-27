@@ -333,6 +333,7 @@ jobs:
       - uses: ecmwf-actions/reusable-workflows/ci-python@v2
         with:
           lib_path: ${{ steps.build-deps.outputs.lib_path }}
+          conda_install: libffi=3.3
 
   atlas:
     name: atlas
