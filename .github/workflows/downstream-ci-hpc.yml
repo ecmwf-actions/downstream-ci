@@ -32,6 +32,9 @@ on:
       fdb:
         required: false
         type: string
+      pyfdb:
+        required: false
+        type: string
       atlas:
         required: false
         type: string
@@ -55,6 +58,7 @@ jobs:
       pyodc: ${{ steps.setup.outputs.pyodc }}
       metkit: ${{ steps.setup.outputs.metkit }}
       fdb: ${{ steps.setup.outputs.fdb }}
+      pyfdb: ${{ steps.setup.outputs.pyfdb }}
       atlas: ${{ steps.setup.outputs.atlas }}
       fckit: ${{ steps.setup.outputs.fckit }}
       plume: ${{ steps.setup.outputs.plume }}
@@ -87,6 +91,9 @@ jobs:
               path: .github/ci-hpc-config.yml
             ${{ inputs.fdb || 'ecmwf/fdb@develop' }}:
               path: .github/ci-hpc-config.yml
+            ${{ inputs.pyfdb || 'ecmwf/pyfdb@develop' }}:
+              path: .github/ci-hpc-config.yml
+              python: true
             ${{ inputs.atlas || 'ecmwf/atlas@develop' }}:
               path: .github/ci-hpc-config.yml
             ${{ inputs.fckit || 'ecmwf/fckit@develop' }}:
@@ -281,6 +288,29 @@ jobs:
             ${{ inputs.eckit }}
             ${{ inputs.eccodes }}
             ${{ inputs.metkit }}
+
+  pyfdb:
+    name: pyfdb
+    needs: [setup, eckit, eccodes, metkit, fdb]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pyfdb && (inputs.eckit || inputs.eccodes || inputs.metkit || inputs.fdb || inputs.pyfdb) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.pyfdb) }}
+    runs-on:
+      [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+        with:
+          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+          repository: ${{ inputs.pyfdb || 'ecmwf/pyfdb@develop' }}
+          build_config: .github/ci-hpc-config.yml
+          dependencies: |
+            ${{ inputs.eckit }}
+            ${{ inputs.eccodes }}
+            ${{ inputs.metkit }}
+            ${{ inputs.fdb }}
 
   atlas:
     name: atlas

@@ -32,6 +32,9 @@ on:
       fdb:
         required: false
         type: string
+      pyfdb:
+        required: false
+        type: string
       atlas:
         required: false
         type: string
@@ -56,6 +59,7 @@ jobs:
       pyodc: ${{ steps.setup.outputs.pyodc }}
       metkit: ${{ steps.setup.outputs.metkit }}
       fdb: ${{ steps.setup.outputs.fdb }}
+      pyfdb: ${{ steps.setup.outputs.pyfdb }}
       atlas: ${{ steps.setup.outputs.atlas }}
       fckit: ${{ steps.setup.outputs.fckit }}
       plume: ${{ steps.setup.outputs.plume }}
@@ -89,6 +93,9 @@ jobs:
               path: .github/ci-config.yml
             ${{ inputs.fdb || 'ecmwf/fdb@develop' }}:
               path: .github/ci-config.yml
+            ${{ inputs.pyfdb || 'ecmwf/pyfdb@develop' }}:
+              path: .github/ci-config.yml
+              python: true
             ${{ inputs.atlas || 'ecmwf/atlas@develop' }}:
               path: .github/ci-config.yml
             ${{ inputs.fckit || 'ecmwf/fckit@develop' }}:
@@ -298,6 +305,34 @@ jobs:
             ${{ inputs.eccodes }}
             ${{ inputs.eckit }}
             ${{ inputs.metkit }}
+
+  pyfdb:
+    name: pyfdb
+    needs: [setup, eckit, eccodes, metkit, fdb]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pyfdb && (inputs.eckit || inputs.eccodes || inputs.metkit || inputs.fdb || inputs.pyfdb) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.pyfdb) }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+      - name: Build dependencies
+        id: build-deps
+        uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ inputs.pyfdb || 'ecmwf/pyfdb@develop' }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+          build_package_inputs: |
+            repository: ${{ inputs.pyfdb || 'ecmwf/pyfdb@develop' }}
+          build_config: .github/ci-config.yml
+          build_dependencies: |
+            ${{ inputs.eccodes }}
+            ${{ inputs.eckit }}
+            ${{ inputs.metkit }}
+            ${{ inputs.fdb }}
+
+      - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+        with:
+          lib_path: ${{ steps.build-deps.outputs.lib_path }}
 
   atlas:
     name: atlas
