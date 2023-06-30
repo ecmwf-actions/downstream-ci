@@ -329,8 +329,11 @@ jobs:
             ${{ inputs.eckit }}
             ${{ inputs.metkit }}
             ${{ inputs.fdb }}
-
+      - run: mkdir -p data/fdb
       - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+        env:
+          FDB5_CONFIG: >
+            {"type":"local","engine":"toc","schema":"${{ github.workspace }}/tests/default_fdb_schema","spaces":[{"handler":"Default","roots":[{"path":"${{ github.workspace }}/data/fdb"}]}]}
         with:
           lib_path: ${{ steps.build-deps.outputs.lib_path }}
           conda_install: libffi=3.3
