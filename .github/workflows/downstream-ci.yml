@@ -69,8 +69,8 @@ jobs:
       - name: checkout reusable wfs repo
         uses: actions/checkout@v3
         with:
-          repository: 'ecmwf-actions/downstream-ci'
-          ref: 'main'
+          repository: "ecmwf-actions/downstream-ci"
+          ref: "main"
 
       - name: Run setup script
         id: setup
@@ -109,7 +109,8 @@ jobs:
           MATRIX: |
             name:
             - gnu@debian-11
-            - gnu@centos-7.9
+            - gnu-7@centos-7.9
+            - gnu-8@centos-7.9
             - gnu@rocky-8.6
             - clang@rocky-8.6
             - gnu@ubuntu-22.04
@@ -122,13 +123,20 @@ jobs:
               compiler_cc: gcc
               compiler_cxx: g++
               compiler_fc: gfortran
-            - name: gnu@centos-7.9
+            - name: gnu-7@centos-7.9
               labels: [self-hosted, platform-builder-centos-7.9]
               os: centos-7.9
-              compiler: gnu
-              compiler_cc: gcc
-              compiler_cxx: g++
-              compiler_fc: gfortran
+              compiler: gnu-7
+              compiler_cc: gcc-7
+              compiler_cxx: g++-7
+              compiler_fc: gfortran-7
+            - name: gnu-8@centos-7.9
+              labels: [self-hosted, platform-builder-centos-7.9]
+              os: centos-7.9
+              compiler: gnu-8
+              compiler_cc: gcc-8
+              compiler_cxx: g++-8
+              compiler_fc: gfortran-8
             - name: gnu@rocky-8.6
               labels: [self-hosted, platform-builder-rocky-8.6]
               os: rocky-8.6
