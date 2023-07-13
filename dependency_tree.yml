@@ -1,0 +1,130 @@
+---
+# this document is for build-package
+name: build-package
+
+ecbuild: ~
+
+eccodes:
+  deps:
+    - libaec
+    - ecbuild
+
+eccodes-python:
+  deps:
+    - eccodes
+
+pgen:
+  deps:
+    - mir
+    - metkit
+
+mir:
+  deps:
+    - atlas
+    - eccodes
+
+atlas:
+  deps:
+    - eckit
+
+metkit:
+  deps:
+    - eccodes
+    - eckit
+
+eckit:
+  deps:
+    - ecbuild
+
+libaec: ~
+
+odc:
+  deps:
+    - eckit
+
+pyodc:
+  deps:
+    - odc
+
+fdb:
+  deps:
+    - metkit
+
+pyfdb:
+  deps:
+    - fdb
+
+fckit:
+  deps:
+    - eckit
+
+plume:
+  deps:
+    - atlas
+    - fckit
+
+---
+# this is for build-package-hpc
+name: build-package-hpc
+
+ecbuild: ~
+
+pgen:
+  deps:
+    - mir
+    - metkit
+
+mir:
+  deps:
+    - atlas
+    - eccodes
+
+atlas:
+  modules:
+    - fftw
+  deps:
+    - eckit
+
+metkit:
+  deps:
+    - eccodes
+    - eckit
+
+eckit:
+  deps:
+    - ecbuild
+
+eccodes:
+  deps:
+    - ecbuild
+  modules:
+    - aec
+
+eccodes-python:
+  deps:
+    - eccodes
+
+odc:
+  deps:
+    - eckit
+
+pyodc:
+  deps:
+    - odc
+
+fdb:
+  deps:
+    - metkit
+
+pyfdb:
+  deps:
+    - fdb
+
+fckit:
+  deps:
+    - eckit
+
+plume:
+  deps:
+    - atlas
+    - fckit

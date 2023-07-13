@@ -65,12 +65,13 @@ jobs:
       plume: ${{ steps.setup.outputs.plume }}
       mir: ${{ steps.setup.outputs.mir }}
       trigger_repo: ${{ steps.setup.outputs.trigger_repo}}
+      dep_tree: ${{ steps.setup.outputs.build_package_dep_tree }}
     steps:
       - name: checkout reusable wfs repo
         uses: actions/checkout@v3
         with:
-          repository: "ecmwf-actions/downstream-ci"
-          ref: "main"
+          repository: 'ecmwf-actions/downstream-ci'
+          ref: 'main'
 
       - name: Run setup script
         id: setup
@@ -176,6 +177,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.eccodes) }}
     runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
@@ -193,6 +196,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.eccodes-python) }}
     runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - name: Build dependencies
         id: build-deps
@@ -218,6 +223,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.eckit) }}
     runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
@@ -235,6 +242,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.odc) }}
     runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
@@ -254,6 +263,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.pyodc) }}
     runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - name: Build dependencies
         id: build-deps
@@ -281,6 +292,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.metkit) }}
     runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
@@ -301,6 +314,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.fdb) }}
     runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
@@ -322,6 +337,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.pyfdb) }}
     runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - name: Build dependencies
         id: build-deps
@@ -354,6 +371,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.atlas) }}
     runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
@@ -373,6 +392,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.fckit) }}
     runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
@@ -392,6 +413,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.plume) }}
     runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
@@ -413,6 +436,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.mir) }}
     runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
