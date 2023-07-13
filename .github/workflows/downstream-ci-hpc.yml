@@ -63,6 +63,7 @@ jobs:
       fckit: ${{ steps.setup.outputs.fckit }}
       plume: ${{ steps.setup.outputs.plume }}
       mir: ${{ steps.setup.outputs.mir }}
+      dep_tree: ${{ steps.setup.outputs.build_package_hpc_dep_tree }}
     steps:
       - name: checkout reusable wfs repo
         uses: actions/checkout@v3
@@ -158,6 +159,8 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.eccodes) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:
@@ -176,6 +179,8 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.eccodes-python) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:
@@ -196,6 +201,8 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.eckit) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:
@@ -214,6 +221,8 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.odc) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:
@@ -234,6 +243,8 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.pyodc) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:
@@ -255,6 +266,8 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.metkit) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:
@@ -276,6 +289,8 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.fdb) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:
@@ -298,6 +313,8 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.pyfdb) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:
@@ -321,6 +338,8 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.atlas) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:
@@ -341,6 +360,8 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.fckit) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:
@@ -361,6 +382,8 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.plume) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:
@@ -383,6 +406,8 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.mir) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
         with:

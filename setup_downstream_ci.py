@@ -84,8 +84,27 @@ print("Build matrices:")
 yaml.Dumper.ignore_aliases = lambda *args: True
 print(yaml.dump(matrices, sort_keys=False))
 
+
+with open("dependency_tree.yml", "r") as f:
+    dep_tree = list(yaml.safe_load_all(f))
+
+build_package_dep_tree = [d for d in dep_tree if d.get("name") == "build-package"][0]
+build_package_hpc_dep_tree = [
+    d for d in dep_tree if d.get("name") == "build-package-hpc"
+][0]
+
+
 with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
     print("trigger_repo", trigger_repo, sep="=", file=f)
+
+    print("build_package_dep_tree<<EOF", file=f)
+    print(yaml.dump(build_package_dep_tree), file=f)
+    print("EOF", file=f)
+
+    print("build_package_hpc_dep_tree<<EOF", file=f)
+    print(yaml.dump(build_package_hpc_dep_tree), file=f)
+    print("EOF", file=f)
+
     for key, value in matrices.items():
         print(f"{key}<<EOF", file=f)
         print(json.dumps(value, separators=(",", ":")), file=f)
