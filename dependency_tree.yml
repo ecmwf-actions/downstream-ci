@@ -36,7 +36,9 @@ eckit:
   deps:
     - ecbuild
 
-libaec: ~
+libaec:
+  deps:
+    - ecbuild
 
 odc:
   deps:
