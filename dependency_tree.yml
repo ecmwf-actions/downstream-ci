@@ -97,8 +97,6 @@ eckit:
     - ecbuild
 
 eccodes:
-  deps:
-    - ecbuild
   modules:
     - aec
 
