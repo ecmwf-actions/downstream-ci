@@ -88,11 +88,23 @@ print(yaml.dump(matrices, sort_keys=False))
 with open("dependency_tree.yml", "r") as f:
     dep_tree = list(yaml.safe_load_all(f))
 
-build_package_dep_tree = [d for d in dep_tree if d.get("name") == "build-package"][0]
-build_package_hpc_dep_tree = [
+build_package_dep_tree: dict = [
+    d for d in dep_tree if d.get("name") == "build-package"
+][0]
+build_package_dep_tree.pop("name", None)
+build_package_hpc_dep_tree: dict = [
     d for d in dep_tree if d.get("name") == "build-package-hpc"
 ][0]
+build_package_hpc_dep_tree.pop("name", None)
 
+print(
+    "build-package dependency tree:\n",
+    yaml.dump(build_package_dep_tree, sort_keys=False),
+)
+print(
+    "build-package-hpc dependency tree:\n",
+    yaml.dump(build_package_hpc_dep_tree, sort_keys=False),
+)
 
 with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
     print("trigger_repo", trigger_repo, sep="=", file=f)
