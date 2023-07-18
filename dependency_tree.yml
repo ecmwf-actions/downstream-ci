@@ -71,6 +71,8 @@ name: build-package-hpc
 
 ecbuild: ~
 
+skinnywms: ~
+
 pgen:
   deps:
     - mir
