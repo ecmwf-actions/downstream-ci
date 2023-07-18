@@ -47,6 +47,9 @@ on:
       mir:
         required: false
         type: string
+      skinnywms:
+        required: false
+        type: string
 
 jobs:
   setup:
@@ -64,6 +67,7 @@ jobs:
       fckit: ${{ steps.setup.outputs.fckit }}
       plume: ${{ steps.setup.outputs.plume }}
       mir: ${{ steps.setup.outputs.mir }}
+      skinnywms: ${{ steps.setup.outputs.skinnywms }}
       trigger_repo: ${{ steps.setup.outputs.trigger_repo}}
       dep_tree: ${{ steps.setup.outputs.build_package_dep_tree }}
     steps:
@@ -105,6 +109,9 @@ jobs:
               path: .github/ci-config.yml
             ${{ inputs.mir || 'ecmwf/mir@develop' }}:
               path: .github/ci-config.yml
+            ${{ inputs.skinnywms || 'ecmwf/skinnywms@develop' }}:
+              path: .github/ci-config.yml
+              python: true
           PYTHON_VERSIONS: |
             - "3.10"
           MATRIX: |
@@ -450,3 +457,19 @@ jobs:
             ${{ inputs.eccodes }}
             ${{ inputs.eckit }}
             ${{ inputs.atlas }}
+
+  skinnywms:
+    name: skinnywms
+    needs: [setup]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.skinnywms && inputs.skinnywms }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.skinnywms) }}
+    runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+        with:
+          repository: ${{ inputs.skinnywms || 'ecmwf/skinnywms@develop' }}
+          checkout: true
