@@ -116,17 +116,17 @@ jobs:
             - "3.10"
           MATRIX: |
             name:
-            - gnu@debian-11
+            - gnu@debian-12
             - gnu-7@centos-7.9
             - gnu-8@centos-7.9
-            - gnu@rocky-8.6
-            - clang@rocky-8.6
+            - gnu@rocky-8.8
+            - clang@rocky-8.8
             - gnu@ubuntu-22.04
             - gnu@fedora-37
             include:
-            - name: gnu@debian-11
-              labels: [self-hosted, platform-builder-debian-11]
-              os: debian-11
+            - name: gnu@debian-12
+              labels: [self-hosted, platform-builder-debian-12]
+              os: debian-12
               compiler: gnu
               compiler_cc: gcc
               compiler_cxx: g++
@@ -145,16 +145,16 @@ jobs:
               compiler_cc: gcc-8
               compiler_cxx: g++-8
               compiler_fc: gfortran-8
-            - name: gnu@rocky-8.6
-              labels: [self-hosted, platform-builder-rocky-8.6]
-              os: rocky-8.6
+            - name: gnu@rocky-8.8
+              labels: [self-hosted, platform-builder-rocky-8.8]
+              os: rocky-8.8
               compiler: gnu
               compiler_cc: gcc
               compiler_cxx: g++
               compiler_fc: gfortran
-            - name: clang@rocky-8.6
-              labels: [self-hosted, platform-builder-rocky-8.6]
-              os: rocky-8.6
+            - name: clang@rocky-8.8
+              labels: [self-hosted, platform-builder-rocky-8.8]
+              os: rocky-8.8
               compiler: clang
               compiler_cc: clang
               compiler_cxx: clang++
