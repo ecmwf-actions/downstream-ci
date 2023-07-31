@@ -26,6 +26,7 @@ mir:
 atlas:
   deps:
     - eckit
+    - fckit
 
 metkit:
   deps:
@@ -88,6 +89,7 @@ atlas:
     - fftw
   deps:
     - eckit
+    - fckit
 
 metkit:
   deps:
