@@ -1,3 +1,31 @@
+"""
+The purpose of this script is to setup the data needed for downstream CI
+
+Inputs (as environment variables):
+    TOKEN: Github token
+    CONFIG: Yaml object, which contains paths to build config file for all repos
+            in downstream ci. Optionally whether it's a python package (can be ommitted). example:
+            ```
+            owner/repo@main:
+              path: .github/ci-config.yml
+              python: true
+            ```
+    SKIP_MATRIX_JOBS: Multiline string, list of matrix job names to be skipped 
+    PYTHON_VERSIONS: Yaml list, list of python version to expand the matrix with
+    PYTHON_JOBS: Yaml list, list of jobs to be used for python packages
+    MATRIX: Yaml object, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategymatrix
+
+Outputs:
+    Outputs are written to $GITHUB_OUTPUT file.
+
+    trigger_repo: name of the triggerring repository without the owner prefix
+    build_package_dep_tree: parsed dependency tree in yaml format for build-package
+    build_package_hpc_dep_tree: parsed dependency tree in yaml format for build-package-hpc
+    <repo>: for each repo in CONFIG input, this will produce an output with name of the repository. Contains the build
+            matrix for the specific package.
+"""
+
+
 import json
 import os
 import sys
