@@ -338,8 +338,8 @@ jobs:
 
   atlas:
     name: atlas
-    needs: [setup, eckit]
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.atlas && (inputs.eckit || inputs.atlas) }}
+    needs: [setup, eckit, fckit]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.atlas && (inputs.eckit || inputs.atlas || inputs.fckit) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.atlas) }}
@@ -357,6 +357,7 @@ jobs:
           build_config: .github/ci-hpc-config.yml
           dependencies: |
             ${{ inputs.eckit }}
+            ${{ inputs.fckit }}
 
   fckit:
     name: fckit
