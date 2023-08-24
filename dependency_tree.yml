@@ -66,6 +66,10 @@ plume:
     - atlas
     - fckit
 
+ecflow:
+  deps:
+    - ecbuild
+
 ---
 # this is for build-package-hpc
 name: build-package-hpc
@@ -132,3 +136,8 @@ plume:
   deps:
     - atlas
     - fckit
+
+ecflow:
+  deps:
+    - ecbuild
+
