@@ -50,6 +50,9 @@ on:
       skinnywms:
         required: false
         type: string
+      pdbufr:
+        required: false
+        type: string
 
 jobs:
   setup:
@@ -68,6 +71,7 @@ jobs:
       plume: ${{ steps.setup.outputs.plume }}
       mir: ${{ steps.setup.outputs.mir }}
       skinnywms: ${{ steps.setup.outputs.skinnywms }}
+      pdbufr: ${{ steps.setup.outputs.pdbufr }}
       trigger_repo: ${{ steps.setup.outputs.trigger_repo}}
       dep_tree: ${{ steps.setup.outputs.build_package_dep_tree }}
     steps:
@@ -110,6 +114,9 @@ jobs:
             ${{ inputs.mir || 'ecmwf/mir@develop' }}:
               path: .github/ci-config.yml
             ${{ inputs.skinnywms || 'ecmwf/skinnywms@develop' }}:
+              path: .github/ci-config.yml
+              python: true
+            ${{ inputs.pdbufr || 'ecmwf/pdbufr@downstream-ci' }}:
               path: .github/ci-config.yml
               python: true
           PYTHON_VERSIONS: |
@@ -474,3 +481,20 @@ jobs:
         with:
           repository: ${{ inputs.skinnywms || 'ecmwf/skinnywms@develop' }}
           checkout: true
+
+  pdbufr:
+    name: pdbufr
+    needs: [setup]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pdbufr && inputs.pdbufr }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.pdbufr) }}
+    runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+        with:
+          repository: ${{ inputs.pdbufr || 'ecmwf/pdbufr@downstream-ci' }}
+          checkout: true
+          lib_path: ${{ steps.build-deps.outputs.lib_path }}

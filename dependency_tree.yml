@@ -66,6 +66,11 @@ plume:
     - atlas
     - fckit
 
+pdbufr:
+  deps:
+    - eccodes-python
+    - pyodc
+
 ---
 # this is for build-package-hpc
 name: build-package-hpc
@@ -132,3 +137,8 @@ plume:
   deps:
     - atlas
     - fckit
+
+pdbufr:
+  deps:
+    - eccodes-python
+    - pyodc

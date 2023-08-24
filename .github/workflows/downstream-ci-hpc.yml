@@ -50,6 +50,9 @@ on:
       skinnywms:
         required: false
         type: string
+      pdbufr:
+        required: false
+        type: string
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -67,6 +70,7 @@ jobs:
       plume: ${{ steps.setup.outputs.plume }}
       mir: ${{ steps.setup.outputs.mir }}
       skinnywms: ${{ steps.setup.outputs.skinnywms }}
+      pdbufr: ${{ steps.setup.outputs.pdbufr }}
       dep_tree: ${{ steps.setup.outputs.build_package_hpc_dep_tree }}
     steps:
       - name: checkout reusable wfs repo
@@ -108,6 +112,9 @@ jobs:
             ${{ inputs.mir || 'ecmwf/mir@develop' }}:
               path: .github/ci-hpc-config.yml
             ${{ inputs.skinnywms || 'ecmwf/skinnywms@develop' }}:
+              path: .github/ci-hpc-config.yml
+              python: true
+            ${{ inputs.pdbufr || 'ecmwf/pdbufr@downstream-ci' }}:
               path: .github/ci-hpc-config.yml
               python: true
           SKIP_MATRIX_JOBS: |
@@ -448,3 +455,23 @@ jobs:
           troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
           repository: ${{ inputs.skinnywms || 'ecmwf/skinnywms@develop' }}
           build_config: .github/ci-hpc-config.yml
+  pdbufr:
+    name: pdbufr
+    needs: [setup]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pdbufr && inputs.pdbufr }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.skinnywms) }}
+    runs-on:
+      [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+        with:
+          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+          repository: ${{ inputs.pdbufr || 'ecmwf/pdbufr@downstream-ci' }}
+          build_config: .github/ci-hpc-config.yml
+
