@@ -17,6 +17,9 @@ on:
       eccodes-python:
         required: false
         type: string
+      cfgrib:
+        required: false
+        type: string
       eckit:
         required: false
         type: string
@@ -60,6 +63,7 @@ jobs:
     outputs:
       eccodes: ${{ steps.setup.outputs.eccodes }}
       eccodes-python: ${{ steps.setup.outputs.eccodes-python }}
+      cfgrib: ${{ steps.setup.outputs.cfgrib }}
       eckit: ${{ steps.setup.outputs.eckit }}
       odc: ${{ steps.setup.outputs.odc }}
       pyodc: ${{ steps.setup.outputs.pyodc }}
@@ -88,6 +92,9 @@ jobs:
             ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}:
               path: .github/ci-hpc-config.yml
             ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}:
+              path: .github/ci-hpc-config.yml
+              python: true
+            ${{ inputs.cfgrib || 'ecmwf/cfgrib@master' }}:
               path: .github/ci-hpc-config.yml
               python: true
             ${{ inputs.eckit || 'ecmwf/eckit@develop' }}:
@@ -205,6 +212,28 @@ jobs:
           build_config: .github/ci-hpc-config.yml
           dependencies: |
             ${{ inputs.eccodes }}
+
+  cfgrib:
+    name: cfgrib
+    needs: [setup, eccodes-python]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cfgrib && (inputs.eccodes-python || inputs.cfgrib) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.cfgrib) }}
+    runs-on:
+      [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+        with:
+          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+          repository: ${{ inputs.cfgrib || 'ecmwf/cfgrib@master' }}
+          build_config: .github/ci-hpc-config.yml
+          dependencies: |
+            ${{ inputs.eccodes-python }}
 
   eckit:
     name: eckit
