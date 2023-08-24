@@ -17,6 +17,9 @@ on:
       eccodes-python:
         required: false
         type: string
+      cfgrib:
+        required: false
+        type: string
       eckit:
         required: false
         type: string
@@ -57,6 +60,7 @@ jobs:
     outputs:
       eccodes: ${{ steps.setup.outputs.eccodes }}
       eccodes-python: ${{ steps.setup.outputs.eccodes-python }}
+      cfgrib: ${{ steps.setup.outputs.cfgrib }}
       eckit: ${{ steps.setup.outputs.eckit }}
       odc: ${{ steps.setup.outputs.odc }}
       pyodc: ${{ steps.setup.outputs.pyodc }}
@@ -85,6 +89,9 @@ jobs:
             ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}:
               path: .github/ci-config.yml
             ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}:
+              path: .github/ci-config.yml
+              python: true
+            ${{ inputs.cfgrib || 'ecmwf/cfgrib@develop' }}:
               path: .github/ci-config.yml
               python: true
             ${{ inputs.eckit || 'ecmwf/eckit@develop' }}:
@@ -217,6 +224,33 @@ jobs:
           build_config: .github/ci-config.yml
           build_dependencies: |
             ${{ inputs.eccodes }}
+
+      - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+        with:
+          lib_path: ${{ steps.build-deps.outputs.lib_path }}
+
+  cfgrib:
+    name: cfgrib
+    needs: [setup, eccodes-python]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cfgrib && (inputs.eccodes-python || inputs.cfgrib) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.cfgrib) }}
+    runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - name: Build dependencies
+        id: build-deps
+        uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ inputs.cfgrib || 'ecmwf/cfgrib@add-to-downstream-ci' }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+          build_package_inputs: |
+            repository: ${{ inputs.cfgrib || 'ecmwf/cfgrib@add-to-downstream-ci' }}
+          build_config: .github/ci-config.yml
+          build_dependencies: |
+            ${{ inputs.eccodes-python }}
 
       - uses: ecmwf-actions/reusable-workflows/ci-python@v2
         with:

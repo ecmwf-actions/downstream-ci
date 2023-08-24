@@ -13,6 +13,10 @@ eccodes-python:
   deps:
     - eccodes
 
+cfgrib:
+  deps:
+    - eccodes-python
+
 pgen:
   deps:
     - mir
@@ -107,6 +111,10 @@ eccodes:
 eccodes-python:
   deps:
     - eccodes
+
+cfgrib:
+  deps:
+    - eccodes-python
 
 odc:
   deps:
