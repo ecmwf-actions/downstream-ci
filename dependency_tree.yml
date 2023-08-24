@@ -69,7 +69,6 @@ plume:
 pdbufr:
   deps:
     - eccodes-python
-    - pyodc
 
 ---
 # this is for build-package-hpc
@@ -141,4 +140,3 @@ plume:
 pdbufr:
   deps:
     - eccodes-python
-    - pyodc
