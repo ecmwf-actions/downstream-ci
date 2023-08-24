@@ -13,6 +13,10 @@ eccodes-python:
   deps:
     - eccodes
 
+cfgrib:
+  deps:
+    - eccodes-python
+
 pgen:
   deps:
     - mir
@@ -70,6 +74,10 @@ pdbufr:
   deps:
     - eccodes-python
 
+ecflow:
+  deps:
+    - ecbuild
+
 ---
 # this is for build-package-hpc
 name: build-package-hpc
@@ -112,6 +120,10 @@ eccodes-python:
   deps:
     - eccodes
 
+cfgrib:
+  deps:
+    - eccodes-python
+
 odc:
   deps:
     - eckit
@@ -140,3 +152,8 @@ plume:
 pdbufr:
   deps:
     - eccodes-python
+
+ecflow:
+  deps:
+    - ecbuild
+
