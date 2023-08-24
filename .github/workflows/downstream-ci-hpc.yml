@@ -89,7 +89,7 @@ jobs:
             ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}:
               path: .github/ci-hpc-config.yml
               python: true
-            ${{ inputs.cfgrib || 'ecmwf/cfgrib@develop' }}:
+            ${{ inputs.cfgrib || 'ecmwf/cfgrib@master' }}:
               path: .github/ci-hpc-config.yml
               python: true
             ${{ inputs.eckit || 'ecmwf/eckit@develop' }}:
@@ -223,7 +223,7 @@ jobs:
           github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
           github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
           troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
-          repository: ${{ inputs.cfgrib || 'ecmwf/cfgrib@add-to-downstream-ci' }}
+          repository: ${{ inputs.cfgrib || 'ecmwf/cfgrib@master' }}
           build_config: .github/ci-hpc-config.yml
           dependencies: |
             ${{ inputs.eccodes-python }}

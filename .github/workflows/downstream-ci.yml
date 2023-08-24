@@ -91,7 +91,7 @@ jobs:
             ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}:
               path: .github/ci-config.yml
               python: true
-            ${{ inputs.cfgrib || 'ecmwf/cfgrib@add-to-downstream-ci' }}:
+            ${{ inputs.cfgrib || 'ecmwf/cfgrib@master' }}:
               path: .github/ci-config.yml
               python: true
             ${{ inputs.eckit || 'ecmwf/eckit@develop' }}:
@@ -244,10 +244,10 @@ jobs:
         id: build-deps
         uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          repository: ${{ inputs.cfgrib || 'ecmwf/cfgrib@add-to-downstream-ci' }}
+          repository: ${{ inputs.cfgrib || 'ecmwf/cfgrib@master' }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
-            repository: ${{ inputs.cfgrib || 'ecmwf/cfgrib@add-to-downstream-ci' }}
+            repository: ${{ inputs.cfgrib || 'ecmwf/cfgrib@master' }}
           build_config: .github/ci-config.yml
           build_dependencies: |
             ${{ inputs.eccodes-python }}
