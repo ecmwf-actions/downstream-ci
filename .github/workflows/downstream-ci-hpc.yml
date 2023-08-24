@@ -50,6 +50,10 @@ on:
       skinnywms:
         required: false
         type: string
+      ecflow:
+        required: false
+        type: string
+
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -68,6 +72,7 @@ jobs:
       mir: ${{ steps.setup.outputs.mir }}
       skinnywms: ${{ steps.setup.outputs.skinnywms }}
       dep_tree: ${{ steps.setup.outputs.build_package_hpc_dep_tree }}
+      ecflow: ${{ steps.setup.outputs.ecflow }}
     steps:
       - name: checkout reusable wfs repo
         uses: actions/checkout@v3
@@ -110,6 +115,8 @@ jobs:
             ${{ inputs.skinnywms || 'ecmwf/skinnywms@develop' }}:
               path: .github/ci-hpc-config.yml
               python: true
+            ${{ inputs.ecflow || 'ecmwf/ecflow@develop' }}:
+              path: .github/ci-hpc-config.yml
           SKIP_MATRIX_JOBS: |
             gnu-10.3.0
             ${{ inputs.skip_matrix_jobs }}
@@ -447,4 +454,24 @@ jobs:
           github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
           troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
           repository: ${{ inputs.skinnywms || 'ecmwf/skinnywms@develop' }}
+          build_config: .github/ci-hpc-config.yml
+
+  ecflow:
+    name: ecflow
+    needs: [setup]
+    if: ${{ inputs.ecflow && needs.setup.outputs.ecflow }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.ecflow) }}
+    runs-on:
+      [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+        with:
+          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+          repository: ${{ inputs.ecflow || 'ecmwf/ecflow@develop' }}
           build_config: .github/ci-hpc-config.yml
