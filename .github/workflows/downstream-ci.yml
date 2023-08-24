@@ -91,7 +91,7 @@ jobs:
             ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}:
               path: .github/ci-config.yml
               python: true
-            ${{ inputs.cfgrib || 'ecmwf/cfgrib@develop' }}:
+            ${{ inputs.cfgrib || 'ecmwf/cfgrib@add-to-downstream-ci' }}:
               path: .github/ci-config.yml
               python: true
             ${{ inputs.eckit || 'ecmwf/eckit@develop' }}:
