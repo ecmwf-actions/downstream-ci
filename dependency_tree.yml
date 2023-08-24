@@ -70,13 +70,13 @@ plume:
     - atlas
     - fckit
 
-pdbufr:
-  deps:
-    - eccodes-python
-
 ecflow:
   deps:
     - ecbuild
+    
+pdbufr:
+  deps:
+    - eccodes-python
 
 ---
 # this is for build-package-hpc
@@ -149,11 +149,11 @@ plume:
     - atlas
     - fckit
 
-pdbufr:
-  deps:
-    - eccodes-python
-
 ecflow:
   deps:
     - ecbuild
+    
+pdbufr:
+  deps:
+    - eccodes-python
 
