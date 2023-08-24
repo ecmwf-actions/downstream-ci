@@ -73,6 +73,10 @@ plume:
 ecflow:
   deps:
     - ecbuild
+    
+pdbufr:
+  deps:
+    - eccodes-python
 
 ---
 # this is for build-package-hpc
@@ -148,4 +152,8 @@ plume:
 ecflow:
   deps:
     - ecbuild
+    
+pdbufr:
+  deps:
+    - eccodes-python
 

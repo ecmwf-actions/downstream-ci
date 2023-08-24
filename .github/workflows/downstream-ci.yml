@@ -56,6 +56,9 @@ on:
       ecflow:
         required: false
         type: string
+      pdbufr:
+        required: false
+        type: string
 
 jobs:
   setup:
@@ -75,6 +78,7 @@ jobs:
       plume: ${{ steps.setup.outputs.plume }}
       mir: ${{ steps.setup.outputs.mir }}
       skinnywms: ${{ steps.setup.outputs.skinnywms }}
+      pdbufr: ${{ steps.setup.outputs.pdbufr }}
       trigger_repo: ${{ steps.setup.outputs.trigger_repo}}
       dep_tree: ${{ steps.setup.outputs.build_package_dep_tree }}
       ecflow: ${{ steps.setup.outputs.ecflow }}
@@ -125,6 +129,9 @@ jobs:
               python: true
             ${{ inputs.ecflow || 'ecmwf/ecflow@develop' }}:
               path: .github/ci-config.yml
+            ${{ inputs.pdbufr || 'ecmwf/pdbufr@master' }}:
+              path: .github/ci-config.yml
+              python: true
           PYTHON_VERSIONS: |
             - "3.10"
           MATRIX: |
@@ -514,7 +521,7 @@ jobs:
         with:
           repository: ${{ inputs.skinnywms || 'ecmwf/skinnywms@develop' }}
           checkout: true
-
+       
   ecflow:
     name: ecflow
     needs: [setup]
@@ -533,3 +540,31 @@ jobs:
           build_package_inputs: |
             repository: ${{ inputs.ecflow || 'ecmwf/ecflow@develop' }}
           build_config: .github/ci-config.yml
+
+  pdbufr:
+    name: pdbufr
+    needs: [setup, eccodes-python]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pdbufr && inputs.pdbufr }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.pdbufr) }}
+    runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - name: Build dependencies
+        id: build-deps
+        uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ inputs.pdbufr || 'ecmwf/pdbufr@master' }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+          build_package_inputs: |
+            repository: ${{ inputs.pdbufr || 'ecmwf/pdbufr@master' }}
+          build_config: .github/ci-config.yml
+          build_dependencies: |
+            ${{ inputs.eccodes-python }}
+
+      - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+        with:
+          lib_path: ${{ steps.build-deps.outputs.lib_path }}
+  
