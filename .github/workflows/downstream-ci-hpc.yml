@@ -58,7 +58,7 @@ on:
         type: string
       pdbufr:
         required: false
-        type: string  
+        type: string
 
 jobs:
   setup:
@@ -222,8 +222,8 @@ jobs:
 
   cfgrib:
     name: cfgrib
-    needs: [setup, eccodes-python]
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cfgrib && (inputs.eccodes-python || inputs.cfgrib) }}
+    needs: [setup, eccodes, eccodes-python]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cfgrib && (inputs.eccodes-python || inputs.eccodes || inputs.cfgrib) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.cfgrib) }}
@@ -240,6 +240,32 @@ jobs:
           repository: ${{ inputs.cfgrib || 'ecmwf/cfgrib@master' }}
           build_config: .github/ci-hpc-config.yml
           dependencies: |
+            ${{ inputs.eccodes }}
+          python_dependencies: |
+            ${{ inputs.eccodes-python }}
+
+  pdbufr:
+    name: pdbufr
+    needs: [setup, eccodes, eccodes-python]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pdbufr && (inputs.eccodes || inputs.eccodes-python || inputs.pdbufr) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.pdbufr) }}
+    runs-on:
+      [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+        with:
+          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+          repository: ${{ inputs.pdbufr || 'ecmwf/pdbufr@master' }}
+          build_config: .github/ci-hpc-config.yml
+          dependencies: |
+            ${{ inputs.eccodes }}
+          python_dependencies: |
             ${{ inputs.eccodes-python }}
 
   eckit:
@@ -491,7 +517,7 @@ jobs:
           troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
           repository: ${{ inputs.skinnywms || 'ecmwf/skinnywms@develop' }}
           build_config: .github/ci-hpc-config.yml
-  
+
   ecflow:
     name: ecflow
     needs: [setup]
@@ -511,25 +537,3 @@ jobs:
           troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
           repository: ${{ inputs.ecflow || 'ecmwf/ecflow@develop' }}
           build_config: .github/ci-hpc-config.yml
-
-  pdbufr:
-    name: pdbufr
-    needs: [setup, eccodes-python]
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pdbufr && inputs.pdbufr }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.pdbufr) }}
-    runs-on:
-      [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
-        with:
-          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
-          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-          troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
-          repository: ${{ inputs.pdbufr || 'ecmwf/pdbufr@master' }}
-          build_config: .github/ci-hpc-config.yml
-          dependencies: |
-            ${{ inputs.eccodes-python }}
