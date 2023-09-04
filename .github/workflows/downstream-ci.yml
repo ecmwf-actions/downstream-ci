@@ -94,44 +94,64 @@ jobs:
         env:
           TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
           CONFIG: |
-            ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}:
+            ecmwf/eccodes:
               path: .github/ci-config.yml
-            ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}:
-              path: .github/ci-config.yml
-              python: true
-            ${{ inputs.cfgrib || 'ecmwf/cfgrib@master' }}:
+              input: ${{ inputs.eccodes }}
+            ecmwf/eccodes-python:
               path: .github/ci-config.yml
               python: true
-            ${{ inputs.eckit || 'ecmwf/eckit@develop' }}:
+              input: ${{ inputs.eccodes-python }}
+            ecmwf/cfgrib:
               path: .github/ci-config.yml
-            ${{ inputs.odc || 'ecmwf/odc@develop' }}:
+              master_branch: master
+              develop_branch: master
+              python: true
+              input: ${{ inputs.cfgrib }}
+            ecmwf/eckit:
               path: .github/ci-config.yml
-            ${{ inputs.pyodc || 'ecmwf/pyodc@develop' }}:
+              input: ${{ inputs.eckit }}
+            ecmwf/odc:
+              path: .github/ci-config.yml
+              input: ${{ inputs.odc }}
+            ecmwf/pyodc:
               path: .github/ci-config.yml
               python: true
-            ${{ inputs.metkit || 'ecmwf/metkit@develop' }}:
+              input: ${{ inputs.pyodc }}
+            ecmwf/metkit:
               path: .github/ci-config.yml
-            ${{ inputs.fdb || 'ecmwf/fdb@develop' }}:
+              input: ${{ inputs.metkit }}
+            ecmwf/fdb:
               path: .github/ci-config.yml
-            ${{ inputs.pyfdb || 'ecmwf/pyfdb@develop' }}:
-              path: .github/ci-config.yml
-              python: true
-            ${{ inputs.atlas || 'ecmwf/atlas@develop' }}:
-              path: .github/ci-config.yml
-            ${{ inputs.fckit || 'ecmwf/fckit@develop' }}:
-              path: .github/ci-config.yml
-            ${{ inputs.plume || 'ecmwf/plume@develop' }}:
-              path: .github/ci-config.yml
-            ${{ inputs.mir || 'ecmwf/mir@develop' }}:
-              path: .github/ci-config.yml
-            ${{ inputs.skinnywms || 'ecmwf/skinnywms@develop' }}:
+              input: ${{ inputs.fdb }}
+            ecmwf/pyfdb:
               path: .github/ci-config.yml
               python: true
-            ${{ inputs.ecflow || 'ecmwf/ecflow@develop' }}:
+              input: ${{ inputs.pyfdb }}
+            ecmwf/atlas:
               path: .github/ci-config.yml
-            ${{ inputs.pdbufr || 'ecmwf/pdbufr@master' }}:
+              input: ${{ inputs.atlas }}
+            ecmwf/fckit:
+              path: .github/ci-config.yml
+              input: ${{ inputs.fckit }}
+            ecmwf/plume:
+              path: .github/ci-config.yml
+              input: ${{ inputs.plume }}
+            ecmwf/mir:
+              path: .github/ci-config.yml
+              input: ${{ inputs.mir }}
+            ecmwf/skinnywms:
               path: .github/ci-config.yml
               python: true
+              input: ${{ inputs.skinnywms }}
+            ecmwf/ecflow:
+              path: .github/ci-config.yml
+              input: ${{ inputs.ecflow }}
+            ecmwf/pdbufr:
+              path: .github/ci-config.yml
+              python: true
+              master_branch: master
+              develop_branch: master
+              input: ${{ inputs.pdbufr }}
           PYTHON_VERSIONS: |
             - "3.10"
           MATRIX: |
@@ -209,11 +229,11 @@ jobs:
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          repository: ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}
+          repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
-            repository: ${{ inputs.eccodes || 'ecmwf/eccodes@develop' }}
-          build_config: .github/ci-config.yml
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
 
   eccodes-python:
     name: eccodes-python
@@ -230,11 +250,11 @@ jobs:
         id: build-deps
         uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          repository: ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}
+          repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
-            repository: ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}
-          build_config: .github/ci-config.yml
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
           build_dependencies: |
             ${{ inputs.eccodes }}
 
@@ -257,11 +277,11 @@ jobs:
         id: build-deps
         uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          repository: ${{ inputs.cfgrib || 'ecmwf/cfgrib@master' }}
+          repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
-            repository: ${{ inputs.cfgrib || 'ecmwf/cfgrib@master' }}
-          build_config: .github/ci-config.yml
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
           build_dependencies: |
             ${{ inputs.eccodes }}
 
@@ -285,11 +305,11 @@ jobs:
         id: build-deps
         uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          repository: ${{ inputs.pdbufr || 'ecmwf/pdbufr@master' }}
+          repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
-            repository: ${{ inputs.pdbufr || 'ecmwf/pdbufr@master' }}
-          build_config: .github/ci-config.yml
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
           build_dependencies: |
             ${{ inputs.eccodes }}
 
@@ -311,11 +331,11 @@ jobs:
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          repository: ${{ inputs.eckit || 'ecmwf/eckit@develop' }}
+          repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
-            repository: ${{ inputs.eckit || 'ecmwf/eckit@develop' }}
-          build_config: .github/ci-config.yml
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
 
   odc:
     name: odc
@@ -330,11 +350,11 @@ jobs:
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          repository: ${{ inputs.odc || 'ecmwf/odc@develop' }}
+          repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
-            repository: ${{ inputs.odc || 'ecmwf/odc@develop' }}
-          build_config: .github/ci-config.yml
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
           build_dependencies: |
             ${{ inputs.eckit }}
 
@@ -353,11 +373,11 @@ jobs:
         id: build-deps
         uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          repository: ${{ inputs.pyodc || 'ecmwf/pyodc@develop' }}
+          repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
-            repository: ${{ inputs.pyodc || 'ecmwf/pyodc@develop' }}
-          build_config: .github/ci-config.yml
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
           build_dependencies: |
             ${{ inputs.eckit }}
             ${{ inputs.odc}}
@@ -380,11 +400,11 @@ jobs:
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          repository: ${{ inputs.metkit || 'ecmwf/metkit@develop' }}
+          repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
-            repository: ${{ inputs.metkit || 'ecmwf/metkit@develop' }}
-          build_config: .github/ci-config.yml
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
           build_dependencies: |
             ${{ inputs.eccodes }}
             ${{ inputs.eckit }}
@@ -402,11 +422,11 @@ jobs:
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          repository: ${{ inputs.fdb || 'ecmwf/fdb@develop' }}
+          repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
-            repository: ${{ inputs.fdb || 'ecmwf/fdb@develop' }}
-          build_config: .github/ci-config.yml
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
           build_dependencies: |
             ${{ inputs.eccodes }}
             ${{ inputs.eckit }}
@@ -427,11 +447,11 @@ jobs:
         id: build-deps
         uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          repository: ${{ inputs.pyfdb || 'ecmwf/pyfdb@develop' }}
+          repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
-            repository: ${{ inputs.pyfdb || 'ecmwf/pyfdb@develop' }}
-          build_config: .github/ci-config.yml
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
           build_dependencies: |
             ${{ inputs.eccodes }}
             ${{ inputs.eckit }}
@@ -459,11 +479,11 @@ jobs:
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          repository: ${{ inputs.atlas || 'ecmwf/atlas@develop' }}
+          repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
-            repository: ${{ inputs.atlas || 'ecmwf/atlas@develop' }}
-          build_config: .github/ci-config.yml
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
           build_dependencies: |
             ${{ inputs.eckit }}
             ${{ inputs.fckit }}
@@ -481,11 +501,11 @@ jobs:
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          repository: ${{ inputs.fckit || 'ecmwf/fckit@develop' }}
+          repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
-            repository: ${{ inputs.fckit || 'ecmwf/fckit@develop' }}
-          build_config: .github/ci-config.yml
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
           build_dependencies: |
             ${{ inputs.eckit }}
 
@@ -502,11 +522,11 @@ jobs:
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          repository: ${{ inputs.plume || 'ecmwf/plume@develop' }}
+          repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
-            repository: ${{ inputs.plume || 'ecmwf/plume@develop' }}
-          build_config: .github/ci-config.yml
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
           build_dependencies: |
             ${{ inputs.eckit }}
             ${{ inputs.fckit }}
@@ -525,11 +545,11 @@ jobs:
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          repository: ${{ inputs.mir || 'ecmwf/mir@develop' }}
+          repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
-            repository: ${{ inputs.mir || 'ecmwf/mir@develop' }}
-          build_config: .github/ci-config.yml
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
           build_dependencies: |
             ${{ inputs.eccodes }}
             ${{ inputs.eckit }}
@@ -548,7 +568,7 @@ jobs:
     steps:
       - uses: ecmwf-actions/reusable-workflows/ci-python@v2
         with:
-          repository: ${{ inputs.skinnywms || 'ecmwf/skinnywms@develop' }}
+          repository: ${{ matrix.owner_repo_ref }}
           checkout: true
 
   ecflow:
@@ -564,8 +584,8 @@ jobs:
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          repository: ${{ inputs.ecflow || 'ecmwf/ecflow@develop' }}
+          repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
           build_package_inputs: |
-            repository: ${{ inputs.ecflow || 'ecmwf/ecflow@develop' }}
-          build_config: .github/ci-config.yml
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
