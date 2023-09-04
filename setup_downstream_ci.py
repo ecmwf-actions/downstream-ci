@@ -4,7 +4,8 @@ The purpose of this script is to setup the data needed for downstream CI
 Inputs (as environment variables):
     TOKEN: Github token
     CONFIG: Yaml object, which contains paths to build config file for all repos
-            in downstream ci. Optionally whether it's a python package (can be ommitted). example:
+            in downstream ci. Optionally whether it's a python package (can be
+            ommitted). example:
             ```
             owner/repo@main:
               path: .github/ci-config.yml
@@ -13,15 +14,18 @@ Inputs (as environment variables):
     SKIP_MATRIX_JOBS: Multiline string, list of matrix job names to be skipped 
     PYTHON_VERSIONS: Yaml list, list of python version to expand the matrix with
     PYTHON_JOBS: Yaml list, list of jobs to be used for python packages
-    MATRIX: Yaml object, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategymatrix
+    MATRIX: Yaml object, see
+            https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategymatrix
 
 Outputs:
     Outputs are written to $GITHUB_OUTPUT file.
 
     trigger_repo: name of the triggerring repository without the owner prefix
     build_package_dep_tree: parsed dependency tree in yaml format for build-package
-    build_package_hpc_dep_tree: parsed dependency tree in yaml format for build-package-hpc
-    <repo>: for each repo in CONFIG input, this will produce an output with name of the repository. Contains the build
+    build_package_hpc_dep_tree: parsed dependency tree in yaml format for 
+                                build-package-hpc
+    <repo>: for each repo in CONFIG input, this will produce an output with name of the
+            repository. Contains the build
             matrix for the specific package.
 """
 
@@ -34,28 +38,27 @@ import requests
 import yaml
 
 # Load inputs
-config_paths: dict = yaml.safe_load(os.getenv("CONFIG_PATHS", ""))
 ci_config: dict = yaml.safe_load(os.getenv("CONFIG", ""))
 python_versions = yaml.safe_load(os.getenv("PYTHON_VERSIONS", ""))
 python_jobs = yaml.safe_load(os.getenv("PYTHON_JOBS", ""))
 matrix = yaml.safe_load(os.getenv("MATRIX", ""))
 skip_jobs = os.getenv("SKIP_MATRIX_JOBS", "").splitlines()
 token = os.getenv("TOKEN", "")
+trigger_ref_name = os.getenv("GITHUB_REF_NAME", "")
 
 github_repository = os.getenv("GITHUB_REPOSITORY", "")
 _, trigger_repo = github_repository.split("/")
 print(f"Triggered from: {trigger_repo}")
 
-if not ci_config:
-    ci_config = config_paths
+
+DEFAULT_MASTER_BRANCH_NAME = "master"
+DEFAULT_DEVELOP_BRANCH_NAME = "develop"
 
 
-# Get config for each repo
-def get_config(repo, path):
-    print("Getting config for", repo)
-    owner_repo, ref = repo.split("@")
-    owner, repo = owner_repo.split("/")
-    url = f"https://raw.githubusercontent.com/{owner_repo}/{ref}/{path}"
+# Get build-pacakge(-hpc) config for each repo
+def get_config(owner, repo, ref, path):
+    print(f"Getting config for {owner}/{repo}@{ref}")
+    url = f"https://raw.githubusercontent.com/{owner}/{repo}/{ref}/{path}"
     response = requests.get(url, headers={"Authorization": f"token {token}"})
     return_obj = {"repo": repo, "matrix": [], "config_found": False}
 
@@ -83,28 +86,49 @@ if skip_jobs:
 
 matrices = {}
 
-for k, v in ci_config.items():
-    path = v["path"] if type(v) == dict else v
-    config = get_config(k, path)
+# whether to use master branch for dependencies
+# if triggered from master branch (as defined in the config)
+use_master = (
+    ci_config[github_repository].get("master_branch", DEFAULT_MASTER_BRANCH_NAME)
+    == trigger_ref_name
+)
+
+for owner_repo, val in ci_config.items():
+    owner_repo: str
+    val: dict
+
+    owner, repo = owner_repo.split("/")
+
+    master_branch_name = val.get("master_branch", DEFAULT_MASTER_BRANCH_NAME)
+    develop_branch_name = val.get("develop_branch", DEFAULT_DEVELOP_BRANCH_NAME)
+    ref = master_branch_name if use_master else develop_branch_name
+    package_input = val.get("input", "")
+    if package_input:
+        _, ref = package_input.split("@")
+
+    path = val.get("path", "")
+    config = get_config(owner, repo, ref, path)
 
     if not config["config_found"]:
         continue
 
     if config["matrix"]:
-        matrices[config["repo"]] = {**matrix, "config": config["matrix"]}
+        matrices[repo] = {**matrix, "config": config["matrix"]}
     else:
-        matrices[config["repo"]] = {**matrix}
+        matrices[repo] = {**matrix}
 
-    if type(v) == dict and v.get("python", ""):
-        matrices[config["repo"]]["python_version"] = python_versions
+    for index, item in enumerate(matrices[repo]["include"]):
+        matrices[repo]["include"][index]["owner_repo_ref"] = f"{owner}/{repo}@{ref}"
+        matrices[repo]["include"][index]["config_path"] = path
+
+    if val.get("python", ""):
+        matrices[repo]["python_version"] = python_versions
         if python_jobs:
-            matrices[config["repo"]]["name"] = [
-                name for name in matrices[config["repo"]]["name"] if name in python_jobs
+            matrices[repo]["name"] = [
+                name for name in matrices[repo]["name"] if name in python_jobs
             ]
-            matrices[config["repo"]]["include"] = [
-                d
-                for d in matrices[config["repo"]]["include"]
-                if d["name"] in python_jobs
+            matrices[repo]["include"] = [
+                d for d in matrices[repo]["include"] if d["name"] in python_jobs
             ]
 
 
