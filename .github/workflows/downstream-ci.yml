@@ -92,6 +92,7 @@ jobs:
       - name: Run setup script
         id: setup
         env:
+          # See setup_downstream_ci.py docstring for syntax
           TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
           CONFIG: |
             ecmwf/eccodes:
