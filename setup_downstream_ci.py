@@ -1,17 +1,23 @@
 """
-The purpose of this script is to setup the data needed for downstream CI
+The purpose of this script is to setup the data needed for downstream CI, mainly the
+matrix and repository ref specific to each package.
 
 Inputs (as environment variables):
     TOKEN: Github token
-    CONFIG: Yaml object, which contains paths to build config file for all repos
-            in downstream ci. Optionally whether it's a python package (can be
-            ommitted). example:
+    CONFIG: Yaml object, which contains information for the setup script about packages
+            in the downstream CI.
+            Syntax:
             ```
-            owner/repo@main:
-              path: .github/ci-config.yml
-              python: true
+            owner/repo:
+                path: path/to/ci-config.yml     Required, from repository root
+                python: true                    Optional, if python package
+                input: ${{ inputs.package }}    Rquired, value from workflow inputs
+                master_branch: branch1          Optional, name of master-type branch,
+                                                default: "master"
+                develop_branch: branch2         Optional, name of develop-type branch,
+                                                default: "develop"
             ```
-    SKIP_MATRIX_JOBS: Multiline string, list of matrix job names to be skipped 
+    SKIP_MATRIX_JOBS: Multiline string, list of matrix job names to be skipped
     PYTHON_VERSIONS: Yaml list, list of python version to expand the matrix with
     PYTHON_JOBS: Yaml list, list of jobs to be used for python packages
     MATRIX: Yaml object, see
@@ -22,11 +28,12 @@ Outputs:
 
     trigger_repo: name of the triggerring repository without the owner prefix
     build_package_dep_tree: parsed dependency tree in yaml format for build-package
-    build_package_hpc_dep_tree: parsed dependency tree in yaml format for 
+    build_package_hpc_dep_tree: parsed dependency tree in yaml format for
                                 build-package-hpc
     <repo>: for each repo in CONFIG input, this will produce an output with name of the
-            repository. Contains the build
-            matrix for the specific package.
+            repository. Contains the build matrix for the specific package. Matrix
+            contains variables `owner_repo_ref` (used for repository input to
+            build-package(-hpc)) and `config_path` (build config file path).
 """
 
 
