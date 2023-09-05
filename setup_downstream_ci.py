@@ -51,9 +51,11 @@ python_jobs = yaml.safe_load(os.getenv("PYTHON_JOBS", ""))
 matrix = yaml.safe_load(os.getenv("MATRIX", ""))
 skip_jobs = os.getenv("SKIP_MATRIX_JOBS", "").splitlines()
 token = os.getenv("TOKEN", "")
-trigger_ref_name = os.getenv("GITHUB_REF_NAME", "")
+trigger_ref_name = os.getenv("DISPATCH_REF_NAME") or os.getenv("GITHUB_REF_NAME", "")
 
-github_repository = os.getenv("GITHUB_REPOSITORY", "")
+github_repository = os.getenv("DISPATCH_REPOSITORY") or os.getenv(
+    "GITHUB_REPOSITORY", ""
+)
 _, trigger_repo = github_repository.split("/")
 print(f"Triggered from: {trigger_repo}")
 
@@ -96,7 +98,9 @@ matrices = {}
 # whether to use master branch for dependencies
 # if triggered from master branch (as defined in the config)
 use_master = (
-    ci_config[github_repository].get("master_branch", DEFAULT_MASTER_BRANCH_NAME)
+    ci_config.get(github_repository, {}).get(
+        "master_branch", DEFAULT_MASTER_BRANCH_NAME
+    )
     == trigger_ref_name
 )
 
