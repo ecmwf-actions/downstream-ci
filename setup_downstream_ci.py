@@ -78,7 +78,7 @@ def get_config(owner, repo, ref, path):
         return_obj["config_found"] = True
         return return_obj
 
-    print(f"::warning::Config for {repo} not found.")
+    print(f"::warning::Config for {owner}/{repo}@{ref} not found.")
     print(response.status_code, response.content)
 
     if trigger_repo == return_obj["repo"]:
@@ -103,11 +103,10 @@ use_master = (
     )
     == trigger_ref_name
 )
+print("use_master: ", use_master)
 
 for owner_repo, val in ci_config.items():
-    owner_repo: str
-    val: dict
-
+    print("*" * 10)
     owner, repo = owner_repo.split("/")
 
     master_branch_name = val.get("master_branch", DEFAULT_MASTER_BRANCH_NAME)
@@ -117,6 +116,7 @@ for owner_repo, val in ci_config.items():
     if package_input:
         _, ref = package_input.split("@")
 
+    print(owner, repo, ref)
     path = val.get("path", "")
     config = get_config(owner, repo, ref, path)
 
@@ -127,7 +127,7 @@ for owner_repo, val in ci_config.items():
         matrices[repo] = {**matrix, "config": config["matrix"]}
     else:
         matrices[repo] = {**matrix}
-
+    print(matrices[repo]["include"])
     for index, item in enumerate(matrices[repo]["include"]):
         matrices[repo]["include"][index]["owner_repo_ref"] = f"{owner}/{repo}@{ref}"
         matrices[repo]["include"][index]["config_path"] = path
