@@ -37,6 +37,7 @@ Outputs:
 """
 
 
+import copy
 import json
 import os
 import sys
@@ -106,7 +107,6 @@ use_master = (
 print("use_master: ", use_master)
 
 for owner_repo, val in ci_config.items():
-    print("*" * 10)
     owner, repo = owner_repo.split("/")
 
     master_branch_name = val.get("master_branch", DEFAULT_MASTER_BRANCH_NAME)
@@ -116,7 +116,6 @@ for owner_repo, val in ci_config.items():
     if package_input:
         _, ref = package_input.split("@")
 
-    print(owner, repo, ref)
     path = val.get("path", "")
     config = get_config(owner, repo, ref, path)
 
@@ -124,10 +123,9 @@ for owner_repo, val in ci_config.items():
         continue
 
     if config["matrix"]:
-        matrices[repo] = {**matrix, "config": config["matrix"]}
+        matrices[repo] = {**copy.deepcopy(matrix), "config": config["matrix"]}
     else:
-        matrices[repo] = {**matrix}
-    print(matrices[repo]["include"])
+        matrices[repo] = copy.deepcopy(matrix)
     for index, item in enumerate(matrices[repo]["include"]):
         matrices[repo]["include"][index]["owner_repo_ref"] = f"{owner}/{repo}@{ref}"
         matrices[repo]["include"][index]["config_path"] = path
