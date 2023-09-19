@@ -99,6 +99,7 @@ mir:
 atlas:
   modules:
     - fftw
+    - qhull
   deps:
     - eckit
     - fckit
