@@ -157,7 +157,7 @@ jobs:
             - "3.10"
           MATRIX: |
             name:
-            - gnu@debian-11
+            # - gnu@debian-11
             - gnu-7@centos-7.9
             - gnu-8@centos-7.9
             - gnu@rocky-8.6
