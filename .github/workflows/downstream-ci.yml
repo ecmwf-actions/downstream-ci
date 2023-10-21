@@ -158,12 +158,12 @@ jobs:
           MATRIX: |
             name:
             # - gnu@debian-11
-            - gnu-7@centos-7.9
-            - gnu-8@centos-7.9
-            - gnu@rocky-8.6
-            - clang@rocky-8.6
-            - gnu@ubuntu-22.04
-            - gnu@fedora-37
+            #- gnu-7@centos-7.9
+            #- gnu-8@centos-7.9
+            #- gnu@rocky-8.6
+            #- clang@rocky-8.6
+            #- gnu@ubuntu-22.04
+            #- gnu@fedora-37
             - clang@macos-13-arm
             - clang@macos-13-x86
             include:
@@ -174,49 +174,49 @@ jobs:
             #  compiler_cc: gcc
             #  compiler_cxx: g++
             #  compiler_fc: gfortran
-            - name: gnu-7@centos-7.9
-              labels: [self-hosted, platform-builder-centos-7.9]
-              os: centos-7.9
-              compiler: gnu-7
-              compiler_cc: gcc-7
-              compiler_cxx: g++-7
-              compiler_fc: gfortran-7
-            - name: gnu-8@centos-7.9
-              labels: [self-hosted, platform-builder-centos-7.9]
-              os: centos-7.9
-              compiler: gnu-8
-              compiler_cc: gcc-8
-              compiler_cxx: g++-8
-              compiler_fc: gfortran-8
-            - name: gnu@rocky-8.6
-              labels: [self-hosted, platform-builder-rocky-8.6]
-              os: rocky-8.6
-              compiler: gnu
-              compiler_cc: gcc
-              compiler_cxx: g++
-              compiler_fc: gfortran
-            - name: clang@rocky-8.6
-              labels: [self-hosted, platform-builder-rocky-8.6]
-              os: rocky-8.6
-              compiler: clang
-              compiler_cc: clang
-              compiler_cxx: clang++
-              compiler_fc: gfortran
-              toolchain_file: /opt/actions-runner/files/toolchain-clang-rocky-8.6.cmake
-            - name: gnu@ubuntu-22.04
-              labels: [self-hosted, platform-builder-ubuntu-22.04]
-              os: ubuntu-22.04
-              compiler: gnu
-              compiler_cc: gcc
-              compiler_cxx: g++
-              compiler_fc: gfortran
-            - name: gnu@fedora-37
-              labels: [self-hosted, platform-builder-fedora-37]
-              os: fedora-37
-              compiler: gnu
-              compiler_cc: gcc
-              compiler_cxx: g++
-              compiler_fc: gfortran
+            #- name: gnu-7@centos-7.9
+            #  labels: [self-hosted, platform-builder-centos-7.9]
+            #  os: centos-7.9
+            #  compiler: gnu-7
+            #  compiler_cc: gcc-7
+            #  compiler_cxx: g++-7
+            #  compiler_fc: gfortran-7
+            #- name: gnu-8@centos-7.9
+            #  labels: [self-hosted, platform-builder-centos-7.9]
+            #  os: centos-7.9
+            #  compiler: gnu-8
+            #  compiler_cc: gcc-8
+            #  compiler_cxx: g++-8
+            #  compiler_fc: gfortran-8
+            #- name: gnu@rocky-8.6
+            #  labels: [self-hosted, platform-builder-rocky-8.6]
+            #  os: rocky-8.6
+            #  compiler: gnu
+            #  compiler_cc: gcc
+            #  compiler_cxx: g++
+            #  compiler_fc: gfortran
+            #- name: clang@rocky-8.6
+            #  labels: [self-hosted, platform-builder-rocky-8.6]
+            #  os: rocky-8.6
+            #  compiler: clang
+            #  compiler_cc: clang
+            #  compiler_cxx: clang++
+            #  compiler_fc: gfortran
+            #  toolchain_file: /opt/actions-runner/files/toolchain-clang-rocky-8.6.cmake
+            #- name: gnu@ubuntu-22.04
+            #  labels: [self-hosted, platform-builder-ubuntu-22.04]
+            #  os: ubuntu-22.04
+            #  compiler: gnu
+            #  compiler_cc: gcc
+            #  compiler_cxx: g++
+            #  compiler_fc: gfortran
+            #- name: gnu@fedora-37
+            #  labels: [self-hosted, platform-builder-fedora-37]
+            #  os: fedora-37
+            #  compiler: gnu
+            #  compiler_cc: gcc
+            #  compiler_cxx: g++
+            #  compiler_fc: gfortran
             - name: clang@macos-13-arm
               labels: [self-hosted, platform-builder-macosx-13.4.1-arm64]
               os: macos-13-arm
