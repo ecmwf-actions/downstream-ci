@@ -167,13 +167,13 @@ jobs:
             - clang@macos-13-arm
             - clang@macos-13-x86
             include:
-            - name: gnu@debian-11
-              labels: [self-hosted, platform-builder-debian-11]
-              os: debian-11
-              compiler: gnu
-              compiler_cc: gcc
-              compiler_cxx: g++
-              compiler_fc: gfortran
+            #- name: gnu@debian-11
+            #  labels: [self-hosted, platform-builder-debian-11]
+            #  os: debian-11
+            #  compiler: gnu
+            #  compiler_cc: gcc
+            #  compiler_cxx: g++
+            #  compiler_fc: gfortran
             - name: gnu-7@centos-7.9
               labels: [self-hosted, platform-builder-centos-7.9]
               os: centos-7.9
