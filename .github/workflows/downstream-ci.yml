@@ -164,6 +164,8 @@ jobs:
             - clang@rocky-8.6
             - gnu@ubuntu-22.04
             - gnu@fedora-37
+            - clang@macos-13-arm
+            - clang@macos-13-x86
             include:
             - name: gnu@debian-11
               labels: [self-hosted, platform-builder-debian-11]
@@ -214,6 +216,20 @@ jobs:
               compiler: gnu
               compiler_cc: gcc
               compiler_cxx: g++
+              compiler_fc: gfortran
+            - name: clang@macos-13-arm
+              labels: [self-hosted, platform-builder-macosx-13.4.1-arm64]
+              os: macos-13-arm
+              compiler: clang
+              compiler_cc: clang
+              compiler_cxx: clang++
+              compiler_fc: gfortran
+            - name: clang@macos-13-x86
+              labels: [self-hosted, platform-builder-macosx-13.4.1-x86_64]
+              os: macos-13-x86
+              compiler: clang
+              compiler_cc: clang
+              compiler_cxx: clang++
               compiler_fc: gfortran
         run: python setup_downstream_ci.py
 
