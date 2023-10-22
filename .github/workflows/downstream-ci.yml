@@ -496,6 +496,8 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        env:
+          ATLAS_RUN_MPI_ARGS: "--oversubscribe" # for macos runners that do not have enough slots for ctest        
         with:
           repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
