@@ -225,8 +225,9 @@ jobs:
               compiler_cxx: clang++
               compiler_fc: gfortran
               env: |
-                BOOST_ROOT=$(brew --prefix boost)
-                BOOST_INCLUDE=$(brew --prefix boost)/include
+                BOOST_ROOT_DIR=$(brew --prefix boost)
+                BOOST_INCLUDE_DIR=$(brew --prefix boost)/include
+                BOOST_LIB_DIR=$(brew --prefix boost)/lib
             - name: clang@macos-13-x86
               labels: [self-hosted, platform-builder-macosx-13.4.1-x86_64]
               os: macos-13-x86
@@ -235,8 +236,9 @@ jobs:
               compiler_cxx: clang++
               compiler_fc: gfortran
               env: |
-                BOOST_ROOT=$(brew --prefix boost)
-                BOOST_INCLUDE=$(brew --prefix boost)/include
+                BOOST_ROOT_DIR=$(brew --prefix boost)
+                BOOST_INCLUDE_DIR=$(brew --prefix boost)/include
+                BOOST_LIB_DIR=$(brew --prefix boost)/lib
         run: python setup_downstream_ci.py
 
   eccodes:
