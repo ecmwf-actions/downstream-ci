@@ -228,6 +228,7 @@ jobs:
                 BOOST_ROOT_DIR=$(brew --prefix)
                 BOOST_INCLUDE_DIR=$(brew --prefix)/include
                 BOOST_LIB_DIR=$(brew --prefix)/lib
+                OPENSSL_ROOT_DIR=$(brew --prefix openssl)
             - name: clang@macos-13-x86
               labels: [self-hosted, platform-builder-macosx-13.4.1-x86_64]
               os: macos-13-x86
@@ -239,6 +240,7 @@ jobs:
                 BOOST_ROOT_DIR=$(brew --prefix)
                 BOOST_INCLUDE_DIR=$(brew --prefix)/include
                 BOOST_LIB_DIR=$(brew --prefix)/lib
+                OPENSSL_ROOT_DIR=$(brew --prefix openssl)
         run: python setup_downstream_ci.py
 
   eccodes:
