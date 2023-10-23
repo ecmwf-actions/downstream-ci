@@ -608,7 +608,7 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
-      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@main
         with:
           repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
