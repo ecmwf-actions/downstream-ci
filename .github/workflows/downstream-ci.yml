@@ -224,11 +224,11 @@ jobs:
               compiler_cc: clang
               compiler_cxx: clang++
               compiler_fc: gfortran
+              #OPENSSL_ROOT_DIR is taken care of in build-package
               env: |
                 BOOST_ROOT_DIR=$(brew --prefix)
                 BOOST_INCLUDE_DIR=$(brew --prefix)/include
                 BOOST_LIB_DIR=$(brew --prefix)/lib
-                #OPENSSL_ROOT_DIR is taken care of in build-package
             - name: clang@macos-13-x86
               labels: [self-hosted, platform-builder-macosx-13.4.1-x86_64]
               os: macos-13-x86
@@ -236,11 +236,11 @@ jobs:
               compiler_cc: clang
               compiler_cxx: clang++
               compiler_fc: gfortran
+              #OPENSSL_ROOT_DIR is taken care of in build-package
               env: |
                 BOOST_ROOT_DIR=$(brew --prefix)
                 BOOST_INCLUDE_DIR=$(brew --prefix)/include
                 BOOST_LIB_DIR=$(brew --prefix)/lib
-                #OPENSSL_ROOT_DIR is taken care of in build-package
         run: python setup_downstream_ci.py
 
   eccodes:
