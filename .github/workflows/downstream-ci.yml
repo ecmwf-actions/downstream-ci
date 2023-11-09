@@ -164,6 +164,8 @@ jobs:
             - clang@rocky-8.6
             - gnu@ubuntu-22.04
             - gnu@fedora-37
+            - clang@macos-13-arm
+            - clang@macos-13-x86
             include:
             - name: gnu@debian-11
               labels: [self-hosted, platform-builder-debian-11]
@@ -172,6 +174,10 @@ jobs:
               compiler_cc: gcc
               compiler_cxx: g++
               compiler_fc: gfortran
+              env: &linux_env |
+                BOOST_ROOT_DIR=/usr
+                BOOST_INCLUDE_DIR=/usr/include/boost169
+                BOOST_LIB_DIR=/usr/lib64/boost169
             - name: gnu-7@centos-7.9
               labels: [self-hosted, platform-builder-centos-7.9]
               os: centos-7.9
@@ -179,6 +185,7 @@ jobs:
               compiler_cc: gcc-7
               compiler_cxx: g++-7
               compiler_fc: gfortran-7
+              env: *linux_env
             - name: gnu-8@centos-7.9
               labels: [self-hosted, platform-builder-centos-7.9]
               os: centos-7.9
@@ -186,6 +193,7 @@ jobs:
               compiler_cc: gcc-8
               compiler_cxx: g++-8
               compiler_fc: gfortran-8
+              env: *linux_env
             - name: gnu@rocky-8.6
               labels: [self-hosted, platform-builder-rocky-8.6]
               os: rocky-8.6
@@ -193,6 +201,7 @@ jobs:
               compiler_cc: gcc
               compiler_cxx: g++
               compiler_fc: gfortran
+              env: *linux_env
             - name: clang@rocky-8.6
               labels: [self-hosted, platform-builder-rocky-8.6]
               os: rocky-8.6
@@ -200,6 +209,7 @@ jobs:
               compiler_cc: clang
               compiler_cxx: clang++
               compiler_fc: gfortran
+              env: *linux_env
               toolchain_file: /opt/actions-runner/files/toolchain-clang-rocky-8.6.cmake
             - name: gnu@ubuntu-22.04
               labels: [self-hosted, platform-builder-ubuntu-22.04]
@@ -208,6 +218,7 @@ jobs:
               compiler_cc: gcc
               compiler_cxx: g++
               compiler_fc: gfortran
+              env: *linux_env
             - name: gnu@fedora-37
               labels: [self-hosted, platform-builder-fedora-37]
               os: fedora-37
@@ -215,6 +226,28 @@ jobs:
               compiler_cc: gcc
               compiler_cxx: g++
               compiler_fc: gfortran
+              env: *linux_env
+            - name: clang@macos-13-arm
+              labels: [self-hosted, platform-builder-macosx-13.4.1-arm64]
+              os: macos-13-arm
+              compiler: clang
+              compiler_cc: clang
+              compiler_cxx: clang++
+              compiler_fc: gfortran
+              #OPENSSL_ROOT_DIR is taken care of in build-package
+              env: &macos_env |
+                BOOST_ROOT_DIR=$(brew --prefix)
+                BOOST_INCLUDE_DIR=$(brew --prefix)/include
+                BOOST_LIB_DIR=$(brew --prefix)/lib
+            - name: clang@macos-13-x86
+              labels: [self-hosted, platform-builder-macosx-13.4.1-x86_64]
+              os: macos-13-x86
+              compiler: clang
+              compiler_cc: clang
+              compiler_cxx: clang++
+              compiler_fc: gfortran
+              #OPENSSL_ROOT_DIR is taken care of in build-package
+              env: *macos_env
         run: python setup_downstream_ci.py
 
   eccodes:
@@ -480,6 +513,8 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        env:
+          ATLAS_RUN_MPI_ARGS: "--oversubscribe" # for macos runners that do not have enough slots for ctest        
         with:
           repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
