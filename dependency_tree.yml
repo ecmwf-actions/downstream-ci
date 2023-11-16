@@ -78,6 +78,12 @@ pdbufr:
   deps:
     - eccodes-python
 
+earthkit-data:
+  deps:
+    - cfgrib
+    - pdbufr
+    - pyodc
+
 ---
 # this is for build-package-hpc
 name: build-package-hpc
@@ -158,3 +164,8 @@ pdbufr:
   deps:
     - eccodes-python
 
+earthkit-data:
+  deps:
+    - cfgrib
+    - pdbufr
+    - pyodc

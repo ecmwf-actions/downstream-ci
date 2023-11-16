@@ -557,3 +557,27 @@ jobs:
           troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
           repository: ${{ matrix.owner_repo_ref }}
           build_config: ${{ matrix.config_path }}
+
+  earthkit-data:
+    name: earthkit-data
+    needs: [setup, cfgrib, pdbufr, pyodc]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pdbufr && (inputs.cfgrib || inputs.pdbufr || inputs.pyodc || inputs.earthkit-data) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.earthkit-data) }}
+    runs-on:
+      [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+        with:
+          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+          repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
+          python_dependencies: |
+            ${{ inputs.cfgrib }}
+            ${{ inputs.pdbufr }}
+            ${{ inputs.pyodc }}
