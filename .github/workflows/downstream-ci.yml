@@ -86,8 +86,8 @@ jobs:
       - name: checkout reusable wfs repo
         uses: actions/checkout@v3
         with:
-          repository: 'ecmwf-actions/downstream-ci'
-          ref: 'main'
+          repository: "ecmwf-actions/downstream-ci"
+          ref: "main"
 
       - name: Run setup script
         id: setup
@@ -153,6 +153,8 @@ jobs:
               master_branch: master
               develop_branch: master
               input: ${{ inputs.pdbufr }}
+          SKIP_MATRIX_JOBS: |
+            ${{ inputs.skip_matrix_jobs }}
           PYTHON_VERSIONS: |
             - "3.10"
           MATRIX: |
@@ -514,7 +516,7 @@ jobs:
     steps:
       - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         env:
-          ATLAS_RUN_MPI_ARGS: "--oversubscribe" # for macos runners that do not have enough slots for ctest        
+          ATLAS_RUN_MPI_ARGS: "--oversubscribe" # for macos runners that do not have enough slots for ctest
         with:
           repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
