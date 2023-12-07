@@ -60,6 +60,9 @@ on:
       ecflow:
         required: false
         type: string
+      thermofeel:
+        required: false
+        type: string
       pdbufr:
         required: false
         type: string
@@ -86,6 +89,7 @@ jobs:
       trigger_repo: ${{ steps.setup.outputs.trigger_repo}}
       dep_tree: ${{ steps.setup.outputs.build_package_dep_tree }}
       ecflow: ${{ steps.setup.outputs.ecflow }}
+      thermofeel: ${{ steps.setup.outputs.thermofeel }}
     steps:
       - name: checkout reusable wfs repo
         uses: actions/checkout@v4
@@ -148,6 +152,10 @@ jobs:
               path: .github/ci-config.yml
               python: true
               input: ${{ inputs.skinnywms }}
+            ecmwf/thermofeel:
+              path: .github/ci-config.yml
+              python: true
+              input: ${{ inputs.thermofeel }}
             ecmwf/ecflow:
               path: .github/ci-config.yml
               input: ${{ inputs.ecflow }}
@@ -636,6 +644,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.skinnywms) }}
+    runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+        with:
+          repository: ${{ matrix.owner_repo_ref }}
+          checkout: true
+
+  thermofeel:
+    name: thermofeel
+    needs: [setup, python-qa]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.thermofeel && inputs.thermofeel }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.thermofeel) }}
     runs-on: ${{ matrix.labels }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}

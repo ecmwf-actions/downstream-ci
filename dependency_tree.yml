@@ -86,6 +86,8 @@ ecbuild: ~
 
 skinnywms: ~
 
+thermofeel: ~
+
 pgen:
   deps:
     - mir
