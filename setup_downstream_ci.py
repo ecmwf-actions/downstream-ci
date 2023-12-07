@@ -118,7 +118,8 @@ for owner_repo, val in ci_config.items():
 
     config = {}
     path = val.get("path", "")
-    config = get_config(owner, repo, ref, path)
+    if path:
+        config = get_config(owner, repo, ref, path)
 
     if not config["config_found"]:
         continue
