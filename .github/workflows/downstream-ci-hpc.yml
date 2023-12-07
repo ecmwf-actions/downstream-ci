@@ -83,7 +83,7 @@ jobs:
       ecflow: ${{ steps.setup.outputs.ecflow }}
     steps:
       - name: checkout reusable wfs repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: 'ecmwf-actions/downstream-ci'
           ref: 'main'
