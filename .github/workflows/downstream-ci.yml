@@ -153,7 +153,6 @@ jobs:
               python: true
               input: ${{ inputs.skinnywms }}
             ecmwf/thermofeel:
-              path: .github/ci-config.yml
               python: true
               input: ${{ inputs.thermofeel }}
             ecmwf/ecflow:
