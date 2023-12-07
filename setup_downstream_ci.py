@@ -116,6 +116,7 @@ for owner_repo, val in ci_config.items():
     if package_input:
         _, ref = package_input.split("@")
 
+    config = {}
     path = val.get("path", "")
     config = get_config(owner, repo, ref, path)
 
