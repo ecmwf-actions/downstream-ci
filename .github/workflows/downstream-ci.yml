@@ -173,7 +173,6 @@ jobs:
               path: .github/ci-config.yml
               python: true
               input: ${{ inputs.earthkit-data }}
-          PYTHON_VERSIONS: |
           SKIP_MATRIX_JOBS: |
             ${{ inputs.skip_matrix_jobs }}
           PYTHON_VERSIONS: |
