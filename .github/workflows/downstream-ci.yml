@@ -11,6 +11,10 @@ on:
         description: Whether to upload code coverage
         type: boolean
         required: false
+      python_qa:
+        description: Whether to run code QA tasks.
+        type: boolean
+        required: false
       eccodes:
         required: false
         type: string
@@ -56,12 +60,16 @@ on:
       ecflow:
         required: false
         type: string
+      thermofeel:
+        required: false
+        type: string
       pdbufr:
         required: false
         type: string
       earthkit-data:
         required: false
         type: string
+
 
 jobs:
   setup:
@@ -85,10 +93,11 @@ jobs:
       trigger_repo: ${{ steps.setup.outputs.trigger_repo}}
       dep_tree: ${{ steps.setup.outputs.build_package_dep_tree }}
       ecflow: ${{ steps.setup.outputs.ecflow }}
+      thermofeel: ${{ steps.setup.outputs.thermofeel }}
       earthkit-data: ${{ steps.setup.outputs.earthkit-data }}
     steps:
       - name: checkout reusable wfs repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: "ecmwf-actions/downstream-ci"
           ref: "main"
@@ -148,6 +157,9 @@ jobs:
               path: .github/ci-config.yml
               python: true
               input: ${{ inputs.skinnywms }}
+            ecmwf/thermofeel:
+              python: true
+              input: ${{ inputs.thermofeel }}
             ecmwf/ecflow:
               path: .github/ci-config.yml
               input: ${{ inputs.ecflow }}
@@ -162,6 +174,9 @@ jobs:
               python: true
               input: ${{ inputs.earthkit-data }}
           PYTHON_VERSIONS: |
+          SKIP_MATRIX_JOBS: |
+            ${{ inputs.skip_matrix_jobs }}
+          PYTHON_VERSIONS: |
             - "3.10"
           MATRIX: |
             name:
@@ -172,8 +187,8 @@ jobs:
             - clang@rocky-8.6
             - gnu@ubuntu-22.04
             - gnu@fedora-37
-            - clang@macos-13-arm
-            - clang@macos-13-x86
+            # - clang@macos-13-arm
+            # - clang@macos-13-x86
             include:
             - name: gnu@debian-11
               labels: [self-hosted, platform-builder-debian-11]
@@ -235,28 +250,59 @@ jobs:
               compiler_cxx: g++
               compiler_fc: gfortran
               env: *linux_env
-            - name: clang@macos-13-arm
-              labels: [self-hosted, platform-builder-macosx-13.4.1-arm64]
-              os: macos-13-arm
-              compiler: clang
-              compiler_cc: clang
-              compiler_cxx: clang++
-              compiler_fc: gfortran
-              #OPENSSL_ROOT_DIR is taken care of in build-package
-              env: &macos_env |
-                BOOST_ROOT_DIR=$(brew --prefix)
-                BOOST_INCLUDE_DIR=$(brew --prefix)/include
-                BOOST_LIB_DIR=$(brew --prefix)/lib
-            - name: clang@macos-13-x86
-              labels: [self-hosted, platform-builder-macosx-13.4.1-x86_64]
-              os: macos-13-x86
-              compiler: clang
-              compiler_cc: clang
-              compiler_cxx: clang++
-              compiler_fc: gfortran
-              #OPENSSL_ROOT_DIR is taken care of in build-package
-              env: *macos_env
+            # - name: clang@macos-13-arm
+            #   labels: [self-hosted, platform-builder-macosx-13.4.1-arm64]
+            #   os: macos-13-arm
+            #   compiler: clang
+            #   compiler_cc: clang
+            #   compiler_cxx: clang++
+            #   compiler_fc: gfortran
+            #   #OPENSSL_ROOT_DIR is taken care of in build-package
+            #   env: &macos_env |
+            #     BOOST_ROOT_DIR=$(brew --prefix)
+            #     BOOST_INCLUDE_DIR=$(brew --prefix)/include
+            #     BOOST_LIB_DIR=$(brew --prefix)/lib
+            # - name: clang@macos-13-x86
+            #   labels: [self-hosted, platform-builder-macosx-13.4.1-x86_64]
+            #   os: macos-13-x86
+            #   compiler: clang
+            #   compiler_cc: clang
+            #   compiler_cxx: clang++
+            #   compiler_fc: gfortran
+            #   #OPENSSL_ROOT_DIR is taken care of in build-package
+            #   env: *macos_env
         run: python setup_downstream_ci.py
+
+  python-qa:
+    name: python-qa
+    needs: [setup]
+    if: ${{ inputs.python_qa }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repository }}
+          ref: ${{ inputs.ref }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install black flake8 isort
+
+      - name: Check isort
+        run: isort --check .
+
+      - name: Check black
+        run: black --check .
+
+      - name: Check flake8
+        run: flake8 .
 
   eccodes:
     name: eccodes
@@ -607,6 +653,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.skinnywms) }}
+    runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+        with:
+          repository: ${{ matrix.owner_repo_ref }}
+          checkout: true
+
+  thermofeel:
+    name: thermofeel
+    needs: [setup, python-qa]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.thermofeel && inputs.thermofeel }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.thermofeel) }}
     runs-on: ${{ matrix.labels }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}

@@ -68,15 +68,20 @@ DEFAULT_DEVELOP_BRANCH_NAME = "develop"
 # Get build-pacakge(-hpc) config for each repo
 def get_config(owner, repo, ref, path):
     print(f"Getting config for {owner}/{repo}@{ref}")
+    return_obj = {"repo": repo, "matrix": [], "setup_matrix": False}
+    if not path:
+        print(f"Config path not provided for {repo}")
+        return_obj["setup_matrix"] = True
+        return return_obj
+
     url = f"https://raw.githubusercontent.com/{owner}/{repo}/{ref}/{path}"
     response = requests.get(url, headers={"Authorization": f"token {token}"})
-    return_obj = {"repo": repo, "matrix": [], "config_found": False}
 
     if response.status_code == 200:
         content = response.content.decode()
         config = yaml.safe_load(content)
         return_obj["matrix"] = config.get("matrix", [])
-        return_obj["config_found"] = True
+        return_obj["setup_matrix"] = True
         return return_obj
 
     print(f"::warning::Config for {owner}/{repo}@{ref} not found.")
@@ -119,7 +124,7 @@ for owner_repo, val in ci_config.items():
     path = val.get("path", "")
     config = get_config(owner, repo, ref, path)
 
-    if not config["config_found"]:
+    if not config["setup_matrix"]:
         continue
 
     if config["matrix"]:
