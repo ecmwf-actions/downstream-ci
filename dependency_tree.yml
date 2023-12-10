@@ -2,6 +2,15 @@
 # this document is for build-package
 name: build-package
 
+atlas:
+  deps:
+    - eckit
+    - fckit
+
+cfgrib:
+  deps:
+    - eccodes-python
+
 ecbuild: ~
 
 eccodes:
@@ -13,90 +22,63 @@ eccodes-python:
   deps:
     - eccodes
 
-cfgrib:
+ecflow:
   deps:
-    - eccodes-python
+    - ecbuild
 
-pgen:
+eckit:
   deps:
-    - mir
-    - metkit
+    - ecbuild
 
-mir:
-  deps:
-    - atlas
-    - eccodes
-
-atlas:
+fckit:
   deps:
     - eckit
-    - fckit
+
+fdb:
+  deps:
+    - metkit
+
+libaec:
+  deps:
+    - ecbuild
 
 metkit:
   deps:
     - eccodes
     - eckit
 
-eckit:
+mir:
   deps:
-    - ecbuild
-
-libaec:
-  deps:
-    - ecbuild
+    - atlas
+    - eccodes
 
 odc:
   deps:
     - eckit
 
-pyodc:
-  deps:
-    - odc
-
-fdb:
-  deps:
-    - metkit
-
-pyfdb:
-  deps:
-    - fdb
-
-fckit:
-  deps:
-    - eckit
-
-plume:
-  deps:
-    - atlas
-    - fckit
-
-ecflow:
-  deps:
-    - ecbuild
-    
 pdbufr:
   deps:
     - eccodes-python
-
----
-# this is for build-package-hpc
-name: build-package-hpc
-
-ecbuild: ~
-
-skinnywms: ~
-
-thermofeel: ~
 
 pgen:
   deps:
     - mir
     - metkit
 
-mir:
+plume:
   deps:
     - atlas
-    - eccodes
+    - fckit
+pyfdb:
+  deps:
+    - fdb
+pyodc:
+  deps:
+    - odc
+
+---
+# this is for build-package-hpc
+name: build-package-hpc
 
 atlas:
   modules:
@@ -106,14 +88,11 @@ atlas:
     - eckit
     - fckit
 
-metkit:
+cfgrib:
   deps:
-    - eccodes
-    - eckit
+    - eccodes-python
 
-eckit:
-  deps:
-    - ecbuild
+ecbuild: ~
 
 eccodes:
   modules:
@@ -123,40 +102,58 @@ eccodes-python:
   deps:
     - eccodes
 
-cfgrib:
+ecflow:
   deps:
-    - eccodes-python
+    - ecbuild
 
-odc:
+eckit:
+  deps:
+    - ecbuild
+
+fckit:
   deps:
     - eckit
-
-pyodc:
-  deps:
-    - odc
 
 fdb:
   deps:
     - metkit
 
-pyfdb:
+metkit:
   deps:
-    - fdb
+    - eccodes
+    - eckit
 
-fckit:
+mir:
+  deps:
+    - atlas
+    - eccodes
+
+odc:
   deps:
     - eckit
+
+pdbufr:
+  deps:
+    - eccodes-python
+
+pgen:
+  deps:
+    - mir
+    - metkit
 
 plume:
   deps:
     - atlas
     - fckit
 
-ecflow:
+pyfdb:
   deps:
-    - ecbuild
-    
-pdbufr:
-  deps:
-    - eccodes-python
+    - fdb
 
+pyodc:
+  deps:
+    - odc
+
+skinnywms: ~
+
+thermofeel: ~

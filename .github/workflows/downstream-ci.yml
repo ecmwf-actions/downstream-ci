@@ -15,55 +15,56 @@ on:
         description: Whether to run code QA tasks.
         type: boolean
         required: false
+      # packages
+      atlas:
+        required: false
+        type: string
+      cfgrib:
+        required: false
+        type: string
       eccodes:
         required: false
         type: string
       eccodes-python:
         required: false
         type: string
-      cfgrib:
+      ecflow:
         required: false
         type: string
       eckit:
         required: false
         type: string
-      odc:
-        required: false
-        type: string
-      pyodc:
-        required: false
-        type: string
-      metkit:
+      fckit:
         required: false
         type: string
       fdb:
         required: false
         type: string
-      pyfdb:
-        required: false
-        type: string
-      atlas:
-        required: false
-        type: string
-      fckit:
-        required: false
-        type: string
-      plume:
+      metkit:
         required: false
         type: string
       mir:
         required: false
         type: string
-      skinnywms:
-        required: false
-        type: string
-      ecflow:
-        required: false
-        type: string
-      thermofeel:
+      odc:
         required: false
         type: string
       pdbufr:
+        required: false
+        type: string
+      plume:
+        required: false
+        type: string
+      pyfdb:
+        required: false
+        type: string
+      pyodc:
+        required: false
+        type: string
+      skinnywms:
+        required: false
+        type: string
+      thermofeel:
         required: false
         type: string
 
@@ -71,24 +72,24 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      eccodes: ${{ steps.setup.outputs.eccodes }}
-      eccodes-python: ${{ steps.setup.outputs.eccodes-python }}
-      cfgrib: ${{ steps.setup.outputs.cfgrib }}
-      eckit: ${{ steps.setup.outputs.eckit }}
-      odc: ${{ steps.setup.outputs.odc }}
-      pyodc: ${{ steps.setup.outputs.pyodc }}
-      metkit: ${{ steps.setup.outputs.metkit }}
-      fdb: ${{ steps.setup.outputs.fdb }}
-      pyfdb: ${{ steps.setup.outputs.pyfdb }}
-      atlas: ${{ steps.setup.outputs.atlas }}
-      fckit: ${{ steps.setup.outputs.fckit }}
-      plume: ${{ steps.setup.outputs.plume }}
-      mir: ${{ steps.setup.outputs.mir }}
-      skinnywms: ${{ steps.setup.outputs.skinnywms }}
-      pdbufr: ${{ steps.setup.outputs.pdbufr }}
       trigger_repo: ${{ steps.setup.outputs.trigger_repo}}
       dep_tree: ${{ steps.setup.outputs.build_package_dep_tree }}
+      atlas: ${{ steps.setup.outputs.atlas }}
+      cfgrib: ${{ steps.setup.outputs.cfgrib }}
+      eccodes: ${{ steps.setup.outputs.eccodes }}
+      eccodes-python: ${{ steps.setup.outputs.eccodes-python }}
       ecflow: ${{ steps.setup.outputs.ecflow }}
+      eckit: ${{ steps.setup.outputs.eckit }}
+      fckit: ${{ steps.setup.outputs.fckit }}
+      fdb: ${{ steps.setup.outputs.fdb }}
+      metkit: ${{ steps.setup.outputs.metkit }}
+      mir: ${{ steps.setup.outputs.mir }}
+      odc: ${{ steps.setup.outputs.odc }}
+      pdbufr: ${{ steps.setup.outputs.pdbufr }}
+      plume: ${{ steps.setup.outputs.plume }}
+      pyfdb: ${{ steps.setup.outputs.pyfdb }}
+      pyodc: ${{ steps.setup.outputs.pyodc }}
+      skinnywms: ${{ steps.setup.outputs.skinnywms }}
       thermofeel: ${{ steps.setup.outputs.thermofeel }}
     steps:
       - name: checkout reusable wfs repo
@@ -103,6 +104,15 @@ jobs:
           # See setup_downstream_ci.py docstring for syntax
           TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
           CONFIG: |
+            ecmwf/atlas:
+              path: .github/ci-config.yml
+              input: ${{ inputs.atlas }}
+            ecmwf/cfgrib:
+              path: .github/ci-config.yml
+              master_branch: master
+              develop_branch: master
+              python: true
+              input: ${{ inputs.cfgrib }}
             ecmwf/eccodes:
               path: .github/ci-config.yml
               input: ${{ inputs.eccodes }}
@@ -110,44 +120,44 @@ jobs:
               path: .github/ci-config.yml
               python: true
               input: ${{ inputs.eccodes-python }}
-            ecmwf/cfgrib:
+            ecmwf/ecflow:
               path: .github/ci-config.yml
-              master_branch: master
-              develop_branch: master
-              python: true
-              input: ${{ inputs.cfgrib }}
+              input: ${{ inputs.ecflow }}
             ecmwf/eckit:
               path: .github/ci-config.yml
               input: ${{ inputs.eckit }}
-            ecmwf/odc:
+            ecmwf/fckit:
               path: .github/ci-config.yml
-              input: ${{ inputs.odc }}
-            ecmwf/pyodc:
-              path: .github/ci-config.yml
-              python: true
-              input: ${{ inputs.pyodc }}
-            ecmwf/metkit:
-              path: .github/ci-config.yml
-              input: ${{ inputs.metkit }}
+              input: ${{ inputs.fckit }}
             ecmwf/fdb:
               path: .github/ci-config.yml
               input: ${{ inputs.fdb }}
+            ecmwf/metkit:
+              path: .github/ci-config.yml
+              input: ${{ inputs.metkit }}
+            ecmwf/mir:
+              path: .github/ci-config.yml
+              input: ${{ inputs.mir }}
+            ecmwf/odc:
+              path: .github/ci-config.yml
+              input: ${{ inputs.odc }}
+            ecmwf/pdbufr:
+              path: .github/ci-config.yml
+              python: true
+              master_branch: master
+              develop_branch: master
+              input: ${{ inputs.pdbufr }}
+            ecmwf/plume:
+              path: .github/ci-config.yml
+              input: ${{ inputs.plume }}
             ecmwf/pyfdb:
               path: .github/ci-config.yml
               python: true
               input: ${{ inputs.pyfdb }}
-            ecmwf/atlas:
+            ecmwf/pyodc:
               path: .github/ci-config.yml
-              input: ${{ inputs.atlas }}
-            ecmwf/fckit:
-              path: .github/ci-config.yml
-              input: ${{ inputs.fckit }}
-            ecmwf/plume:
-              path: .github/ci-config.yml
-              input: ${{ inputs.plume }}
-            ecmwf/mir:
-              path: .github/ci-config.yml
-              input: ${{ inputs.mir }}
+              python: true
+              input: ${{ inputs.pyodc }}
             ecmwf/skinnywms:
               path: .github/ci-config.yml
               python: true
@@ -155,15 +165,6 @@ jobs:
             ecmwf/thermofeel:
               python: true
               input: ${{ inputs.thermofeel }}
-            ecmwf/ecflow:
-              path: .github/ci-config.yml
-              input: ${{ inputs.ecflow }}
-            ecmwf/pdbufr:
-              path: .github/ci-config.yml
-              python: true
-              master_branch: master
-              develop_branch: master
-              input: ${{ inputs.pdbufr }}
           SKIP_MATRIX_JOBS: |
             ${{ inputs.skip_matrix_jobs }}
           PYTHON_VERSIONS: |
@@ -294,6 +295,58 @@ jobs:
       - name: Check flake8
         run: flake8 .
 
+  atlas:
+    name: atlas
+    needs: [setup, eckit, fckit]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.atlas && (inputs.eckit || inputs.atlas || inputs.fckit) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.atlas) }}
+    runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        env:
+          ATLAS_RUN_MPI_ARGS: "--oversubscribe" # for macos runners that do not have enough slots for ctest
+        with:
+          repository: ${{ matrix.owner_repo_ref }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+          build_package_inputs: |
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
+          build_dependencies: |
+            ${{ inputs.eckit }}
+            ${{ inputs.fckit }}
+
+  cfgrib:
+    name: cfgrib
+    needs: [setup, eccodes, eccodes-python]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cfgrib && (inputs.eccodes-python || inputs.eccodes || inputs.cfgrib) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.cfgrib) }}
+    runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - name: Build dependencies
+        id: build-deps
+        uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ matrix.owner_repo_ref }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+          build_package_inputs: |
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
+          build_dependencies: |
+            ${{ inputs.eccodes }}
+
+      - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+        with:
+          lib_path: ${{ steps.build-deps.outputs.lib_path }}
+          python_dependencies: ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}
+
   eccodes:
     name: eccodes
     needs: [setup]
@@ -340,20 +393,77 @@ jobs:
         with:
           lib_path: ${{ steps.build-deps.outputs.lib_path }}
 
-  cfgrib:
-    name: cfgrib
-    needs: [setup, eccodes, eccodes-python]
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cfgrib && (inputs.eccodes-python || inputs.eccodes || inputs.cfgrib) }}
+  ecflow:
+    name: ecflow
+    needs: [setup]
+    if: ${{ inputs.ecflow && needs.setup.outputs.ecflow }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.cfgrib) }}
+      matrix: ${{ fromJson(needs.setup.outputs.ecflow) }}
     runs-on: ${{ matrix.labels }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
-      - name: Build dependencies
-        id: build-deps
-        uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ matrix.owner_repo_ref }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+          build_package_inputs: |
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
+
+  eckit:
+    name: eckit
+    needs: [setup]
+    if: ${{ inputs.eckit && needs.setup.outputs.eckit }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.eckit) }}
+    runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ matrix.owner_repo_ref }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+          build_package_inputs: |
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
+
+  fckit:
+    name: fckit
+    needs: [setup, eckit]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.fckit && (inputs.eckit || inputs.fckit) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.fckit) }}
+    runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ matrix.owner_repo_ref }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+          build_package_inputs: |
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
+          build_dependencies: |
+            ${{ inputs.eckit }}
+
+  fdb:
+    name: fdb
+    needs: [setup, eckit, eccodes, metkit]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.fdb && (inputs.eckit || inputs.eccodes || inputs.metkit || inputs.fdb) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.fdb) }}
+    runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
           repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
@@ -362,11 +472,74 @@ jobs:
           build_config: ${{ matrix.config_path }}
           build_dependencies: |
             ${{ inputs.eccodes }}
+            ${{ inputs.eckit }}
+            ${{ inputs.metkit }}
 
-      - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+  metkit:
+    name: metkit
+    needs: [setup, eckit, eccodes]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.metkit && (inputs.eckit || inputs.eccodes || inputs.metkit) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.metkit) }}
+    runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
-          lib_path: ${{ steps.build-deps.outputs.lib_path }}
-          python_dependencies: ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}
+          repository: ${{ matrix.owner_repo_ref }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+          build_package_inputs: |
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
+          build_dependencies: |
+            ${{ inputs.eccodes }}
+            ${{ inputs.eckit }}
+
+  mir:
+    name: mir
+    needs: [setup, eckit, eccodes, atlas]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.mir && (inputs.eckit || inputs.eccodes || inputs.atlas || inputs.mir) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.mir) }}
+    runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ matrix.owner_repo_ref }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+          build_package_inputs: |
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
+          build_dependencies: |
+            ${{ inputs.eccodes }}
+            ${{ inputs.eckit }}
+            ${{ inputs.atlas }}
+
+  odc:
+    name: odc
+    needs: [setup, eckit]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.odc && (inputs.eckit || inputs.odc) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.odc) }}
+    runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ matrix.owner_repo_ref }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+          build_package_inputs: |
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
+          build_dependencies: |
+            ${{ inputs.eckit }}
 
   pdbufr:
     name: pdbufr
@@ -397,32 +570,13 @@ jobs:
           python_dependencies: ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}
           requirements_path: tests/downstream-ci-requirements.txt
 
-  eckit:
-    name: eckit
-    needs: [setup]
-    if: ${{ inputs.eckit && needs.setup.outputs.eckit }}
+  plume:
+    name: plume
+    needs: [setup, eckit, fckit, atlas]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.plume && (inputs.eckit || inputs.fckit || inputs.atlas || inputs.plume) }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.eckit) }}
-    runs-on: ${{ matrix.labels }}
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    steps:
-      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
-        with:
-          repository: ${{ matrix.owner_repo_ref }}
-          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
-          build_package_inputs: |
-            repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-
-  odc:
-    name: odc
-    needs: [setup, eckit]
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.odc && (inputs.eckit || inputs.odc) }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.odc) }}
+      matrix: ${{ fromJson(needs.setup.outputs.plume) }}
     runs-on: ${{ matrix.labels }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
@@ -436,80 +590,8 @@ jobs:
           build_config: ${{ matrix.config_path }}
           build_dependencies: |
             ${{ inputs.eckit }}
-
-  pyodc:
-    name: pyodc
-    needs: [setup, eckit, odc]
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pyodc && (inputs.eckit || inputs.odc || inputs.pyodc) }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.pyodc) }}
-    runs-on: ${{ matrix.labels }}
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    steps:
-      - name: Build dependencies
-        id: build-deps
-        uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
-        with:
-          repository: ${{ matrix.owner_repo_ref }}
-          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
-          build_package_inputs: |
-            repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          build_dependencies: |
-            ${{ inputs.eckit }}
-            ${{ inputs.odc}}
-
-      - uses: ecmwf-actions/reusable-workflows/ci-python@v2
-        with:
-          lib_path: ${{ steps.build-deps.outputs.lib_path }}
-          conda_install: libffi=3.3
-
-  metkit:
-    name: metkit
-    needs: [setup, eckit, eccodes]
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.metkit && (inputs.eckit || inputs.eccodes || inputs.metkit) }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.metkit) }}
-    runs-on: ${{ matrix.labels }}
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    steps:
-      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
-        with:
-          repository: ${{ matrix.owner_repo_ref }}
-          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
-          build_package_inputs: |
-            repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          build_dependencies: |
-            ${{ inputs.eccodes }}
-            ${{ inputs.eckit }}
-
-  fdb:
-    name: fdb
-    needs: [setup, eckit, eccodes, metkit]
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.fdb && (inputs.eckit || inputs.eccodes || inputs.metkit || inputs.fdb) }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.fdb) }}
-    runs-on: ${{ matrix.labels }}
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    steps:
-      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
-        with:
-          repository: ${{ matrix.owner_repo_ref }}
-          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
-          build_package_inputs: |
-            repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          build_dependencies: |
-            ${{ inputs.eccodes }}
-            ${{ inputs.eckit }}
-            ${{ inputs.metkit }}
+            ${{ inputs.fckit }}
+            ${{ inputs.atlas }}
 
   pyfdb:
     name: pyfdb
@@ -545,20 +627,20 @@ jobs:
           lib_path: ${{ steps.build-deps.outputs.lib_path }}
           conda_install: libffi=3.3
 
-  atlas:
-    name: atlas
-    needs: [setup, eckit, fckit]
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.atlas && (inputs.eckit || inputs.atlas || inputs.fckit) }}
+  pyodc:
+    name: pyodc
+    needs: [setup, eckit, odc]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pyodc && (inputs.eckit || inputs.odc || inputs.pyodc) }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.atlas) }}
+      matrix: ${{ fromJson(needs.setup.outputs.pyodc) }}
     runs-on: ${{ matrix.labels }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
-      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
-        env:
-          ATLAS_RUN_MPI_ARGS: "--oversubscribe" # for macos runners that do not have enough slots for ctest
+      - name: Build dependencies
+        id: build-deps
+        uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
         with:
           repository: ${{ matrix.owner_repo_ref }}
           codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
@@ -567,74 +649,12 @@ jobs:
           build_config: ${{ matrix.config_path }}
           build_dependencies: |
             ${{ inputs.eckit }}
-            ${{ inputs.fckit }}
+            ${{ inputs.odc}}
 
-  fckit:
-    name: fckit
-    needs: [setup, eckit]
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.fckit && (inputs.eckit || inputs.fckit) }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.fckit) }}
-    runs-on: ${{ matrix.labels }}
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    steps:
-      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      - uses: ecmwf-actions/reusable-workflows/ci-python@v2
         with:
-          repository: ${{ matrix.owner_repo_ref }}
-          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
-          build_package_inputs: |
-            repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          build_dependencies: |
-            ${{ inputs.eckit }}
-
-  plume:
-    name: plume
-    needs: [setup, eckit, fckit, atlas]
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.plume && (inputs.eckit || inputs.fckit || inputs.atlas || inputs.plume) }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.plume) }}
-    runs-on: ${{ matrix.labels }}
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    steps:
-      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
-        with:
-          repository: ${{ matrix.owner_repo_ref }}
-          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
-          build_package_inputs: |
-            repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          build_dependencies: |
-            ${{ inputs.eckit }}
-            ${{ inputs.fckit }}
-            ${{ inputs.atlas }}
-
-  mir:
-    name: mir
-    needs: [setup, eckit, eccodes, atlas]
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.mir && (inputs.eckit || inputs.eccodes || inputs.atlas || inputs.mir) }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.mir) }}
-    runs-on: ${{ matrix.labels }}
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    steps:
-      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
-        with:
-          repository: ${{ matrix.owner_repo_ref }}
-          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
-          build_package_inputs: |
-            repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          build_dependencies: |
-            ${{ inputs.eccodes }}
-            ${{ inputs.eckit }}
-            ${{ inputs.atlas }}
+          lib_path: ${{ steps.build-deps.outputs.lib_path }}
+          conda_install: libffi=3.3
 
   skinnywms:
     name: skinnywms
@@ -667,22 +687,3 @@ jobs:
         with:
           repository: ${{ matrix.owner_repo_ref }}
           checkout: true
-
-  ecflow:
-    name: ecflow
-    needs: [setup]
-    if: ${{ inputs.ecflow && needs.setup.outputs.ecflow }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.ecflow) }}
-    runs-on: ${{ matrix.labels }}
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    steps:
-      - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
-        with:
-          repository: ${{ matrix.owner_repo_ref }}
-          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
-          build_package_inputs: |
-            repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
