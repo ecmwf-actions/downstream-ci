@@ -100,6 +100,7 @@ if skip_jobs:
 
 
 matrices = {}
+py_codecov_platform = ""
 
 # whether to use master branch for dependencies
 # if triggered from master branch (as defined in the config)
@@ -144,6 +145,10 @@ for owner_repo, val in ci_config.items():
             matrices[repo]["include"] = [
                 d for d in matrices[repo]["include"] if d["name"] in python_jobs
             ]
+        if repo == trigger_repo:
+            py_codecov_platform = (
+                matrices[repo]["name"][0] if len(matrices[repo]["name"]) else ""
+            )
 
 
 print("Build matrices:")
@@ -174,6 +179,7 @@ print(
 
 with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
     print("trigger_repo", trigger_repo, sep="=", file=f)
+    print("py_codecov_platform", py_codecov_platform, sep="=", file=f)
 
     print("build_package_dep_tree<<EOF", file=f)
     print(yaml.dump(build_package_dep_tree), file=f)

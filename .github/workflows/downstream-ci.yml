@@ -72,8 +72,9 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      trigger_repo: ${{ steps.setup.outputs.trigger_repo}}
       dep_tree: ${{ steps.setup.outputs.build_package_dep_tree }}
+      trigger_repo: ${{ steps.setup.outputs.trigger_repo}}
+      py_codecov_platform: ${{ steps.setup.outputs.py_codecov_platform }}
       atlas: ${{ steps.setup.outputs.atlas }}
       cfgrib: ${{ steps.setup.outputs.cfgrib }}
       eccodes: ${{ steps.setup.outputs.eccodes }}
@@ -391,6 +392,7 @@ jobs:
 
       - uses: ecmwf-actions/reusable-workflows/ci-python@v2
         with:
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
           lib_path: ${{ steps.build-deps.outputs.lib_path }}
 
   ecflow:
