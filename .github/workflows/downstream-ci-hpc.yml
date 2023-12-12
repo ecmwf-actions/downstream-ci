@@ -165,7 +165,7 @@ jobs:
               develop_branch: master
               input: ${{ inputs.pdbufr }}
             ecmwf/earthkit-data:
-              path: .github/ci-config.yml
+              path: .github/ci-hpc-config.yml
               python: true
               input: ${{ inputs.earthkit-data }}
           SKIP_MATRIX_JOBS: |
