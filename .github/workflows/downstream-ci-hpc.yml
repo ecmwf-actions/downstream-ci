@@ -62,6 +62,10 @@ on:
       pdbufr:
         required: false
         type: string
+      earthkit-data:
+        required: false
+        type: string
+
 
 jobs:
   setup:
@@ -85,6 +89,7 @@ jobs:
       dep_tree: ${{ steps.setup.outputs.build_package_hpc_dep_tree }}
       ecflow: ${{ steps.setup.outputs.ecflow }}
       thermofeel: ${{ steps.setup.outputs.thermofeel }}
+      earthkit-data: ${{ steps.setup.outputs.earthkit-data }}
     steps:
       - name: checkout reusable wfs repo
         uses: actions/checkout@v4
@@ -159,6 +164,10 @@ jobs:
               master_branch: master
               develop_branch: master
               input: ${{ inputs.pdbufr }}
+            ecmwf/earthkit-data:
+              path: .github/ci-config.yml
+              python: true
+              input: ${{ inputs.earthkit-data }}
           SKIP_MATRIX_JOBS: |
             gnu-10.3.0
             ${{ inputs.skip_matrix_jobs }}
