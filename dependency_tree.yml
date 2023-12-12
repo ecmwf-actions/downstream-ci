@@ -2,6 +2,15 @@
 # this document is for build-package
 name: build-package
 
+atlas:
+  deps:
+    - eckit
+    - fckit
+
+cfgrib:
+  deps:
+    - eccodes-python
+
 ecbuild: ~
 
 eccodes:
@@ -13,7 +22,41 @@ eccodes-python:
   deps:
     - eccodes
 
-cfgrib:
+ecflow:
+  deps:
+    - ecbuild
+
+eckit:
+  deps:
+    - ecbuild
+
+fckit:
+  deps:
+    - eckit
+
+fdb:
+  deps:
+    - metkit
+
+libaec:
+  deps:
+    - ecbuild
+
+metkit:
+  deps:
+    - eccodes
+    - eckit
+
+mir:
+  deps:
+    - atlas
+    - eccodes
+
+odc:
+  deps:
+    - eckit
+
+pdbufr:
   deps:
     - eccodes-python
 
@@ -22,62 +65,16 @@ pgen:
     - mir
     - metkit
 
-mir:
-  deps:
-    - atlas
-    - eccodes
-
-atlas:
-  deps:
-    - eckit
-    - fckit
-
-metkit:
-  deps:
-    - eccodes
-    - eckit
-
-eckit:
-  deps:
-    - ecbuild
-
-libaec:
-  deps:
-    - ecbuild
-
-odc:
-  deps:
-    - eckit
-
-pyodc:
-  deps:
-    - odc
-
-fdb:
-  deps:
-    - metkit
-
-pyfdb:
-  deps:
-    - fdb
-
-fckit:
-  deps:
-    - eckit
-
 plume:
   deps:
     - atlas
     - fckit
-
-ecflow:
+pyfdb:
   deps:
-    - ecbuild
-    
-pdbufr:
+    - fdb
+pyodc:
   deps:
-    - eccodes-python
-
+    - odc
 earthkit-data:
   deps:
     - cfgrib
@@ -88,22 +85,6 @@ earthkit-data:
 # this is for build-package-hpc
 name: build-package-hpc
 
-ecbuild: ~
-
-skinnywms: ~
-
-thermofeel: ~
-
-pgen:
-  deps:
-    - mir
-    - metkit
-
-mir:
-  deps:
-    - atlas
-    - eccodes
-
 atlas:
   modules:
     - fftw
@@ -112,14 +93,11 @@ atlas:
     - eckit
     - fckit
 
-metkit:
+cfgrib:
   deps:
-    - eccodes
-    - eckit
+    - eccodes-python
 
-eckit:
-  deps:
-    - ecbuild
+ecbuild: ~
 
 eccodes:
   modules:
@@ -129,42 +107,61 @@ eccodes-python:
   deps:
     - eccodes
 
-cfgrib:
+ecflow:
   deps:
-    - eccodes-python
+    - ecbuild
 
-odc:
+eckit:
+  deps:
+    - ecbuild
+
+fckit:
   deps:
     - eckit
-
-pyodc:
-  deps:
-    - odc
 
 fdb:
   deps:
     - metkit
 
-pyfdb:
+metkit:
   deps:
-    - fdb
+    - eccodes
+    - eckit
 
-fckit:
+mir:
+  deps:
+    - atlas
+    - eccodes
+
+odc:
   deps:
     - eckit
+
+pdbufr:
+  deps:
+    - eccodes-python
+
+pgen:
+  deps:
+    - mir
+    - metkit
 
 plume:
   deps:
     - atlas
     - fckit
 
-ecflow:
+pyfdb:
   deps:
-    - ecbuild
-    
-pdbufr:
+    - fdb
+
+pyodc:
   deps:
-    - eccodes-python
+    - odc
+
+skinnywms: ~
+
+thermofeel: ~
 
 earthkit-data:
   deps:
