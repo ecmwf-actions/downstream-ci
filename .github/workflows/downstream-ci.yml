@@ -169,11 +169,11 @@ jobs:
               input: ${{ inputs.skinnywms }}
             ecmwf/thermofeel:
               python: true
-              input: ${{ inputs.thermofeel }}          
+              input: ${{ inputs.thermofeel }}
             ecmwf/earthkit-data:
               path: .github/ci-config.yml
               python: true
-              input: ${{ inputs.earthkit-data }} 	
+              input: ${{ inputs.earthkit-data }}
           SKIP_MATRIX_JOBS: |
             ${{ inputs.skip_matrix_jobs }}
           PYTHON_VERSIONS: |
