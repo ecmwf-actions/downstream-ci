@@ -75,6 +75,11 @@ pyfdb:
 pyodc:
   deps:
     - odc
+earthkit-data:
+  deps:
+    - cfgrib
+    - pdbufr
+    - pyodc
 
 ---
 # this is for build-package-hpc
@@ -157,3 +162,9 @@ pyodc:
 skinnywms: ~
 
 thermofeel: ~
+
+earthkit-data:
+  deps:
+    - cfgrib
+    - pdbufr
+    - pyodc
