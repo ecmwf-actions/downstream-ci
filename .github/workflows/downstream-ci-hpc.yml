@@ -168,6 +168,7 @@ jobs:
             ecmwf/earthkit-data:
               path: .github/ci-hpc-config.yml
               python: true
+              master_branch: main
               input: ${{ inputs.earthkit-data }}
           SKIP_MATRIX_JOBS: |
             gnu-10.3.0
