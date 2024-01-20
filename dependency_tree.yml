@@ -52,8 +52,6 @@ mir:
     - atlas
     - eccodes
 
-multiurl: ~
-
 odc:
   deps:
     - eckit
