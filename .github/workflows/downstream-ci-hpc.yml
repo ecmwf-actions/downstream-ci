@@ -42,6 +42,9 @@ on:
       mir:
         required: false
         type: string
+      multiurl:
+        required: false
+        type: string 
       odc:
         required: false
         type: string
@@ -83,6 +86,7 @@ jobs:
       fdb: ${{ steps.setup.outputs.fdb }}
       metkit: ${{ steps.setup.outputs.metkit }}
       mir: ${{ steps.setup.outputs.mir }}
+      multiurl: ${{ steps.setup.outputs.multiurl }}
       odc: ${{ steps.setup.outputs.odc }}
       pdbufr: ${{ steps.setup.outputs.pdbufr }}
       plume: ${{ steps.setup.outputs.plume }}
@@ -137,6 +141,12 @@ jobs:
             ecmwf/mir:
               path: .github/ci-hpc-config.yml
               input: ${{ inputs.mir }}
+            ecmwf/multiurl:
+              path: .github/ci-hpc-config.yml
+              master_branch: main
+              develop_branch: main
+              python: true
+              input: ${{ inputs.multiurl }}
             ecmwf/odc:
               path: .github/ci-hpc-config.yml
               input: ${{ inputs.odc }}
@@ -439,6 +449,26 @@ jobs:
             ${{ inputs.eccodes }}
             ${{ inputs.atlas }}
 
+  multiurl:
+    name: multiurl
+    needs: [setup]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multiurl && (inputs.multiurl) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.multiurl) }}
+    runs-on:
+      [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+        with:
+          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+          repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
+
   odc:
     name: odc
     needs: [setup, eckit]
@@ -600,7 +630,7 @@ jobs:
   earthkit-data:
     name: earthkit-data
     needs: [setup, cfgrib, pdbufr, pyodc]
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-data && (inputs.cfgrib || inputs.pdbufr || inputs.pyodc || inputs.earthkit-data) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-data && (inputs.cfgrib || inputs.multiurl || inputs.pdbufr || inputs.pyodc || inputs.earthkit-data) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.earthkit-data) }}
@@ -618,6 +648,7 @@ jobs:
           build_config: ${{ matrix.config_path }}
           python_dependencies: |
             ${{ inputs.cfgrib }}
+            ${{ inputs.multiurl }}
             ${{ inputs.pdbufr }}
             ${{ inputs.pyodc }}
 
