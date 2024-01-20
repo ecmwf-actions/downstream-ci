@@ -551,20 +551,9 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     steps:
-      - name: Build dependencies
-        id: build-deps
-        uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
-        with:
-          repository: ${{ matrix.owner_repo_ref }}
-          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
-          build_package_inputs: |
-            repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-
       - uses: ecmwf-actions/reusable-workflows/ci-python@v2
         with:
           lib_path: ${{ steps.build-deps.outputs.lib_path }}
-          
 
   odc:
     name: odc
