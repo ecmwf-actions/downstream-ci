@@ -46,6 +46,9 @@ on:
       mir:
         required: false
         type: string
+      multiurl:
+        required: false
+        type: string 
       odc:
         required: false
         type: string
@@ -88,6 +91,7 @@ jobs:
       fdb: ${{ steps.setup.outputs.fdb }}
       metkit: ${{ steps.setup.outputs.metkit }}
       mir: ${{ steps.setup.outputs.mir }}
+      multiurl: ${{ steps.setup.outputs.multiurl }}
       odc: ${{ steps.setup.outputs.odc }}
       pdbufr: ${{ steps.setup.outputs.pdbufr }}
       plume: ${{ steps.setup.outputs.plume }}
@@ -143,6 +147,12 @@ jobs:
             ecmwf/mir:
               path: .github/ci-config.yml
               input: ${{ inputs.mir }}
+            ecmwf/multiurl:
+              path: .github/ci-config.yml
+              master_branch: main
+              develop_branch: main
+              python: true
+              input: ${{ inputs.multiurl }}
             ecmwf/odc:
               path: .github/ci-config.yml
               input: ${{ inputs.odc }}
@@ -531,6 +541,32 @@ jobs:
             ${{ inputs.eckit }}
             ${{ inputs.atlas }}
 
+  multiurl:
+    name: multiurl
+    needs: [setup]
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multiurl && (inputs.multiurl) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.multiurl) }}
+    runs-on: ${{ matrix.labels }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - name: Build dependencies
+        id: build-deps
+        uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+        with:
+          repository: ${{ matrix.owner_repo_ref }}
+          codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+          build_package_inputs: |
+            repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
+
+      - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+        with:
+          lib_path: ${{ steps.build-deps.outputs.lib_path }}
+          
+
   odc:
     name: odc
     needs: [setup, eckit]
@@ -702,7 +738,7 @@ jobs:
   earthkit-data:
     name: earthkit-data
     needs: [setup, cfgrib, pdbufr, pyodc]
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-data && (inputs.cfgrib || inputs.pdbufr || inputs.pyodc || inputs.earthkit-data) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-data && (inputs.cfgrib || inputs.multiurl || inputs.pdbufr || inputs.pyodc || inputs.earthkit-data) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.earthkit-data) }}
@@ -726,9 +762,10 @@ jobs:
         with:
           lib_path: ${{ steps.build-deps.outputs.lib_path }}
           python_dependencies: |
-            ${{ inputs.cfgrib || 'ecmwf/cfgrib@master' }}
-            ${{ inputs.pdbufr || 'ecmwf/pdbufr@master' }}
-            ${{ inputs.pyodc || 'ecmwf/pyodc@develop' }}
+          ${{ inputs.cfgrib || 'ecmwf/cfgrib@master' }}
+          ${{ inputs.multiurl || 'ecmwf/multiurl@main' }}
+          ${{ inputs.pdbufr || 'ecmwf/pdbufr@master' }}
+          ${{ inputs.pyodc || 'ecmwf/pyodc@develop' }}
           requirements_path: tests/downstream-ci-requirements.txt
           test_cmd: |
             python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml

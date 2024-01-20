@@ -52,6 +52,8 @@ mir:
     - atlas
     - eccodes
 
+multiurl: ~
+
 odc:
   deps:
     - eckit
@@ -78,6 +80,7 @@ pyodc:
 earthkit-data:
   deps:
     - cfgrib
+    - multiurl
     - pdbufr
     - pyodc
 
@@ -128,6 +131,8 @@ metkit:
     - eccodes
     - eckit
 
+multiurl: ~
+
 mir:
   deps:
     - atlas
@@ -166,5 +171,6 @@ thermofeel: ~
 earthkit-data:
   deps:
     - cfgrib
+    - multiurl
     - pdbufr
     - pyodc
