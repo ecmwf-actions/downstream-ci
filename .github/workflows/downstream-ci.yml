@@ -762,7 +762,7 @@ jobs:
           lib_path: ${{ steps.build-deps.outputs.lib_path }}
           python_dependencies: |
             ${{ inputs.cfgrib || 'ecmwf/cfgrib@master' }}
-            ${{ inputs.multiurl || 'ecmwf/multiurl@main' }}
+            ${{ inputs.multiurl || 'ecmwf/multiurl@add-to-downstream-ci' }}
             ${{ inputs.pdbufr || 'ecmwf/pdbufr@master' }}
             ${{ inputs.pyodc || 'ecmwf/pyodc@develop' }}
           requirements_path: tests/downstream-ci-requirements.txt
