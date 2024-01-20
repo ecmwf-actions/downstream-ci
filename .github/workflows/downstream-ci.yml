@@ -149,8 +149,8 @@ jobs:
               input: ${{ inputs.mir }}
             ecmwf/multiurl:
               path: .github/ci-config.yml
-              master_branch: main
-              develop_branch: main
+              master_branch: add-to-downstream-ci
+              develop_branch: add-to-downstream-ci
               python: true
               input: ${{ inputs.multiurl }}
             ecmwf/odc:
