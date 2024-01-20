@@ -143,8 +143,8 @@ jobs:
               input: ${{ inputs.mir }}
             ecmwf/multiurl:
               path: .github/ci-hpc-config.yml
-              master_branch: add-to-downstream-ci
-              develop_branch: add-to-downstream-ci
+              master_branch: main
+              develop_branch: main
               python: true
               input: ${{ inputs.multiurl }}
             ecmwf/odc:
