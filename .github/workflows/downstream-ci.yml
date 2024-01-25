@@ -728,7 +728,7 @@ jobs:
   earthkit-data:
     name: earthkit-data
     needs: [setup, cfgrib, pdbufr, pyodc]
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-data && (inputs.cfgrib || inputs.multiurl || inputs.pdbufr || inputs.pyodc || inputs.earthkit-data) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-data && (inputs.cfgrib || inputs.eccodes-python|| inputs.multiurl || inputs.pdbufr || inputs.pyodc || inputs.earthkit-data) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.earthkit-data) }}
@@ -753,6 +753,7 @@ jobs:
           lib_path: ${{ steps.build-deps.outputs.lib_path }}
           python_dependencies: |
             ${{ inputs.cfgrib || 'ecmwf/cfgrib@master' }}
+            ${{ inputs.eccodes-python || 'ecmwf/eccodes-python@develop' }}
             ${{ inputs.multiurl || 'ecmwf/multiurl@main' }}
             ${{ inputs.pdbufr || 'ecmwf/pdbufr@master' }}
             ${{ inputs.pyodc || 'ecmwf/pyodc@develop' }}
