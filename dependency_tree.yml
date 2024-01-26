@@ -26,6 +26,10 @@ ecflow:
   deps:
     - ecbuild
 
+ecflow-light:
+  deps:
+    - eckit
+
 eckit:
   deps:
     - ecbuild
@@ -111,6 +115,10 @@ eccodes-python:
 ecflow:
   deps:
     - ecbuild
+
+ecflow-light:
+  deps:
+    - eckit
 
 eckit:
   deps:

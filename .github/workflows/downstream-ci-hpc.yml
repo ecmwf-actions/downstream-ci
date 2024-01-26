@@ -27,6 +27,9 @@ on:
       ecflow:
         required: false
         type: string
+      ecflow-light:
+        required: false
+        type: string
       eckit:
         required: false
         type: string
@@ -81,6 +84,7 @@ jobs:
       eccodes: ${{ steps.setup.outputs.eccodes }}
       eccodes-python: ${{ steps.setup.outputs.eccodes-python }}
       ecflow: ${{ steps.setup.outputs.ecflow }}
+      ecflow-light: ${{ steps.setup.outputs.ecflow-light }}
       eckit: ${{ steps.setup.outputs.eckit }}
       fckit: ${{ steps.setup.outputs.fckit }}
       fdb: ${{ steps.setup.outputs.fdb }}
@@ -126,6 +130,9 @@ jobs:
             ecmwf/ecflow:
               path: .github/ci-hpc-config.yml
               input: ${{ inputs.ecflow }}
+            ecmwf/ecflow-light:
+              path: .github/ci-hpc-config.yml
+              input: ${{ inputs.ecflow-light }}
             ecmwf/eckit:
               path: .github/ci-hpc-config.yml
               input: ${{ inputs.eckit }}
@@ -323,6 +330,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.ecflow) }}
+    runs-on:
+      [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    steps:
+      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+        with:
+          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+          repository: ${{ matrix.owner_repo_ref }}
+          build_config: ${{ matrix.config_path }}
+
+  ecflow-light:
+    name: ecflow-light
+    needs: [setup]
+    if: ${{ inputs.ecflow-light && needs.setup.outputs.ecflow-light }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.ecflow-light) }}
     runs-on:
       [self-hosted, linux, "${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}"]
     env:
