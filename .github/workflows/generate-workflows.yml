@@ -1,0 +1,45 @@
+# This workflows generates downstream-ci workflows on every push.
+# If you wish to skip the build, e.g. for testing manual changes add `[skip ci]` to commit msg.
+name: Generate workflows
+
+on: push
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]' && !github.event.pull_request.head.repo.fork
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref  }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Git config
+        run: |
+          git config --global user.email "github-actions@example.com"
+          git config --global user.name "github-actions[bot]"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Build
+        run: python generate-workflows.py --config config.yml --dep-tree dependency_tree.yml --output .github/workflows
+
+      - name: Check Git status
+        id: git_status
+        run: |
+          GIT_STATUS_OUTPUT=$(git status --porcelain)
+          if [[ -n "$GIT_STATUS_OUTPUT" ]]; then
+            echo "GIT_STATUS_MODIFIED=true" >> $GITHUB_ENV
+          else
+            echo "GIT_STATUS_MODIFIED=false" >> $GITHUB_ENV
+          fi
+
+      - name: Commit & push index.js
+        # Push only if the built workflow has changed.
+        if: env.GIT_STATUS_MODIFIED == 'true'
+        run: |
+          git add .github/workflows/*
+          git commit --no-verify -m "Build workflows"
+          git push origin ${{ github.head_ref || github.ref  }}
