@@ -1,0 +1,133 @@
+downstream-ci:
+  type: build-package
+  python_qa: true
+  python_versions:
+    - "3.10"
+  matrix:
+    name:
+      - gnu@debian-11
+      - gnu-7@centos-7.9
+      - gnu-8@centos-7.9
+      - gnu@rocky-8.6
+      - clang@rocky-8.6
+      - gnu@ubuntu-22.04
+      - gnu@fedora-37
+      - clang@macos-13-arm
+      - clang@macos-13-x86
+    include:
+      - name: gnu@debian-11
+        labels: [self-hosted, platform-builder-debian-11]
+        os: debian-11
+        compiler: gnu
+        compiler_cc: gcc
+        compiler_cxx: g++
+        compiler_fc: gfortran
+        env: &linux_env |
+          BOOST_ROOT_DIR=/usr
+          BOOST_INCLUDE_DIR=/usr/include/boost169
+          BOOST_LIB_DIR=/usr/lib64/boost169
+      - name: gnu-7@centos-7.9
+        labels: [self-hosted, platform-builder-centos-7.9]
+        os: centos-7.9
+        compiler: gnu-7
+        compiler_cc: gcc-7
+        compiler_cxx: g++-7
+        compiler_fc: gfortran-7
+        env: *linux_env
+      - name: gnu-8@centos-7.9
+        labels: [self-hosted, platform-builder-centos-7.9]
+        os: centos-7.9
+        compiler: gnu-8
+        compiler_cc: gcc-8
+        compiler_cxx: g++-8
+        compiler_fc: gfortran-8
+        env: *linux_env
+      - name: gnu@rocky-8.6
+        labels: [self-hosted, platform-builder-rocky-8.6]
+        os: rocky-8.6
+        compiler: gnu
+        compiler_cc: gcc
+        compiler_cxx: g++
+        compiler_fc: gfortran
+        env: *linux_env
+      - name: clang@rocky-8.6
+        labels: [self-hosted, platform-builder-rocky-8.6]
+        os: rocky-8.6
+        compiler: clang
+        compiler_cc: clang
+        compiler_cxx: clang++
+        compiler_fc: gfortran
+        env: *linux_env
+        toolchain_file: /opt/actions-runner/files/toolchain-clang-rocky-8.6.cmake
+      - name: gnu@ubuntu-22.04
+        labels: [self-hosted, platform-builder-ubuntu-22.04]
+        os: ubuntu-22.04
+        compiler: gnu
+        compiler_cc: gcc
+        compiler_cxx: g++
+        compiler_fc: gfortran
+        env: *linux_env
+      - name: gnu@fedora-37
+        labels: [self-hosted, platform-builder-fedora-37]
+        os: fedora-37
+        compiler: gnu
+        compiler_cc: gcc
+        compiler_cxx: g++
+        compiler_fc: gfortran
+        env: *linux_env
+      - name: clang@macos-13-arm
+        labels: [self-hosted, platform-builder-macosx-13.4.1-arm64]
+        os: macos-13-arm
+        compiler: clang
+        compiler_cc: clang
+        compiler_cxx: clang++
+        compiler_fc: gfortran
+        #OPENSSL_ROOT_DIR is taken care of in build-package
+        env: &macos_env |
+          BOOST_ROOT_DIR=$(brew --prefix)
+          BOOST_INCLUDE_DIR=$(brew --prefix)/include
+          BOOST_LIB_DIR=$(brew --prefix)/lib
+      - name: clang@macos-13-x86
+        labels: [self-hosted, platform-builder-macosx-13.4.1-x86_64]
+        os: macos-13-x86
+        compiler: clang
+        compiler_cc: clang
+        compiler_cxx: clang++
+        compiler_fc: gfortran
+        #OPENSSL_ROOT_DIR is taken care of in build-package
+        env: *macos_env
+downstream-ci-hpc:
+  type: build-package-hpc
+  python_versions:
+    - "3.10"
+  matrix:
+    name:
+      - gnu-12.2.0
+      - gnu-8.5.0
+      - nvidia-22.11
+      - intel-2021.4.0
+    include:
+      - name: gnu-12.2.0
+        compiler: gnu-12.2.0
+        compiler_cc: gcc
+        compiler_cxx: g++
+        compiler_fc: gfortran
+        compiler_modules: gcc/12.2.0
+      - name: gnu-8.5.0
+        compiler: gnu-8.5.0
+        compiler_cc: gcc
+        compiler_cxx: g++
+        compiler_fc: gfortran
+        compiler_modules: gcc/8.5.0
+      - name: nvidia-22.11
+        compiler: nvidia-22.11
+        compiler_cc: nvc
+        compiler_cxx: nvc++
+        compiler_fc: nvfortran
+        compiler_modules: prgenv/nvidia,nvidia/22.11
+      - name: intel-2021.4.0
+        compiler: intel-2021.4.0
+        compiler_cc: icc
+        compiler_cxx: icpc
+        compiler_fc: ifort
+        compiler_modules: prgenv/intel,intel/2021.4.0

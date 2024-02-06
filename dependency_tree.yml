@@ -1,182 +1,135 @@
----
-# this document is for build-package
-name: build-package
-
 atlas:
+  type: cmake
+  downstream-ci-hpc:
+    modules:
+      - fftw
+      - qhull
   deps:
     - eckit
     - fckit
 
 cfgrib:
+  type: python
+  master_branch: master
+  develop_branch: master
   deps:
     - eccodes-python
 
-ecbuild: ~
+earthkit-data:
+  type: python
+  master_branch: main
+  deps:
+    - cfgrib
+    - multiurl
+    - pdbufr
+    - pyodc
+
+ecbuild:
+  type: cmake
+  input: false
 
 eccodes:
-  deps:
-    - libaec
-    - ecbuild
+  type: cmake
+  downstream-ci-hpc:
+    modules:
+      - aec
+    deps:
+      - ecbuild
+  downstream-ci:
+    deps:
+      - libaec
+      - ecbuild
 
 eccodes-python:
+  type: python
   deps:
     - eccodes
 
 ecflow:
+  type: cmake
   deps:
     - ecbuild
 
 ecflow-light:
+  type: cmake
   deps:
     - eckit
 
 eckit:
+  type: cmake
   deps:
     - ecbuild
 
 fckit:
+  type: cmake
   deps:
     - eckit
 
 fdb:
+  type: cmake
   deps:
     - metkit
 
 libaec:
+  type: cmake
+  input: false
   deps:
     - ecbuild
 
 metkit:
+  type: cmake
   deps:
     - eccodes
     - eckit
 
 mir:
+  type: cmake
   deps:
     - atlas
     - eccodes
 
+multiurl:
+  type: python
+  master_branch: main
+  develop_branch: main
+
 odc:
+  type: cmake
   deps:
     - eckit
 
 pdbufr:
+  type: python
+  master_branch: master
+  develop_branch: master
   deps:
     - eccodes-python
 
 pgen:
+  type: cmake
+  input: false
   deps:
     - mir
     - metkit
 
 plume:
-  deps:
-    - atlas
-    - fckit
-pyfdb:
-  deps:
-    - fdb
-pyodc:
-  deps:
-    - odc
-earthkit-data:
-  deps:
-    - cfgrib
-    - multiurl
-    - pdbufr
-    - pyodc
-
----
-# this is for build-package-hpc
-name: build-package-hpc
-
-atlas:
-  modules:
-    - fftw
-    - qhull
-  deps:
-    - eckit
-    - fckit
-
-cfgrib:
-  deps:
-    - eccodes-python
-
-ecbuild: ~
-
-eccodes:
-  modules:
-    - aec
-
-eccodes-python:
-  deps:
-    - eccodes
-
-ecflow:
-  deps:
-    - ecbuild
-
-ecflow-light:
-  deps:
-    - eckit
-
-eckit:
-  deps:
-    - ecbuild
-
-fckit:
-  deps:
-    - eckit
-
-fdb:
-  deps:
-    - metkit
-
-metkit:
-  deps:
-    - eccodes
-    - eckit
-
-multiurl: ~
-
-mir:
-  deps:
-    - atlas
-    - eccodes
-
-odc:
-  deps:
-    - eckit
-
-pdbufr:
-  deps:
-    - eccodes-python
-
-pgen:
-  deps:
-    - mir
-    - metkit
-
-plume:
+  type: cmake
   deps:
     - atlas
     - fckit
 
 pyfdb:
+  type: python
   deps:
     - fdb
 
 pyodc:
+  type: python
   deps:
     - odc
 
-skinnywms: ~
+skinnywms:
+  type: python
 
-thermofeel: ~
-
-earthkit-data:
-  deps:
-    - cfgrib
-    - multiurl
-    - pdbufr
-    - pyodc
+thermofeel:
+  type: python
