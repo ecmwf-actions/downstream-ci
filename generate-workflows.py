@@ -315,13 +315,42 @@ class Workflow:
                 "with": {"repository": "ecmwf-actions/downstream-ci", "ref": "main"},
             }
         )
+        setup_config = {}
+        default_config_path = (
+            ".github/ci-config.yml"
+            if self.wf_type == "build-package"
+            else ".github/ci-hpc-config.yml"
+        )
+        for dep in dep_tree:
+            if tree_get_package_var("input", dep_tree, dep, self.name) is not False:
+                setup_config[f"ecmwf/{dep}"] = {
+                    "path": tree_get_package_var(
+                        "config_path", dep_tree, dep, self.name
+                    )
+                    or default_config_path,
+                    "input": "${{ " + f"inputs.{dep}" + " }}",
+                    "python": dep_tree[dep].get("type", "cmake") == "python",
+                    "master_branch": tree_get_package_var(
+                        "master_branch", dep_tree, dep, self.name
+                    )
+                    or "master",
+                    "develop_branch": tree_get_package_var(
+                        "develop_branch", dep_tree, dep, self.name
+                    )
+                    or "develop",
+                }
         steps.append(
             {
                 "name": "Run setup script",
                 "id": "setup",
                 "env": {
                     "TOKEN": "${{ secrets.GH_REPO_READ_TOKEN }}",
-                    "CONFIG": "",
+                    "CONFIG": yaml.dump(
+                        setup_config,
+                        indent=2,
+                        default_flow_style=False,
+                        sort_keys=False,
+                    ),
                     "SKIP_MATRIX_JOBS": "${{ inputs.skip_matrix_jobs }}",
                     "PYTHON_VERSIONS": yaml.dump(
                         wf_config["python_versions"], indent=2, default_flow_style=False
@@ -372,9 +401,6 @@ def main():
                 default_flow_style=False,
                 width=float("inf"),
             )
-
-
-# config var
 
 
 if __name__ == "__main__":
