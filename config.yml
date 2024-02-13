@@ -1,5 +1,10 @@
 downstream-ci:
   type: build-package
+  inputs:
+    codecov_upload:
+      description: Whether to upload code coverage
+      type: boolean
+      required: false
   python_qa: true
   python_versions:
     - "3.10"
@@ -98,6 +103,11 @@ downstream-ci:
         env: *macos_env
 downstream-ci-hpc:
   type: build-package-hpc
+  inputs:
+    dev_runner:
+      description: Whether to use runner with dev version of build-package-hpc .
+      required: false
+      type: boolean
   python_versions:
     - "3.10"
   matrix:

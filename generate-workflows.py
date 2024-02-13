@@ -101,7 +101,10 @@ class Workflow:
 
     # generate inputs - runner type specific inputs + list of packages
     #   read config for specific inputs and dep tree for packages
-    def generate_inputs(self, dep_tree: dict):
+    def generate_inputs(self, dep_tree: dict, wf_config: dict):
+        wf_spec_inputs: dict = wf_config.get("inputs", {})
+        self.inputs.update(wf_spec_inputs)
+
         for package, val in dep_tree.items():
             if tree_get_package_var("input", dep_tree, package, self.name) is not False:
                 self.inputs[package] = {"required": False, "type": "string"}
@@ -295,6 +298,15 @@ class Workflow:
             outputs["dep_tree"] = (
                 "${{ steps.setup.outputs.build_package_hpc_dep_tree }}"
             )
+        self.inputs.update(
+            {
+                "skip_matrix_jobs": {
+                    "description": "List of matrix jobs to be skipped.",
+                    "required": False,
+                    "type": "string",
+                }
+            }
+        )
         steps = []
         steps.append(
             {
@@ -344,7 +356,7 @@ def main():
 
     for name in config.keys():
         wf = Workflow(name=name, wf_type=config[name]["type"])
-        wf.generate_inputs(dep_tree)
+        wf.generate_inputs(dep_tree, config[name])
         wf.generate_setup_job(dep_tree, config[name])
         if config[name].get("python_qa", False):
             wf.add_python_qa_job()
@@ -362,7 +374,6 @@ def main():
             )
 
 
-# wf spec inputs
 # config var
 
 
