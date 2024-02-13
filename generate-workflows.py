@@ -140,7 +140,10 @@ class Workflow:
             },
             {
                 "name": "Install Python Dependencies",
-                "run": "python -m pip install --upgrade pip\npython -m pip install black flake8 isort\n",
+                "run": (
+                    "python -m pip install --upgrade pip\n"
+                    "python -m pip install black flake8 isort\n"
+                ),
             },
             {"name": "Check isort", "run": "isort --check ."},
             {"name": "Check black", "run": "black --check ."},
@@ -191,11 +194,19 @@ class Workflow:
                 if pkg_conf.get("type", "cmake") == "cmake":
                     steps.append(
                         {
-                            "uses": "ecmwf-actions/reusable-workflows/build-package-with-config@v2",
+                            "uses": (
+                                "ecmwf-actions/reusable-workflows/"
+                                "build-package-with-config@v2"
+                            ),
                             "with": {
                                 "repository": "${{ matrix.owner_repo_ref }}",
-                                "codecov_upload": "${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}",
-                                "build_package_inputs": "repository: ${{ matrix.owner_repo_ref }}",
+                                "codecov_upload": (
+                                    "${{ needs.setup.outputs.trigger_repo "
+                                    "== github.job && inputs.codecov_upload }}"
+                                ),
+                                "build_package_inputs": (
+                                    "repository: ${{ matrix.owner_repo_ref }}"
+                                ),
                                 "build_config": "${{ matrix.config_path }}",
                                 "build_dependencies": build_deps,
                             },
@@ -209,11 +220,19 @@ class Workflow:
                             {
                                 "name": "Build dependencies",
                                 "id": "build-deps",
-                                "uses": "ecmwf-actions/reusable-workflows/build-package-with-config@v2",
+                                "uses": (
+                                    "ecmwf-actions/reusable-workflows/"
+                                    "build-package-with-config@v2"
+                                ),
                                 "with": {
                                     "repository": "${{ matrix.owner_repo_ref }}",
-                                    "codecov_upload": "${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}",
-                                    "build_package_inputs": "repository: ${{ matrix.owner_repo_ref }}",
+                                    "codecov_upload": (
+                                        "${{ needs.setup.outputs.trigger_repo == "
+                                        "github.job && inputs.codecov_upload }}"
+                                    ),
+                                    "build_package_inputs": (
+                                        "repository: ${{ matrix.owner_repo_ref }}"
+                                    ),
                                     "build_config": "${{ matrix.config_path }}",
                                     "build_dependencies": "\n".join(
                                         [
@@ -232,7 +251,9 @@ class Workflow:
                             {
                                 "uses": "ecmwf-actions/reusable-workflows/ci-python@v2",
                                 "with": {
-                                    "lib_path": "${{ steps.build-deps.outputs.lib_path }}",
+                                    "lib_path": (
+                                        "${{ steps.build-deps.outputs.lib_path }}"
+                                    ),
                                     "conda_install": "libffi=3.3",
                                     "python_dependencies": "\n".join(
                                         [
@@ -262,14 +283,20 @@ class Workflow:
                             }
                         )
             if self.wf_type == "build-package-hpc":
-                runs_on = "[self-hosted, linux, \"${{ inputs.dev_runner && 'hpc-dev' || 'hpc' }}\"]"
+                runs_on = [
+                    "self-hosted",
+                    "linux",
+                    "hpc",
+                ]
                 steps.append(
                     {
                         "uses": "ecmwf-actions/reusable-workflows/ci-hpc@v2",
                         "with": {
-                            "github_user": "${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}",
+                            "github_user": (
+                                "${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}"
+                            ),
                             "github_token": "${{ secrets.GH_REPO_READ_TOKEN }}",
-                            "troika_user": "${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}",
+                            "troika_user": "${{ secrets.HPC_CI_SSH_USER }}",
                             "repository": "${{ matrix.owner_repo_ref }}",
                             "build_config": "${{ matrix.config_path }}",
                             "dependencies": "\n".join(
@@ -372,7 +399,10 @@ def main():
     )
     parser.add_argument(
         "--output",
-        help="Path to output directory. Workflow files will be created/overwritten there.",
+        help=(
+            "Path to output directory. "
+            "Workflow files will be created/overwritten there."
+        ),
         required=True,
     )
     args = parser.parse_args()

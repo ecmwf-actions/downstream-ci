@@ -2,10 +2,6 @@ name: downstream-ci-hpc
 'on':
   workflow_call:
     inputs:
-      dev_runner:
-        description: Whether to use runner with dev version of build-package-hpc .
-        required: false
-        type: boolean
       atlas:
         required: false
         type: string
@@ -275,13 +271,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.atlas) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
@@ -301,13 +300,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.cfgrib) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
@@ -332,13 +334,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.earthkit-data) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
@@ -362,13 +367,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.eccodes) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: inputs.ecbuild
@@ -384,13 +392,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.eccodes-python) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
@@ -407,13 +418,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.ecflow) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: inputs.ecbuild
@@ -429,13 +443,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.ecflow-light) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
@@ -452,13 +469,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.eckit) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: inputs.ecbuild
@@ -474,13 +494,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.fckit) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
@@ -500,13 +523,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.fdb) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
@@ -527,13 +553,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.metkit) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
@@ -555,13 +584,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.mir) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
@@ -581,13 +613,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.multiurl) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: ''
@@ -603,13 +638,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.odc) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
@@ -628,13 +666,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.pdbufr) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
@@ -654,13 +695,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.plume) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
@@ -683,13 +727,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.pyfdb) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
@@ -711,13 +758,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.pyodc) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
@@ -735,13 +785,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.skinnywms) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: ''
@@ -756,13 +809,16 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.thermofeel) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: '[self-hosted, linux, "${{ inputs.dev_runner && ''hpc-dev'' || ''hpc'' }}"]'
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
         github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ inputs.dev_runner && secrets.HPC_DEV_CI_SSH_USER || secrets.HPC_CI_SSH_USER }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: ''
