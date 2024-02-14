@@ -36,7 +36,6 @@ Outputs:
             build-package(-hpc)) and `config_path` (build config file path).
 """
 
-
 import copy
 import json
 import os
@@ -136,7 +135,7 @@ for owner_repo, val in ci_config.items():
         matrices[repo]["include"][index]["owner_repo_ref"] = f"{owner}/{repo}@{ref}"
         matrices[repo]["include"][index]["config_path"] = path
 
-    if val.get("python", ""):
+    if val.get("python", False) is True:
         matrices[repo]["python_version"] = python_versions
         if python_jobs:
             matrices[repo]["name"] = [

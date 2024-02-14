@@ -103,6 +103,8 @@ downstream-ci:
         env: *macos_env
 downstream-ci-hpc:
   type: build-package-hpc
+  python_jobs:
+    - gnu-8.5.0
   python_versions:
     - "3.10"
   matrix:
