@@ -284,9 +284,8 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
-          inputs.fckit
-          inputs.eckit
-          inputs.ecbuild
+          ${{ inputs.fckit }}
+          ${{ inputs.eckit }}
         python_dependencies: ''
   cfgrib:
     name: cfgrib
@@ -312,10 +311,8 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: |-
-          inputs.eccodes
-          inputs.ecbuild
-        python_dependencies: inputs.eccodes-python
+        dependencies: ${{ inputs.eccodes }}
+        python_dependencies: ${{ inputs.eccodes-python }}
   earthkit-data:
     name: earthkit-data
     needs:
@@ -347,16 +344,15 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
-          inputs.eccodes
-          inputs.odc
-          inputs.eckit
-          inputs.ecbuild
+          ${{ inputs.eccodes }}
+          ${{ inputs.odc }}
+          ${{ inputs.eckit }}
         python_dependencies: |-
-          inputs.cfgrib
-          inputs.multiurl
-          inputs.pdbufr
-          inputs.eccodes-python
-          inputs.pyodc
+          ${{ inputs.cfgrib }}
+          ${{ inputs.multiurl }}
+          ${{ inputs.pdbufr }}
+          ${{ inputs.eccodes-python }}
+          ${{ inputs.pyodc }}
   eccodes:
     name: eccodes
     needs:
@@ -379,7 +375,7 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: inputs.ecbuild
+        dependencies: ''
         python_dependencies: ''
   eccodes-python:
     name: eccodes-python
@@ -404,9 +400,7 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: |-
-          inputs.eccodes
-          inputs.ecbuild
+        dependencies: ${{ inputs.eccodes }}
         python_dependencies: ''
   ecflow:
     name: ecflow
@@ -430,7 +424,7 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: inputs.ecbuild
+        dependencies: ''
         python_dependencies: ''
   ecflow-light:
     name: ecflow-light
@@ -455,9 +449,7 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: |-
-          inputs.eckit
-          inputs.ecbuild
+        dependencies: ${{ inputs.eckit }}
         python_dependencies: ''
   eckit:
     name: eckit
@@ -481,7 +473,7 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: inputs.ecbuild
+        dependencies: ''
         python_dependencies: ''
   fckit:
     name: fckit
@@ -506,9 +498,7 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: |-
-          inputs.eckit
-          inputs.ecbuild
+        dependencies: ${{ inputs.eckit }}
         python_dependencies: ''
   fdb:
     name: fdb
@@ -536,10 +526,9 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
-          inputs.metkit
-          inputs.eccodes
-          inputs.eckit
-          inputs.ecbuild
+          ${{ inputs.metkit }}
+          ${{ inputs.eccodes }}
+          ${{ inputs.eckit }}
         python_dependencies: ''
   metkit:
     name: metkit
@@ -566,9 +555,8 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
-          inputs.eccodes
-          inputs.eckit
-          inputs.ecbuild
+          ${{ inputs.eccodes }}
+          ${{ inputs.eckit }}
         python_dependencies: ''
   mir:
     name: mir
@@ -597,11 +585,10 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
-          inputs.atlas
-          inputs.fckit
-          inputs.eckit
-          inputs.eccodes
-          inputs.ecbuild
+          ${{ inputs.atlas }}
+          ${{ inputs.fckit }}
+          ${{ inputs.eckit }}
+          ${{ inputs.eccodes }}
         python_dependencies: ''
   multiurl:
     name: multiurl
@@ -650,9 +637,7 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: |-
-          inputs.eckit
-          inputs.ecbuild
+        dependencies: ${{ inputs.eckit }}
         python_dependencies: ''
   pdbufr:
     name: pdbufr
@@ -678,10 +663,8 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: |-
-          inputs.eccodes
-          inputs.ecbuild
-        python_dependencies: inputs.eccodes-python
+        dependencies: ${{ inputs.eccodes }}
+        python_dependencies: ${{ inputs.eccodes-python }}
   plume:
     name: plume
     needs:
@@ -708,10 +691,9 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
-          inputs.atlas
-          inputs.fckit
-          inputs.eckit
-          inputs.ecbuild
+          ${{ inputs.atlas }}
+          ${{ inputs.fckit }}
+          ${{ inputs.eckit }}
         python_dependencies: ''
   pyfdb:
     name: pyfdb
@@ -740,11 +722,10 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
-          inputs.fdb
-          inputs.metkit
-          inputs.eccodes
-          inputs.eckit
-          inputs.ecbuild
+          ${{ inputs.fdb }}
+          ${{ inputs.metkit }}
+          ${{ inputs.eccodes }}
+          ${{ inputs.eckit }}
         python_dependencies: ''
   pyodc:
     name: pyodc
@@ -771,9 +752,8 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
-          inputs.odc
-          inputs.eckit
-          inputs.ecbuild
+          ${{ inputs.odc }}
+          ${{ inputs.eckit }}
         python_dependencies: ''
   skinnywms:
     name: skinnywms
