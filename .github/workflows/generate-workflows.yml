@@ -23,6 +23,8 @@ jobs:
         with:
           python-version: "3.x"
 
+      - run: pip install pyyaml
+
       - name: Build
         run: python generate-workflows.py --config config.yml --dep-tree dependency_tree.yml --output .github/workflows
 
