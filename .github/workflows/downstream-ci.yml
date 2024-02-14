@@ -115,127 +115,130 @@ jobs:
         CONFIG: |
           ecmwf/atlas:
             path: .github/ci-config.yml
-            input: ${{ inputs.atlas }}
             python: false
             master_branch: master
             develop_branch: develop
+            input: ${{ inputs.atlas }}
           ecmwf/cfgrib:
             path: .github/ci-config.yml
-            input: ${{ inputs.cfgrib }}
             python: true
             master_branch: master
             develop_branch: master
+            input: ${{ inputs.cfgrib }}
           ecmwf/earthkit-data:
             path: .github/ci-config.yml
-            input: ${{ inputs.earthkit-data }}
             python: true
             master_branch: main
             develop_branch: develop
+            input: ${{ inputs.earthkit-data }}
           ecmwf/eccodes:
             path: .github/ci-config.yml
-            input: ${{ inputs.eccodes }}
             python: false
             master_branch: master
             develop_branch: develop
+            input: ${{ inputs.eccodes }}
           ecmwf/eccodes-python:
             path: .github/ci-config.yml
-            input: ${{ inputs.eccodes-python }}
             python: true
             master_branch: master
             develop_branch: develop
+            input: ${{ inputs.eccodes-python }}
           ecmwf/ecflow:
             path: .github/ci-config.yml
-            input: ${{ inputs.ecflow }}
             python: false
             master_branch: master
             develop_branch: develop
+            input: ${{ inputs.ecflow }}
           ecmwf/ecflow-light:
             path: .github/ci-config.yml
-            input: ${{ inputs.ecflow-light }}
             python: false
             master_branch: master
             develop_branch: develop
+            input: ${{ inputs.ecflow-light }}
           ecmwf/eckit:
             path: .github/ci-config.yml
-            input: ${{ inputs.eckit }}
             python: false
             master_branch: master
             develop_branch: develop
+            input: ${{ inputs.eckit }}
           ecmwf/fckit:
             path: .github/ci-config.yml
-            input: ${{ inputs.fckit }}
             python: false
             master_branch: master
             develop_branch: develop
+            input: ${{ inputs.fckit }}
           ecmwf/fdb:
             path: .github/ci-config.yml
-            input: ${{ inputs.fdb }}
             python: false
             master_branch: master
             develop_branch: develop
+            input: ${{ inputs.fdb }}
           ecmwf/metkit:
             path: .github/ci-config.yml
-            input: ${{ inputs.metkit }}
             python: false
             master_branch: master
             develop_branch: develop
+            input: ${{ inputs.metkit }}
           ecmwf/mir:
             path: .github/ci-config.yml
-            input: ${{ inputs.mir }}
             python: false
             master_branch: master
             develop_branch: develop
+            input: ${{ inputs.mir }}
           ecmwf/multiurl:
             path: .github/ci-config.yml
-            input: ${{ inputs.multiurl }}
             python: true
             master_branch: main
             develop_branch: main
+            input: ${{ inputs.multiurl }}
           ecmwf/odc:
             path: .github/ci-config.yml
-            input: ${{ inputs.odc }}
             python: false
             master_branch: master
             develop_branch: develop
+            input: ${{ inputs.odc }}
           ecmwf/pdbufr:
             path: .github/ci-config.yml
-            input: ${{ inputs.pdbufr }}
             python: true
             master_branch: master
             develop_branch: master
+            input: ${{ inputs.pdbufr }}
           ecmwf/plume:
             path: .github/ci-config.yml
-            input: ${{ inputs.plume }}
             python: false
             master_branch: master
             develop_branch: develop
+            input: ${{ inputs.plume }}
           ecmwf/pyfdb:
             path: .github/ci-config.yml
-            input: ${{ inputs.pyfdb }}
             python: true
             master_branch: master
             develop_branch: develop
+            input: ${{ inputs.pyfdb }}
           ecmwf/pyodc:
             path: .github/ci-config.yml
-            input: ${{ inputs.pyodc }}
             python: true
             master_branch: master
             develop_branch: develop
+            input: ${{ inputs.pyodc }}
           ecmwf/skinnywms:
             path: .github/ci-config.yml
-            input: ${{ inputs.skinnywms }}
             python: true
             master_branch: master
             develop_branch: develop
+            input: ${{ inputs.skinnywms }}
           ecmwf/thermofeel:
             path: .github/ci-config.yml
-            input: ${{ inputs.thermofeel }}
             python: true
             master_branch: master
             develop_branch: develop
+            input: ${{ inputs.thermofeel }}
         SKIP_MATRIX_JOBS: ${{ inputs.skip_matrix_jobs }}
         PYTHON_VERSIONS: |+
           - '3.10'
+
+        PYTHON_JOBS: |+
+          []
 
         MATRIX: |
           include:

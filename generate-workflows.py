@@ -338,7 +338,6 @@ class Workflow:
                         "config_path", dep_tree, dep, self.name
                     )
                     or default_config_path,
-                    "input": "${{ " + f"inputs.{dep}" + " }}",
                     "python": dep_tree[dep].get("type", "cmake") == "python",
                     "master_branch": tree_get_package_var(
                         "master_branch", dep_tree, dep, self.name
@@ -348,6 +347,7 @@ class Workflow:
                         "develop_branch", dep_tree, dep, self.name
                     )
                     or "develop",
+                    "input": "${{ " + f"inputs.{dep}" + " }}",
                 }
         steps.append(
             {
@@ -364,6 +364,12 @@ class Workflow:
                     "SKIP_MATRIX_JOBS": "${{ inputs.skip_matrix_jobs }}",
                     "PYTHON_VERSIONS": yaml.dump(
                         wf_config["python_versions"], indent=2, default_flow_style=False
+                    )
+                    + "\n",
+                    "PYTHON_JOBS": yaml.dump(
+                        wf_config.get("python_jobs", []),
+                        indent=2,
+                        default_flow_style=False,
                     )
                     + "\n",
                     "MATRIX": yaml.dump(wf_config["matrix"], indent=2),
