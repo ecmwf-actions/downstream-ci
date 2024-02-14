@@ -163,8 +163,16 @@ class Workflow:
             if tree_get_package_var("input", dep_tree, package, self.name) is False:
                 continue
             package_deps = get_package_deps(package, dep_tree, self.name)
-            cmake_deps = get_type_deps(package, dep_tree, self.name, "cmake")
-            python_deps = get_type_deps(package, dep_tree, self.name, "python")
+            cmake_deps = [
+                "${{ " + f"inputs.{dep}" + " }}"
+                for dep in get_type_deps(package, dep_tree, self.name, "cmake")
+                if tree_get_package_var("input", dep_tree, dep, self.name) is not False
+            ]
+            python_deps = [
+                "${{ " + f"inputs.{dep}" + " }}"
+                for dep in get_type_deps(package, dep_tree, self.name, "python")
+                if tree_get_package_var("input", dep_tree, dep, self.name) is not False
+            ]
             needs = [
                 dep
                 for dep in package_deps
@@ -173,7 +181,6 @@ class Workflow:
             condition_inputs = " || ".join(
                 [f"inputs.{dep}" for dep in needs + [package]]
             )
-            build_deps = "\n".join(["${{ " + f"inputs.{dep}" + " }}" for dep in needs])
             needs.append("setup")
 
             condition = (
@@ -208,7 +215,7 @@ class Workflow:
                                     "repository: ${{ matrix.owner_repo_ref }}"
                                 ),
                                 "build_config": "${{ matrix.config_path }}",
-                                "build_dependencies": build_deps,
+                                "build_dependencies": "\n".join(cmake_deps),
                             },
                         }
                     )
@@ -234,16 +241,7 @@ class Workflow:
                                         "repository: ${{ matrix.owner_repo_ref }}"
                                     ),
                                     "build_config": "${{ matrix.config_path }}",
-                                    "build_dependencies": "\n".join(
-                                        [
-                                            "${{ " + f"inputs.{dep}" + " }}"
-                                            for dep in cmake_deps
-                                            if tree_get_package_var(
-                                                "input", dep_tree, dep, self.name
-                                            )
-                                            is not False
-                                        ],
-                                    ),
+                                    "build_dependencies": "\n".join(cmake_deps),
                                 },
                             }
                         )
@@ -255,16 +253,7 @@ class Workflow:
                                         "${{ steps.build-deps.outputs.lib_path }}"
                                     ),
                                     "conda_install": "libffi=3.3",
-                                    "python_dependencies": "\n".join(
-                                        [
-                                            "${{ " + f"inputs.{dep}" + " }}"
-                                            for dep in python_deps
-                                            if tree_get_package_var(
-                                                "input", dep_tree, dep, self.name
-                                            )
-                                            is not False
-                                        ]
-                                    ),
+                                    "python_dependencies": "\n".join(python_deps),
                                 },
                             }
                         )
@@ -276,9 +265,7 @@ class Workflow:
                                 "with": {
                                     "repository": "${{ matrix.owner_repo_ref }}",
                                     "checkout": True,
-                                    "python_dependencies": "\n".join(
-                                        [f"inputs.{dep}" for dep in python_deps]
-                                    ),
+                                    "python_dependencies": "\n".join(python_deps),
                                 },
                             }
                         )
@@ -299,12 +286,8 @@ class Workflow:
                             "troika_user": "${{ secrets.HPC_CI_SSH_USER }}",
                             "repository": "${{ matrix.owner_repo_ref }}",
                             "build_config": "${{ matrix.config_path }}",
-                            "dependencies": "\n".join(
-                                [f"inputs.{dep}" for dep in cmake_deps]
-                            ),
-                            "python_dependencies": "\n".join(
-                                [f"inputs.{dep}" for dep in python_deps]
-                            ),
+                            "dependencies": "\n".join(cmake_deps),
+                            "python_dependencies": "\n".join(python_deps),
                         },
                     }
                 )
