@@ -45,8 +45,13 @@ def get_package_deps(
 
 def tree_get_package_var(var_name: str, dep_tree: dict, package: str, wf_name: str):
     """Get package variable from dep tree. Prefers vars set for given workflow name."""
-    package_conf = dep_tree[package].get(wf_name) or dep_tree[package]
-    return package_conf.get(var_name)
+    wf_spec = dep_tree[package].get(wf_name, {})
+    general = dep_tree[package]
+    if wf_spec.get(var_name) is not None:
+        return wf_spec[var_name]
+    if general.get(var_name) is not None:
+        return general[var_name]
+    return None
 
 
 def get_type_deps(
@@ -196,6 +201,7 @@ class Workflow:
             }
             runs_on = "${{ matrix.labels }}"
             env = {"DEP_TREE": "${{ needs.setup.outputs.dep_tree }}"}
+            test_cmd = tree_get_package_var("test_cmd", dep_tree, package, self.name)
             steps = []
             if self.wf_type == "build-package":
                 if pkg_conf.get("type", "cmake") == "cmake":
@@ -259,6 +265,8 @@ class Workflow:
                             ci_python_step["with"]["requirements_path"] = pkg_conf.get(
                                 "requirements_path"
                             )
+                        if test_cmd:
+                            ci_python_step["with"]["test_cmd"] = test_cmd
                         steps.append(ci_python_step)
                     else:
                         # pure python package
@@ -274,6 +282,8 @@ class Workflow:
                             ci_python_step["with"]["requirements_path"] = pkg_conf.get(
                                 "requirements_path"
                             )
+                        if test_cmd:
+                            ci_python_step["with"]["test_cmd"] = test_cmd
                         steps.append(ci_python_step)
             if self.wf_type == "build-package-hpc":
                 runs_on = [
