@@ -245,30 +245,36 @@ class Workflow:
                                 },
                             }
                         )
-                        steps.append(
-                            {
-                                "uses": "ecmwf-actions/reusable-workflows/ci-python@v2",
-                                "with": {
-                                    "lib_path": (
-                                        "${{ steps.build-deps.outputs.lib_path }}"
-                                    ),
-                                    "conda_install": "libffi=3.3",
-                                    "python_dependencies": "\n".join(python_deps),
-                                },
-                            }
-                        )
+                        ci_python_step = {
+                            "uses": "ecmwf-actions/reusable-workflows/ci-python@v2",
+                            "with": {
+                                "lib_path": (
+                                    "${{ steps.build-deps.outputs.lib_path }}"
+                                ),
+                                "conda_install": "libffi=3.3",
+                                "python_dependencies": "\n".join(python_deps),
+                            },
+                        }
+                        if pkg_conf.get("requirements_path"):
+                            ci_python_step["with"]["requirements_path"] = pkg_conf.get(
+                                "requirements_path"
+                            )
+                        steps.append(ci_python_step)
                     else:
                         # pure python package
-                        steps.append(
-                            {
-                                "uses": "ecmwf-actions/reusable-workflows/ci-python@v2",
-                                "with": {
-                                    "repository": "${{ matrix.owner_repo_ref }}",
-                                    "checkout": True,
-                                    "python_dependencies": "\n".join(python_deps),
-                                },
-                            }
-                        )
+                        ci_python_step = {
+                            "uses": "ecmwf-actions/reusable-workflows/ci-python@v2",
+                            "with": {
+                                "repository": "${{ matrix.owner_repo_ref }}",
+                                "checkout": True,
+                                "python_dependencies": "\n".join(python_deps),
+                            },
+                        }
+                        if pkg_conf.get("requirements_path"):
+                            ci_python_step["with"]["requirements_path"] = pkg_conf.get(
+                                "requirements_path"
+                            )
+                        steps.append(ci_python_step)
             if self.wf_type == "build-package-hpc":
                 runs_on = [
                     "self-hosted",

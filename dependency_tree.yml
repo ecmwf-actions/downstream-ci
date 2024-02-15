@@ -18,6 +18,7 @@ cfgrib:
 earthkit-data:
   type: python
   master_branch: main
+  requirements_path: tests/downstream-ci-requirements.txt
   deps:
     - cfgrib
     - multiurl
@@ -102,6 +103,7 @@ pdbufr:
   type: python
   master_branch: master
   develop_branch: master
+  requirements_path: tests/downstream-ci-requirements.txt
   deps:
     - eccodes-python
 
