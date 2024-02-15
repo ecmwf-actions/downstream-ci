@@ -64,6 +64,17 @@ DEFAULT_MASTER_BRANCH_NAME = "master"
 DEFAULT_DEVELOP_BRANCH_NAME = "develop"
 
 
+def tree_get_package_var(var_name: str, dep_tree: dict, package: str, wf_name: str):
+    """Get package variable from dep tree. Prefers vars set for given workflow name."""
+    wf_spec = dep_tree[package].get(wf_name, {})
+    general = dep_tree[package]
+    if wf_spec.get(var_name) is not None:
+        return wf_spec[var_name]
+    if general.get(var_name) is not None:
+        return general[var_name]
+    return None
+
+
 # Get build-pacakge(-hpc) config for each repo
 def get_config(owner, repo, ref, path):
     print(f"Getting config for {owner}/{repo}@{ref}")
@@ -158,14 +169,23 @@ print(yaml.dump(matrices, sort_keys=False))
 with open("dependency_tree.yml", "r") as f:
     dep_tree = list(yaml.safe_load_all(f))
 
-build_package_dep_tree: dict = [
-    d for d in dep_tree if d.get("name") == "build-package"
-][0]
-build_package_dep_tree.pop("name", None)
-build_package_hpc_dep_tree: dict = [
-    d for d in dep_tree if d.get("name") == "build-package-hpc"
-][0]
-build_package_hpc_dep_tree.pop("name", None)
+build_package_dep_tree = {}
+build_package_hpc_dep_tree = {}
+
+
+for package, conf in dep_tree.items():
+    build_package_dep_tree[package] = {}
+    if bp_deps := tree_get_package_var("deps", dep_tree, package, "downstream-ci"):
+        build_package_dep_tree[package]["deps"] = bp_deps
+
+    build_package_hpc_dep_tree[package] = {}
+    if hpc_deps := tree_get_package_var("deps", dep_tree, package, "downstream-ci-hpc"):
+        build_package_hpc_dep_tree[package]["deps"] = hpc_deps
+
+    if hpc_modules := tree_get_package_var(
+        "modules", dep_tree, package, "downstream-ci-hpc"
+    ):
+        build_package_hpc_dep_tree[package]["modules"] = hpc_modules
 
 print(
     "build-package dependency tree:\n",
