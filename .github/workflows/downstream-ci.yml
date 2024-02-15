@@ -492,6 +492,7 @@ jobs:
           ${{ inputs.pdbufr }}
           ${{ inputs.eccodes-python }}
           ${{ inputs.pyodc }}
+        requirements_path: tests/downstream-ci-requirements.txt
   eccodes:
     name: eccodes
     needs:
@@ -759,6 +760,7 @@ jobs:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         conda_install: libffi=3.3
         python_dependencies: ${{ inputs.eccodes-python }}
+        requirements_path: tests/downstream-ci-requirements.txt
   plume:
     name: plume
     needs:
