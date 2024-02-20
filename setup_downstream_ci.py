@@ -50,7 +50,7 @@ ci_config: dict = yaml.safe_load(os.getenv("CONFIG", ""))
 python_versions = yaml.safe_load(os.getenv("PYTHON_VERSIONS", ""))
 python_jobs = yaml.safe_load(os.getenv("PYTHON_JOBS", ""))
 matrix = yaml.safe_load(os.getenv("MATRIX", ""))
-optional_matrix = yaml.safe_load(os.getenv("OPTIONAL_MATRIX", ""))
+optional_matrix = yaml.safe_load(os.getenv("OPTIONAL_MATRIX", "")) or {}
 skip_jobs = os.getenv("SKIP_MATRIX_JOBS", "").splitlines()
 token = os.getenv("TOKEN", "")
 trigger_ref_name = os.getenv("DISPATCH_REF_NAME") or os.getenv("GITHUB_REF_NAME", "")
@@ -143,7 +143,7 @@ for owner_repo, val in ci_config.items():
     matrices[repo] = copy.deepcopy(matrix)
 
     for opt in optional_matrix.get("name", []):
-        if opt in val.get("optional_matrix"):
+        if val.get("optional_matrix", []) and opt in val.get("optional_matrix", []):
             matrices[repo]["name"].append(opt)
             matrices[repo]["include"].extend(
                 [d for d in optional_matrix.get("include") if d["name"] == opt]
@@ -177,7 +177,7 @@ print(yaml.dump(matrices, sort_keys=False))
 
 
 with open("dependency_tree.yml", "r") as f:
-    dep_tree = list(yaml.safe_load_all(f))
+    dep_tree = yaml.safe_load(f)
 
 build_package_dep_tree = {}
 build_package_hpc_dep_tree = {}
