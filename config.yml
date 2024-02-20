@@ -116,24 +116,28 @@ downstream-ci-hpc:
       - intel-2021.4.0
     include:
       - name: gnu-12.2.0
+        site: atos
         compiler: gnu-12.2.0
         compiler_cc: gcc
         compiler_cxx: g++
         compiler_fc: gfortran
         compiler_modules: gcc/12.2.0
       - name: gnu-8.5.0
+        site: atos
         compiler: gnu-8.5.0
         compiler_cc: gcc
         compiler_cxx: g++
         compiler_fc: gfortran
         compiler_modules: gcc/8.5.0
       - name: nvidia-22.11
+        site: atos
         compiler: nvidia-22.11
         compiler_cc: nvc
         compiler_cxx: nvc++
         compiler_fc: nvfortran
         compiler_modules: prgenv/nvidia,nvidia/22.11
       - name: intel-2021.4.0
+        site: atos
         compiler: intel-2021.4.0
         compiler_cc: icc
         compiler_cxx: icpc
@@ -143,7 +147,8 @@ downstream-ci-hpc:
     name:
       - lumi
     include:
-      - name: lumi
+      - name: lumi-gnu-12.2.0
+        site: lumi
         compiler: gnu-12.2.0
         compiler_cc: gcc
         compiler_cxx: g++
