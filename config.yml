@@ -101,6 +101,7 @@ downstream-ci:
         compiler_fc: gfortran
         #OPENSSL_ROOT_DIR is taken care of in build-package
         env: *macos_env
+  optional_matrix: null
 downstream-ci-hpc:
   type: build-package-hpc
   python_jobs:
@@ -138,3 +139,13 @@ downstream-ci-hpc:
         compiler_cxx: icpc
         compiler_fc: ifort
         compiler_modules: prgenv/intel,intel/2021.4.0
+  optional_matrix:
+    name:
+      - lumi
+    include:
+      - name: lumi
+        compiler: gnu-12.2.0
+        compiler_cc: gcc
+        compiler_cxx: g++
+        compiler_fc: gfortran
+        compiler_modules: LUMI/23.09,cpeGNU/23.09

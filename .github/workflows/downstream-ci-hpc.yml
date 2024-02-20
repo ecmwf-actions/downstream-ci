@@ -97,7 +97,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: ecmwf-actions/downstream-ci
-        ref: main
+        ref: generate-workflow
     - name: Run setup script
       id: setup
       env:
@@ -109,120 +109,141 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.atlas }}
+            optional_matrix: null
           ecmwf/cfgrib:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
             develop_branch: master
             input: ${{ inputs.cfgrib }}
+            optional_matrix: null
           ecmwf/earthkit-data:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ inputs.earthkit-data }}
+            optional_matrix: null
           ecmwf/eccodes:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.eccodes }}
+            optional_matrix:
+            - lumi
           ecmwf/eccodes-python:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.eccodes-python }}
+            optional_matrix: null
           ecmwf/ecflow:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.ecflow }}
+            optional_matrix: null
           ecmwf/ecflow-light:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.ecflow-light }}
+            optional_matrix: null
           ecmwf/eckit:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.eckit }}
+            optional_matrix: null
           ecmwf/fckit:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.fckit }}
+            optional_matrix: null
           ecmwf/fdb:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.fdb }}
+            optional_matrix: null
           ecmwf/metkit:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.metkit }}
+            optional_matrix: null
           ecmwf/mir:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.mir }}
+            optional_matrix: null
           ecmwf/multiurl:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: main
             input: ${{ inputs.multiurl }}
+            optional_matrix: null
           ecmwf/odc:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.odc }}
+            optional_matrix: null
           ecmwf/pdbufr:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
             develop_branch: master
             input: ${{ inputs.pdbufr }}
+            optional_matrix: null
           ecmwf/plume:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.plume }}
+            optional_matrix: null
           ecmwf/pyfdb:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.pyfdb }}
+            optional_matrix: null
           ecmwf/pyodc:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.pyodc }}
+            optional_matrix: null
           ecmwf/skinnywms:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.skinnywms }}
+            optional_matrix: null
           ecmwf/thermofeel:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.thermofeel }}
+            optional_matrix: null
         SKIP_MATRIX_JOBS: ${{ inputs.skip_matrix_jobs }}
         PYTHON_VERSIONS: |+
           - '3.10'
@@ -261,6 +282,16 @@ jobs:
           - gnu-8.5.0
           - nvidia-22.11
           - intel-2021.4.0
+        OPTIONAL_MATRIX: |
+          include:
+          - compiler: gnu-12.2.0
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+            compiler_modules: LUMI/23.09,cpeGNU/23.09
+            name: lumi
+          name:
+          - lumi
       run: python setup_downstream_ci.py
   atlas:
     name: atlas
