@@ -364,6 +364,9 @@ class Workflow:
                     )
                     or "develop",
                     "input": "${{ " + f"inputs.{dep}" + " }}",
+                    "optional_matrix": tree_get_package_var(
+                        "optional_matrix", dep_tree, dep, self.name
+                    ),
                 }
         steps.append(
             {
@@ -389,6 +392,9 @@ class Workflow:
                     )
                     + "\n",
                     "MATRIX": yaml.dump(wf_config["matrix"], indent=2),
+                    "OPTIONAL_MATRIX": yaml.dump(
+                        wf_config["optional_matrix"], indent=2, default_flow_style=False
+                    ),
                 },
                 "run": "python setup_downstream_ci.py",
             }

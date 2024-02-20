@@ -22,6 +22,7 @@ Inputs (as environment variables):
     PYTHON_JOBS: Yaml list, list of jobs to be used for python packages
     MATRIX: Yaml object, see
             https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategymatrix
+    OPTIONAL_MATRIX: same as $MATRIX, packages can opt in
 
 Outputs:
     Outputs are written to $GITHUB_OUTPUT file.
@@ -49,6 +50,7 @@ ci_config: dict = yaml.safe_load(os.getenv("CONFIG", ""))
 python_versions = yaml.safe_load(os.getenv("PYTHON_VERSIONS", ""))
 python_jobs = yaml.safe_load(os.getenv("PYTHON_JOBS", ""))
 matrix = yaml.safe_load(os.getenv("MATRIX", ""))
+optional_matrix = yaml.safe_load(os.getenv("OPTIONAL_MATRIX", ""))
 skip_jobs = os.getenv("SKIP_MATRIX_JOBS", "").splitlines()
 token = os.getenv("TOKEN", "")
 trigger_ref_name = os.getenv("DISPATCH_REF_NAME") or os.getenv("GITHUB_REF_NAME", "")
@@ -138,10 +140,18 @@ for owner_repo, val in ci_config.items():
     if not config["setup_matrix"]:
         continue
 
+    matrices[repo] = copy.deepcopy(matrix)
+
+    for opt in optional_matrix.get("name", []):
+        if opt in val.get("optional_matrix"):
+            matrices[repo]["name"].append(opt)
+            matrices[repo]["include"].extend(
+                [d for d in optional_matrix.get("include") if d["name"] == opt]
+            )
+
     if config["matrix"]:
-        matrices[repo] = {**copy.deepcopy(matrix), "config": config["matrix"]}
-    else:
-        matrices[repo] = copy.deepcopy(matrix)
+        matrices[repo]["config"] = config["matrix"]
+
     for index, item in enumerate(matrices[repo]["include"]):
         matrices[repo]["include"][index]["owner_repo_ref"] = f"{owner}/{repo}@{ref}"
         matrices[repo]["include"][index]["config_path"] = path
