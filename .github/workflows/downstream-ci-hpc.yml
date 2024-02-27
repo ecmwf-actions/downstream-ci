@@ -97,7 +97,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: ecmwf-actions/downstream-ci
-        ref: generate-workflow
+        ref: main
     - name: Run setup script
       id: setup
       env:
@@ -130,8 +130,7 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.eccodes }}
-            optional_matrix:
-            - lumi
+            optional_matrix: null
           ecmwf/eccodes-python:
             path: .github/ci-hpc-config.yml
             python: true
@@ -259,24 +258,28 @@ jobs:
             compiler_fc: gfortran
             compiler_modules: gcc/12.2.0
             name: gnu-12.2.0
+            site: atos
           - compiler: gnu-8.5.0
             compiler_cc: gcc
             compiler_cxx: g++
             compiler_fc: gfortran
             compiler_modules: gcc/8.5.0
             name: gnu-8.5.0
+            site: atos
           - compiler: nvidia-22.11
             compiler_cc: nvc
             compiler_cxx: nvc++
             compiler_fc: nvfortran
             compiler_modules: prgenv/nvidia,nvidia/22.11
             name: nvidia-22.11
+            site: atos
           - compiler: intel-2021.4.0
             compiler_cc: icc
             compiler_cxx: icpc
             compiler_fc: ifort
             compiler_modules: prgenv/intel,intel/2021.4.0
             name: intel-2021.4.0
+            site: atos
           name:
           - gnu-12.2.0
           - gnu-8.5.0
@@ -289,7 +292,8 @@ jobs:
             compiler_cxx: g++
             compiler_fc: gfortran
             compiler_modules: LUMI/23.09,cpeGNU/23.09
-            name: lumi
+            name: lumi-gnu-12.2.0
+            site: lumi
           name:
           - lumi
       run: python setup_downstream_ci.py
