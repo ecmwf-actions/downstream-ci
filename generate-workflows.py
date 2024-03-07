@@ -349,11 +349,14 @@ class Workflow:
         )
         for dep in dep_tree:
             if tree_get_package_var("input", dep_tree, dep, self.name) is not False:
+                config_path = tree_get_package_var(
+                    "config_path", dep_tree, dep, self.name
+                )
+                if config_path is None:
+                    config_path = default_config_path
+
                 setup_config[f"ecmwf/{dep}"] = {
-                    "path": tree_get_package_var(
-                        "config_path", dep_tree, dep, self.name
-                    )
-                    or default_config_path,
+                    "path": config_path,
                     "python": dep_tree[dep].get("type", "cmake") == "python",
                     "master_branch": tree_get_package_var(
                         "master_branch", dep_tree, dep, self.name

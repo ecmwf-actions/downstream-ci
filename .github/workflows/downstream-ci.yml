@@ -198,7 +198,7 @@ jobs:
             input: ${{ inputs.mir }}
             optional_matrix: null
           ecmwf/multiurl:
-            path: .github/ci-config.yml
+            path: ''
             python: true
             master_branch: main
             develop_branch: main
@@ -240,14 +240,14 @@ jobs:
             input: ${{ inputs.pyodc }}
             optional_matrix: null
           ecmwf/skinnywms:
-            path: .github/ci-config.yml
+            path: ''
             python: true
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.skinnywms }}
             optional_matrix: null
           ecmwf/thermofeel:
-            path: .github/ci-config.yml
+            path: ''
             python: true
             master_branch: master
             develop_branch: develop
