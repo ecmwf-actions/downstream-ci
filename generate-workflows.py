@@ -257,7 +257,6 @@ class Workflow:
                                 "lib_path": (
                                     "${{ steps.build-deps.outputs.lib_path }}"
                                 ),
-                                "conda_install": "libffi=3.3",
                                 "python_dependencies": "\n".join(python_deps),
                             },
                         }
