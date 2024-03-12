@@ -470,7 +470,6 @@ jobs:
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
-        conda_install: libffi=3.3
         python_dependencies: ${{ inputs.eccodes-python }}
   earthkit-data:
     name: earthkit-data
@@ -508,7 +507,6 @@ jobs:
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
-        conda_install: libffi=3.3
         python_dependencies: |-
           ${{ inputs.cfgrib }}
           ${{ inputs.multiurl }}
@@ -566,7 +564,6 @@ jobs:
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
-        conda_install: libffi=3.3
         python_dependencies: ''
   ecflow:
     name: ecflow
@@ -786,7 +783,6 @@ jobs:
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
-        conda_install: libffi=3.3
         python_dependencies: ${{ inputs.eccodes-python }}
         requirements_path: tests/downstream-ci-requirements.txt
   plume:
@@ -847,7 +843,6 @@ jobs:
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
-        conda_install: libffi=3.3
         python_dependencies: ''
   pyodc:
     name: pyodc
@@ -878,7 +873,6 @@ jobs:
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
-        conda_install: libffi=3.3
         python_dependencies: ''
   skinnywms:
     name: skinnywms
