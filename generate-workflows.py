@@ -200,7 +200,9 @@ class Workflow:
                 "matrix": "${{ " + f"fromJson(needs.setup.outputs.{package})" + " }}",
             }
             runs_on = "${{ matrix.labels }}"
+            package_env = tree_get_package_var("env", dep_tree, package, self.name)
             env = {"DEP_TREE": "${{ needs.setup.outputs.dep_tree }}"}
+            env.update(package_env) if package_env else None
             test_cmd = tree_get_package_var("test_cmd", dep_tree, package, self.name)
             steps = []
             if self.wf_type == "build-package":

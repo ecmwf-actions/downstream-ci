@@ -825,6 +825,9 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.pyfdb) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+      FDB5_CONFIG: '{"type":"local","engine":"toc","schema":"${{ github.workspace }}/tests/default_fdb_schema","spaces":[{"handler":"Default","roots":[{"path":"${{ github.workspace }}/data/fdb"}]}]}
+
+        '
     runs-on: ${{ matrix.labels }}
     steps:
     - name: Build dependencies

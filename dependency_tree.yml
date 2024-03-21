@@ -132,7 +132,10 @@ pyfdb:
   type: python
   deps:
     - fdb
-
+  downstream-ci:
+    env:
+      FDB5_CONFIG: >
+        {"type":"local","engine":"toc","schema":"${{ github.workspace }}/tests/default_fdb_schema","spaces":[{"handler":"Default","roots":[{"path":"${{ github.workspace }}/data/fdb"}]}]}
 pyodc:
   type: python
   deps:
