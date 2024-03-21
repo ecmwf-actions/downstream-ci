@@ -204,6 +204,7 @@ class Workflow:
             env = {"DEP_TREE": "${{ needs.setup.outputs.dep_tree }}"}
             env.update(package_env) if package_env else None
             test_cmd = tree_get_package_var("test_cmd", dep_tree, package, self.name)
+            mkdir = tree_get_package_var("mkdir", dep_tree, package, self.name) or []
             steps = []
             if self.wf_type == "build-package":
                 if pkg_conf.get("type", "cmake") == "cmake":
@@ -253,6 +254,8 @@ class Workflow:
                                 },
                             }
                         )
+                        for path in mkdir:
+                            steps.append({"run": f"mkdir -p {path}"})
                         ci_python_step = {
                             "uses": "ecmwf-actions/reusable-workflows/ci-python@v2",
                             "with": {

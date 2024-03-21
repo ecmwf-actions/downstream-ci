@@ -843,6 +843,7 @@ jobs:
           ${{ inputs.metkit }}
           ${{ inputs.eccodes }}
           ${{ inputs.eckit }}
+    - run: mkdir -p data/fdb
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
