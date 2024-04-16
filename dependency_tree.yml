@@ -92,6 +92,7 @@ metkit:
 mir:
   type: cmake
   deps:
+    - eckit
     - atlas
     - eccodes
 
