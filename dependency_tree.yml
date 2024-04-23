@@ -12,6 +12,7 @@ cfgrib:
   type: python
   master_branch: master
   develop_branch: master
+  requirements_path: ci/requirements-tests.in
   deps:
     - eccodes-python
 
