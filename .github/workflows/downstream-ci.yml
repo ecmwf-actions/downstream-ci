@@ -471,6 +471,7 @@ jobs:
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         python_dependencies: ${{ inputs.eccodes-python }}
+        requirements_path: ci/requirements-tests.in
   earthkit-data:
     name: earthkit-data
     needs:
