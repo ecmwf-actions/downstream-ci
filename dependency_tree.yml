@@ -32,6 +32,11 @@ earthkit-data:
       python -m pytest --forked -vv -m 'no_cache_init'
       python -m coverage report
 
+earthkit-meteo:
+  type: python
+  master_branch: main
+  requirements_path: tests/downstream-ci-requirements.txt
+
 ecbuild:
   type: cmake
   input: false
