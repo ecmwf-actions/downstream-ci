@@ -36,6 +36,8 @@ earthkit-meteo:
   type: python
   master_branch: main
   requirements_path: tests/downstream-ci-requirements.txt
+  downstream-ci:
+    config_path: ""
 
 ecbuild:
   type: cmake
