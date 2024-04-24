@@ -15,6 +15,9 @@ name: downstream-ci
       earthkit-data:
         required: false
         type: string
+      earthkit-meteo:
+        required: false
+        type: string
       eccodes:
         required: false
         type: string
@@ -82,6 +85,7 @@ jobs:
       atlas: ${{ steps.setup.outputs.atlas }}
       cfgrib: ${{ steps.setup.outputs.cfgrib }}
       earthkit-data: ${{ steps.setup.outputs.earthkit-data }}
+      earthkit-meteo: ${{ steps.setup.outputs.earthkit-meteo }}
       eccodes: ${{ steps.setup.outputs.eccodes }}
       eccodes-python: ${{ steps.setup.outputs.eccodes-python }}
       ecflow: ${{ steps.setup.outputs.ecflow }}
@@ -133,6 +137,13 @@ jobs:
             master_branch: main
             develop_branch: develop
             input: ${{ inputs.earthkit-data }}
+            optional_matrix: null
+          ecmwf/earthkit-meteo:
+            path: ''
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ inputs.earthkit-meteo }}
             optional_matrix: null
           ecmwf/eccodes:
             path: .github/ci-config.yml
@@ -520,6 +531,25 @@ jobs:
           python -m pytest -v -m 'notebook'
           python -m pytest --forked -vv -m 'no_cache_init'
           python -m coverage report
+  earthkit-meteo:
+    name: earthkit-meteo
+    needs:
+    - setup
+    - python-qa
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-meteo && (inputs.earthkit-meteo) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.earthkit-meteo) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        checkout: true
+        python_dependencies: ''
+        requirements_path: tests/downstream-ci-requirements.txt
   eccodes:
     name: eccodes
     needs:
