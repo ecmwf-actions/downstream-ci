@@ -362,6 +362,7 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ${{ inputs.eccodes }}
         python_dependencies: ${{ inputs.eccodes-python }}
+        python_requirements: ci/requirements-tests.in
   earthkit-data:
     name: earthkit-data
     needs:
@@ -402,6 +403,7 @@ jobs:
           ${{ inputs.pdbufr }}
           ${{ inputs.eccodes-python }}
           ${{ inputs.pyodc }}
+        python_requirements: tests/downstream-ci-requirements.txt
   earthkit-meteo:
     name: earthkit-meteo
     needs:
@@ -426,6 +428,7 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: ''
+        python_requirements: tests/downstream-ci-requirements.txt
   eccodes:
     name: eccodes
     needs:
@@ -738,6 +741,7 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ${{ inputs.eccodes }}
         python_dependencies: ${{ inputs.eccodes-python }}
+        python_requirements: tests/downstream-ci-requirements.txt
   plume:
     name: plume
     needs:

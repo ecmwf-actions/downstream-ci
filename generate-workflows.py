@@ -295,22 +295,21 @@ class Workflow:
                     "linux",
                     "hpc",
                 ]
-                steps.append(
-                    {
-                        "uses": "ecmwf-actions/reusable-workflows/ci-hpc@v2",
-                        "with": {
-                            "github_user": (
-                                "${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}"
-                            ),
-                            "github_token": "${{ secrets.GH_REPO_READ_TOKEN }}",
-                            "troika_user": "${{ secrets.HPC_CI_SSH_USER }}",
-                            "repository": "${{ matrix.owner_repo_ref }}",
-                            "build_config": "${{ matrix.config_path }}",
-                            "dependencies": "\n".join(cmake_deps),
-                            "python_dependencies": "\n".join(python_deps),
-                        },
-                    }
-                )
+                s = {
+                    "uses": "ecmwf-actions/reusable-workflows/ci-hpc@v2",
+                    "with": {
+                        "github_user": ("${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}"),
+                        "github_token": "${{ secrets.GH_REPO_READ_TOKEN }}",
+                        "troika_user": "${{ secrets.HPC_CI_SSH_USER }}",
+                        "repository": "${{ matrix.owner_repo_ref }}",
+                        "build_config": "${{ matrix.config_path }}",
+                        "dependencies": "\n".join(cmake_deps),
+                        "python_dependencies": "\n".join(python_deps),
+                    },
+                }
+                if pkg_conf.get("requirements_path"):
+                    s["with"]["python_requirements"] = pkg_conf.get("requirements_path")
+                steps.append(s)
             self.add_job(Job(package, needs, condition, strategy, env, runs_on, steps))
 
     def generate_setup_job(self, dep_tree: dict, wf_config: dict):
