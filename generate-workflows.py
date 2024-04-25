@@ -225,6 +225,7 @@ class Workflow:
                                 ),
                                 "build_config": "${{ matrix.config_path }}",
                                 "build_dependencies": "\n".join(cmake_deps),
+                                "codecov_token": "${{ secrets.CODECOV_UPLOAD_TOKEN }}",
                             },
                         }
                     )
@@ -242,10 +243,7 @@ class Workflow:
                                 ),
                                 "with": {
                                     "repository": "${{ matrix.owner_repo_ref }}",
-                                    "codecov_upload": (
-                                        "${{ needs.setup.outputs.trigger_repo == "
-                                        "github.job && inputs.codecov_upload }}"
-                                    ),
+                                    "codecov_upload": False,
                                     "build_package_inputs": (
                                         "repository: ${{ matrix.owner_repo_ref }}"
                                     ),
@@ -263,6 +261,11 @@ class Workflow:
                                     "${{ steps.build-deps.outputs.lib_path }}"
                                 ),
                                 "python_dependencies": "\n".join(python_deps),
+                                "codecov_upload": (
+                                    "${{ needs.setup.outputs.trigger_repo == "
+                                    "github.job && inputs.codecov_upload }}"
+                                ),
+                                "codecov_token": "${{ secrets.CODECOV_UPLOAD_TOKEN }}",
                             },
                         }
                         if pkg_conf.get("requirements_path"):
@@ -280,6 +283,11 @@ class Workflow:
                                 "repository": "${{ matrix.owner_repo_ref }}",
                                 "checkout": True,
                                 "python_dependencies": "\n".join(python_deps),
+                                "codecov_upload": (
+                                    "${{ needs.setup.outputs.trigger_repo == "
+                                    "github.job && inputs.codecov_upload }}"
+                                ),
+                                "codecov_token": "${{ secrets.CODECOV_UPLOAD_TOKEN }}",
                             },
                         }
                         if pkg_conf.get("requirements_path"):

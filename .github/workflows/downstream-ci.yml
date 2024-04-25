@@ -454,6 +454,7 @@ jobs:
         build_dependencies: |-
           ${{ inputs.fckit }}
           ${{ inputs.eckit }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   cfgrib:
     name: cfgrib
     needs:
@@ -474,7 +475,7 @@ jobs:
       uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
       with:
         repository: ${{ matrix.owner_repo_ref }}
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_upload: false
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
         build_config: ${{ matrix.config_path }}
         build_dependencies: ${{ inputs.eccodes }}
@@ -482,6 +483,8 @@ jobs:
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         python_dependencies: ${{ inputs.eccodes-python }}
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
         requirements_path: ci/requirements-tests.in
   earthkit-data:
     name: earthkit-data
@@ -509,7 +512,7 @@ jobs:
       uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
       with:
         repository: ${{ matrix.owner_repo_ref }}
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_upload: false
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
         build_config: ${{ matrix.config_path }}
         build_dependencies: |-
@@ -525,6 +528,8 @@ jobs:
           ${{ inputs.pdbufr }}
           ${{ inputs.eccodes-python }}
           ${{ inputs.pyodc }}
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
         requirements_path: tests/downstream-ci-requirements.txt
         test_cmd: |
           python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
@@ -549,6 +554,8 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
         python_dependencies: ''
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
         requirements_path: tests/downstream-ci-requirements.txt
   eccodes:
     name: eccodes
@@ -569,6 +576,7 @@ jobs:
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
         build_config: ${{ matrix.config_path }}
         build_dependencies: ''
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   eccodes-python:
     name: eccodes-python
     needs:
@@ -588,7 +596,7 @@ jobs:
       uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
       with:
         repository: ${{ matrix.owner_repo_ref }}
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_upload: false
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
         build_config: ${{ matrix.config_path }}
         build_dependencies: ${{ inputs.eccodes }}
@@ -596,6 +604,8 @@ jobs:
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         python_dependencies: ''
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   ecflow:
     name: ecflow
     needs:
@@ -615,6 +625,7 @@ jobs:
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
         build_config: ${{ matrix.config_path }}
         build_dependencies: ''
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   ecflow-light:
     name: ecflow-light
     needs:
@@ -635,6 +646,7 @@ jobs:
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
         build_config: ${{ matrix.config_path }}
         build_dependencies: ${{ inputs.eckit }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   eckit:
     name: eckit
     needs:
@@ -654,6 +666,7 @@ jobs:
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
         build_config: ${{ matrix.config_path }}
         build_dependencies: ''
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   fckit:
     name: fckit
     needs:
@@ -674,6 +687,7 @@ jobs:
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
         build_config: ${{ matrix.config_path }}
         build_dependencies: ${{ inputs.eckit }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   fdb:
     name: fdb
     needs:
@@ -699,6 +713,7 @@ jobs:
           ${{ inputs.metkit }}
           ${{ inputs.eccodes }}
           ${{ inputs.eckit }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   metkit:
     name: metkit
     needs:
@@ -722,6 +737,7 @@ jobs:
         build_dependencies: |-
           ${{ inputs.eccodes }}
           ${{ inputs.eckit }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   mir:
     name: mir
     needs:
@@ -749,6 +765,7 @@ jobs:
           ${{ inputs.fckit }}
           ${{ inputs.eckit }}
           ${{ inputs.eccodes }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   multiurl:
     name: multiurl
     needs:
@@ -767,6 +784,8 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
         python_dependencies: ''
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   odc:
     name: odc
     needs:
@@ -787,6 +806,7 @@ jobs:
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
         build_config: ${{ matrix.config_path }}
         build_dependencies: ${{ inputs.eckit }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   pdbufr:
     name: pdbufr
     needs:
@@ -807,7 +827,7 @@ jobs:
       uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
       with:
         repository: ${{ matrix.owner_repo_ref }}
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_upload: false
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
         build_config: ${{ matrix.config_path }}
         build_dependencies: ${{ inputs.eccodes }}
@@ -815,6 +835,8 @@ jobs:
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         python_dependencies: ${{ inputs.eccodes-python }}
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
         requirements_path: tests/downstream-ci-requirements.txt
   plume:
     name: plume
@@ -841,6 +863,7 @@ jobs:
           ${{ inputs.atlas }}
           ${{ inputs.fckit }}
           ${{ inputs.eckit }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   pyfdb:
     name: pyfdb
     needs:
@@ -866,7 +889,7 @@ jobs:
       uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
       with:
         repository: ${{ matrix.owner_repo_ref }}
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_upload: false
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
         build_config: ${{ matrix.config_path }}
         build_dependencies: |-
@@ -879,6 +902,8 @@ jobs:
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         python_dependencies: ''
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   pyodc:
     name: pyodc
     needs:
@@ -899,7 +924,7 @@ jobs:
       uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
       with:
         repository: ${{ matrix.owner_repo_ref }}
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_upload: false
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
         build_config: ${{ matrix.config_path }}
         build_dependencies: |-
@@ -909,6 +934,8 @@ jobs:
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         python_dependencies: ''
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   skinnywms:
     name: skinnywms
     needs:
@@ -927,6 +954,8 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
         python_dependencies: ''
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   thermofeel:
     name: thermofeel
     needs:
@@ -945,3 +974,5 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
         python_dependencies: ''
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
