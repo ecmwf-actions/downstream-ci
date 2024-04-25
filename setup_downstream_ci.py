@@ -205,6 +205,7 @@ print(
     "build-package-hpc dependency tree:\n",
     yaml.dump(build_package_hpc_dep_tree, sort_keys=False),
 )
+print(f"Python codecov platform: {py_codecov_platform}")
 
 with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
     print("trigger_repo", trigger_repo, sep="=", file=f)
