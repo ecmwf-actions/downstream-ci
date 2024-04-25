@@ -263,7 +263,9 @@ class Workflow:
                                 "python_dependencies": "\n".join(python_deps),
                                 "codecov_upload": (
                                     "${{ needs.setup.outputs.trigger_repo == "
-                                    "github.job && inputs.codecov_upload }}"
+                                    "github.job && inputs.codecov_upload "
+                                    "&& needs.setup.outputs.py_codecov_platform "
+                                    "== matrix.name }}"
                                 ),
                                 "codecov_token": "${{ secrets.CODECOV_UPLOAD_TOKEN }}",
                             },
@@ -285,7 +287,9 @@ class Workflow:
                                 "python_dependencies": "\n".join(python_deps),
                                 "codecov_upload": (
                                     "${{ needs.setup.outputs.trigger_repo == "
-                                    "github.job && inputs.codecov_upload }}"
+                                    "github.job && inputs.codecov_upload && "
+                                    "needs.setup.outputs.py_codecov_platform == "
+                                    "matrix.name }}"
                                 ),
                                 "codecov_token": "${{ secrets.CODECOV_UPLOAD_TOKEN }}",
                             },

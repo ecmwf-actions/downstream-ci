@@ -483,7 +483,7 @@ jobs:
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         python_dependencies: ${{ inputs.eccodes-python }}
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
         requirements_path: ci/requirements-tests.in
   earthkit-data:
@@ -528,7 +528,7 @@ jobs:
           ${{ inputs.pdbufr }}
           ${{ inputs.eccodes-python }}
           ${{ inputs.pyodc }}
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
         requirements_path: tests/downstream-ci-requirements.txt
         test_cmd: |
@@ -554,7 +554,7 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
         python_dependencies: ''
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
         requirements_path: tests/downstream-ci-requirements.txt
   eccodes:
@@ -604,7 +604,7 @@ jobs:
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         python_dependencies: ''
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   ecflow:
     name: ecflow
@@ -784,7 +784,7 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
         python_dependencies: ''
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   odc:
     name: odc
@@ -835,7 +835,7 @@ jobs:
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         python_dependencies: ${{ inputs.eccodes-python }}
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
         requirements_path: tests/downstream-ci-requirements.txt
   plume:
@@ -902,7 +902,7 @@ jobs:
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         python_dependencies: ''
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   pyodc:
     name: pyodc
@@ -934,7 +934,7 @@ jobs:
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         python_dependencies: ''
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   skinnywms:
     name: skinnywms
@@ -954,7 +954,7 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
         python_dependencies: ''
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   thermofeel:
     name: thermofeel
@@ -974,5 +974,5 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
         python_dependencies: ''
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
