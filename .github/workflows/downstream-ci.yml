@@ -359,6 +359,13 @@ jobs:
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.earthkit-geo }}
             optional_matrix: null
+          ecmwf/earthkit-geo:
+            path: ''
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ inputs.earthkit-geo }}
+            optional_matrix: null
           ecmwf/earthkit-meteo:
             path: ''
             python: true
