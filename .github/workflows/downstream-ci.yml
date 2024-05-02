@@ -290,7 +290,7 @@ jobs:
           ecmwf/cascade:
             path: ''
             python: true
-            master_branch: add-to-downstream-ci
+            master_branch: main
             develop_branch: develop
             input: ${{ inputs.cascade }}
             optional_matrix: null
