@@ -51,6 +51,9 @@ name: downstream-ci-hpc
       fdb:
         required: false
         type: string
+      infero:
+        required: false
+        type: string
       metkit:
         required: false
         type: string

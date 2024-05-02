@@ -112,6 +112,14 @@ fdb:
   deps:
     - metkit
 
+infero:
+  type: cmake
+  master_branch: master
+  develop_branch: develop
+  deps:
+    - eckit
+    - fckit
+
 libaec:
   type: cmake
   input: false

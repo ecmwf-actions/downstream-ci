@@ -55,6 +55,9 @@ name: downstream-ci
       fdb:
         required: false
         type: string
+      infero:
+        required: false
+        type: string
       metkit:
         required: false
         type: string
