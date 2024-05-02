@@ -74,6 +74,12 @@ name: downstream-ci-hpc
       thermofeel:
         required: false
         type: string
+      dhskit:
+        required: false
+        type: string
+      ecfs-server:
+        required: false
+        type: string
       skip_matrix_jobs:
         description: List of matrix jobs to be skipped.
         required: false
@@ -107,6 +113,8 @@ jobs:
       pyodc: ${{ steps.setup.outputs.pyodc }}
       skinnywms: ${{ steps.setup.outputs.skinnywms }}
       thermofeel: ${{ steps.setup.outputs.thermofeel }}
+      dhskit: ${{ steps.setup.outputs.dhskit }}
+      ecfs-server: ${{ steps.setup.outputs.ecfs-server }}
       dep_tree: ${{ steps.setup.outputs.build_package_hpc_dep_tree }}
     steps:
     - name: checkout reusable wfs repo
@@ -286,6 +294,20 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.thermofeel }}
+            optional_matrix: null
+          ecmwf/dhskit:
+            path: .github/ci-hpc-config.yml
+            python: false
+            master_branch: master
+            develop_branch: develop
+            input: ${{ inputs.dhskit }}
+            optional_matrix: null
+          ecmwf/ecfs-server:
+            path: .github/ci-hpc-config.yml
+            python: false
+            master_branch: master
+            develop_branch: develop
+            input: ${{ inputs.ecfs-server }}
             optional_matrix: null
         SKIP_MATRIX_JOBS: ${{ inputs.skip_matrix_jobs }}
         PYTHON_VERSIONS: |+
@@ -1011,4 +1033,57 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: ''
+        python_dependencies: ''
+  dhskit:
+    name: dhskit
+    needs:
+    - eckit
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.dhskit && (inputs.eckit || inputs.dhskit) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.dhskit) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ${{ inputs.eckit }}
+        python_dependencies: ''
+  ecfs-server:
+    name: ecfs-server
+    needs:
+    - dhskit
+    - eckit
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.ecfs-server && (inputs.dhskit || inputs.eckit || inputs.ecfs-server) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.ecfs-server) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: |-
+          ${{ inputs.dhskit }}
+          ${{ inputs.eckit }}
         python_dependencies: ''
