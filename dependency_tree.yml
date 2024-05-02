@@ -164,6 +164,6 @@ thermofeel:
 
 cascade:
   type: python
-  master_branch: add-to-downstream-ci
+  master_branch: main
   downstream-ci: 
     config_path: ""
