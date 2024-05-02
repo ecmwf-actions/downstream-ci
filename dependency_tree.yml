@@ -169,6 +169,11 @@ thermofeel:
   downstream-ci:
     config_path: ""
 
+conflator:
+  type: python
+  downstream-ci:
+    config_path: ""
+
 polytope:
   type: python
   deps:
