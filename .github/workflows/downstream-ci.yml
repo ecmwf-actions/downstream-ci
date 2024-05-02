@@ -429,7 +429,7 @@ jobs:
     - name: Run clang-format
       shell: bash {0}
       run: |-
-        ignore="./\($(echo "${{ inputs.ignore_paths }}" | sed ':a;N;$!ba;s/\n/\\|/g')\)"
+        ignore="./\($(echo "${{ inputs.clang_format_ignore }}" | sed ':a;N;$!ba;s/\n/\\|/g')\)"
         echo "Ignore: $ignore"
         files=$(find . -not \( -regex $ignore -prune \) -regex ".*\.\(cpp\|hpp\|cc\|cxx\|h\|c\)")
         errors=0
