@@ -174,10 +174,8 @@ danu:
   master_branch: main
   #requirements_path: environment.yml
   test_cmd: "python -m pytest"
-  config_path: ""
+  conda_deps: |
+    pcraster
+    gdal
   downstream-ci-hpc:
-    modules:
-      - python3
-      - pcraster
-      - gdal
-      - ecmwf-toolbox
+    config_path: ""
