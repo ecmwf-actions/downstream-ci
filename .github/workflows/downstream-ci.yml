@@ -12,6 +12,9 @@ name: downstream-ci
       cfgrib:
         required: false
         type: string
+      earthkit:
+        required: false
+        type: string
       earthkit-data:
         required: false
         type: string
@@ -98,6 +101,7 @@ jobs:
     outputs:
       atlas: ${{ steps.setup.outputs.atlas }}
       cfgrib: ${{ steps.setup.outputs.cfgrib }}
+      earthkit: ${{ steps.setup.outputs.earthkit }}
       earthkit-data: ${{ steps.setup.outputs.earthkit-data }}
       earthkit-geo: ${{ steps.setup.outputs.earthkit-geo }}
       earthkit-meteo: ${{ steps.setup.outputs.earthkit-meteo }}
@@ -146,6 +150,13 @@ jobs:
             master_branch: master
             develop_branch: master
             input: ${{ inputs.cfgrib }}
+            optional_matrix: null
+          ecmwf/earthkit:
+            path: ''
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ inputs.earthkit }}
             optional_matrix: null
           ecmwf/earthkit-data:
             path: .github/ci-config.yml
@@ -529,6 +540,59 @@ jobs:
         codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
         requirements_path: ci/requirements-tests.in
+  earthkit:
+    name: earthkit
+    needs:
+    - earthkit-data
+    - cfgrib
+    - multiurl
+    - pdbufr
+    - eccodes-python
+    - eccodes
+    - pyodc
+    - odc
+    - eckit
+    - earthkit-geo
+    - earthkit-meteo
+    - earthkit-regrid
+    - setup
+    - python-qa
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit && (inputs.earthkit-data || inputs.cfgrib || inputs.multiurl || inputs.pdbufr || inputs.eccodes-python || inputs.eccodes || inputs.pyodc || inputs.odc || inputs.eckit || inputs.earthkit-geo || inputs.earthkit-meteo || inputs.earthkit-regrid || inputs.earthkit) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.earthkit) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+    - name: Build dependencies
+      id: build-deps
+      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        codecov_upload: false
+        build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
+        build_config: ${{ matrix.config_path }}
+        build_dependencies: |-
+          ${{ inputs.eccodes }}
+          ${{ inputs.odc }}
+          ${{ inputs.eckit }}
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+      with:
+        lib_path: ${{ steps.build-deps.outputs.lib_path }}
+        python_dependencies: |-
+          ${{ inputs.earthkit-data }}
+          ${{ inputs.cfgrib }}
+          ${{ inputs.multiurl }}
+          ${{ inputs.pdbufr }}
+          ${{ inputs.eccodes-python }}
+          ${{ inputs.pyodc }}
+          ${{ inputs.earthkit-geo }}
+          ${{ inputs.earthkit-meteo }}
+          ${{ inputs.earthkit-regrid }}
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
+        requirements_path: tests/downstream-ci-requirements.txt
   earthkit-data:
     name: earthkit-data
     needs:
