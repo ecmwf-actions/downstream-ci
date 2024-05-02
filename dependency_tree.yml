@@ -389,8 +389,9 @@ danu:
   master_branch: main
   #requirements_path: environment.yml
   test_cmd: "python -m pytest"
-  conda_deps: |
-    pcraster
-    gdal
-  downstream-ci-hpc:
+  modules:
+    - pcraster
+    - gdal
+    - python3
+  downstream-ci:
     config_path: ""
