@@ -32,13 +32,6 @@ earthkit-data:
       python -m pytest --forked -vv -m 'no_cache_init'
       python -m coverage report
 
-earthkit-plots:
-  type: python
-  master_branch: main
-  requirements_path: tests/downstream-ci-requirements.txt
-  downstream-ci:
-    config_path: ""
-
 earthkit-geo:
   type: python
   master_branch: main
@@ -47,6 +40,13 @@ earthkit-geo:
     config_path: ""
 
 earthkit-meteo:
+  type: python
+  master_branch: main
+  requirements_path: tests/downstream-ci-requirements.txt
+  downstream-ci:
+    config_path: ""
+
+earthkit-plots:
   type: python
   master_branch: main
   requirements_path: tests/downstream-ci-requirements.txt

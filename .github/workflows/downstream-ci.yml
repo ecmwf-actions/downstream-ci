@@ -15,13 +15,13 @@ name: downstream-ci
       earthkit-data:
         required: false
         type: string
-      earthkit-plots:
-        required: false
-        type: string
       earthkit-geo:
         required: false
         type: string
       earthkit-meteo:
+        required: false
+        type: string
+      earthkit-plots:
         required: false
         type: string
       earthkit-regrid:
