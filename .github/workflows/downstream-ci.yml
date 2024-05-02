@@ -77,6 +77,14 @@ name: downstream-ci
         description: Whether to run code QA tasks.
         type: boolean
         required: false
+      clang_format:
+        description: Whether to run clang-format QA.
+        type: boolean
+        required: false
+      clang_format_ignore:
+        description: A list of paths to be skipped during formatting check.
+        type: string
+        required: false
 jobs:
   setup:
     name: setup
@@ -403,12 +411,53 @@ jobs:
       run: black --check .
     - name: Check flake8
       run: flake8 .
+  clang-format:
+    name: clang-format
+    needs:
+    - setup
+    if: ${{ inputs.clang_format }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Install clang-format
+      run: |
+        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+        sudo add-apt-repository deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main
+        sudo apt update
+        sudo apt install -y clang-format-16
+    - name: Run clang-format
+      shell: bash {0}
+      run: |-
+        ignore="./\($(echo "${{ inputs.ignore_paths }}" | sed ':a;N;$!ba;s/\n/\\|/g')\)"
+        echo "Ignore: $ignore"
+        files=$(find . -not \( -regex $ignore -prune \) -regex ".*\.\(cpp\|hpp\|cc\|cxx\|h\|c\)")
+        errors=0
+
+        if [ ! -e ".clang-format" ]
+        then
+            echo "::error::Missing .clang-format file"
+            exit 1
+        fi
+
+        for file in $files; do
+            clang-format-16 --dry-run --Werror --style=file --fallback-style=none $file
+            if [ $? -ne 0 ]; then
+                ((errors++))
+            fi
+        done
+
+        if [ $errors -ne 0 ]; then
+            echo "::error::clang-format failed for $errors files"
+            exit 1
+        fi
   atlas:
     name: atlas
     needs:
     - fckit
     - eckit
     - setup
+    - clang-format
     if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.atlas && (inputs.fckit || inputs.eckit || inputs.atlas) }}
     strategy:
       fail-fast: false
@@ -533,6 +582,7 @@ jobs:
     name: eccodes
     needs:
     - setup
+    - clang-format
     if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.eccodes && (inputs.eccodes) }}
     strategy:
       fail-fast: false
@@ -582,6 +632,7 @@ jobs:
     name: ecflow
     needs:
     - setup
+    - clang-format
     if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.ecflow && (inputs.ecflow) }}
     strategy:
       fail-fast: false
@@ -603,6 +654,7 @@ jobs:
     needs:
     - eckit
     - setup
+    - clang-format
     if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.ecflow-light && (inputs.eckit || inputs.ecflow-light) }}
     strategy:
       fail-fast: false
@@ -623,6 +675,7 @@ jobs:
     name: eckit
     needs:
     - setup
+    - clang-format
     if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.eckit && (inputs.eckit) }}
     strategy:
       fail-fast: false
@@ -644,6 +697,7 @@ jobs:
     needs:
     - eckit
     - setup
+    - clang-format
     if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.fckit && (inputs.eckit || inputs.fckit) }}
     strategy:
       fail-fast: false
@@ -667,6 +721,7 @@ jobs:
     - eccodes
     - eckit
     - setup
+    - clang-format
     if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.fdb && (inputs.metkit || inputs.eccodes || inputs.eckit || inputs.fdb) }}
     strategy:
       fail-fast: false
@@ -692,6 +747,7 @@ jobs:
     - eccodes
     - eckit
     - setup
+    - clang-format
     if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.metkit && (inputs.eccodes || inputs.eckit || inputs.metkit) }}
     strategy:
       fail-fast: false
@@ -718,6 +774,7 @@ jobs:
     - eckit
     - eccodes
     - setup
+    - clang-format
     if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.mir && (inputs.atlas || inputs.fckit || inputs.eckit || inputs.eccodes || inputs.mir) }}
     strategy:
       fail-fast: false
@@ -763,6 +820,7 @@ jobs:
     needs:
     - eckit
     - setup
+    - clang-format
     if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.odc && (inputs.eckit || inputs.odc) }}
     strategy:
       fail-fast: false
@@ -817,6 +875,7 @@ jobs:
     - fckit
     - eckit
     - setup
+    - clang-format
     if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.plume && (inputs.atlas || inputs.fckit || inputs.eckit || inputs.plume) }}
     strategy:
       fail-fast: false

@@ -163,6 +163,63 @@ class Workflow:
         )
         self.add_job(job)
 
+    def add_clang_format_job(self):
+        self.inputs["clang_format"] = {
+            "description": "Whether to run clang-format QA.",
+            "type": "boolean",
+            "required": False,
+        }
+        self.inputs["clang_format_ignore"] = {
+            "description": "A list of paths to be skipped during formatting check.",
+            "type": "string",
+            "required": False,
+        }
+
+        steps = r"""
+                - name: Checkout repository
+                  uses: actions/checkout@v4
+
+                - name: Install clang-format
+                  run: |
+                    wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+                    sudo add-apt-repository deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main
+                    sudo apt update
+                    sudo apt install -y clang-format-16
+
+                - name: Run clang-format
+                  shell: bash {0}
+                  run: |
+                    ignore="./\($(echo "${{ inputs.ignore_paths }}" | sed ':a;N;$!ba;s/\n/\\|/g')\)"
+                    echo "Ignore: $ignore"
+                    files=$(find . -not \( -regex $ignore -prune \) -regex ".*\.\(cpp\|hpp\|cc\|cxx\|h\|c\)")
+                    errors=0
+
+                    if [ ! -e ".clang-format" ]
+                    then
+                        echo "::error::Missing .clang-format file"
+                        exit 1
+                    fi
+
+                    for file in $files; do
+                        clang-format-16 --dry-run --Werror --style=file --fallback-style=none $file
+                        if [ $? -ne 0 ]; then
+                            ((errors++))
+                        fi
+                    done
+
+                    if [ $errors -ne 0 ]; then
+                        echo "::error::clang-format failed for $errors files"
+                        exit 1
+                    fi"""
+        self.add_job(
+            Job(
+                name="clang-format",
+                needs=["setup"],
+                condition="${{ inputs.clang_format }}",
+                steps=yaml.safe_load(steps),
+            )
+        )
+
     def generate_package_jobs(self, dep_tree: dict):
         for package, pkg_conf in dep_tree.items():
             if tree_get_package_var("input", dep_tree, package, self.name) is False:
@@ -208,6 +265,7 @@ class Workflow:
             steps = []
             if self.wf_type == "build-package":
                 if pkg_conf.get("type", "cmake") == "cmake":
+                    needs.append("clang-format")
                     steps.append(
                         {
                             "uses": (
@@ -448,6 +506,8 @@ def main():
         wf.generate_setup_job(dep_tree, config[name])
         if config[name].get("python_qa", False):
             wf.add_python_qa_job()
+        if config[name].get("clang_format", False):
+            wf.add_clang_format_job()
         wf.generate_package_jobs(dep_tree)
         print(yaml.dump(wf, indent=2, sort_keys=False, default_flow_style=False))
         print("=" * 10)

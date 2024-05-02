@@ -6,6 +6,7 @@ downstream-ci:
       type: boolean
       required: false
   python_qa: true
+  clang_format: true
   python_versions:
     - "3.10"
   matrix:
