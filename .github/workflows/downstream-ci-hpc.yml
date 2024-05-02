@@ -604,7 +604,7 @@ jobs:
             input: ${{ steps.prepare-inputs.outputs.covjsonkit }}
             optional_matrix: null
           ecmwf/danu:
-            path: ''
+            path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
