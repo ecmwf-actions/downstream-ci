@@ -142,6 +142,9 @@ name: downstream-ci
       covjsonkit:
         required: false
         type: string
+      danu:
+        required: false
+        type: string
       skip_matrix_jobs:
         description: List of matrix jobs to be skipped.
         required: false
@@ -253,6 +256,7 @@ jobs:
       covjsonkit: ${{ steps.prepare-inputs.outputs.covjsonkit }}
       covjsonkit_matrix: ${{ steps.setup.outputs.covjsonkit }}
       dep_tree: ${{ steps.setup.outputs.build_package_dep_tree }}
+      danu: ${{ steps.setup.outputs.danu }}
       trigger_repo: ${{ steps.setup.outputs.trigger_repo }}
       py_codecov_platform: ${{ steps.setup.outputs.py_codecov_platform }}
       use_master: ${{ steps.setup.outputs.use_master }}
@@ -616,6 +620,13 @@ jobs:
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.covjsonkit }}
+            optional_matrix: null
+          ecmwf/danu:
+            path: ''
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.danu }}
             optional_matrix: null
         PYTHON_VERSIONS: |+
           - '3.10'
@@ -2011,3 +2022,24 @@ jobs:
         python_dependencies: ''
         codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
+  danu:
+    name: danu
+    needs:
+    - setup
+    - python-qa
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.danu && (inputs.danu) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.danu) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        checkout: true
+        python_dependencies: ''
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
+        test_cmd: python -m pytest
