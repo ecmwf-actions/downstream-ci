@@ -16,13 +16,14 @@ cfgrib:
   deps:
     - eccodes-python
 
-
 earthkit:
   type: python
   master_branch: main
   requirements_path: tests/downstream-ci-requirements.txt
   downstream-ci:
     config_path: ""
+    test_cmd: |
+      cd .. && python -m pytest earthkit -vv --cov=. --cov-report=html && cd -
   deps:
     - earthkit-data
     - earthkit-geo
