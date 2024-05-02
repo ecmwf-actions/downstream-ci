@@ -174,9 +174,9 @@ danu:
   master_branch: main
   #requirements_path: environment.yml
   test_cmd: "python -m pytest"
-  modules:
-    - pcraster
-    - gdal
-    - python3
-  downstream-ci:
-    config_path: ""
+  downstream-ci-hpc:
+    config_path: ".github/ci-hpc-config.yml"
+    modules:
+      - pcraster
+      - gdal
+      - python3
