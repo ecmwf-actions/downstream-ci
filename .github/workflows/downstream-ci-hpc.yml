@@ -105,7 +105,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: ecmwf-actions/downstream-ci
-        ref: main
+        ref: add-cascade
     - name: Run setup script
       id: setup
       env:
