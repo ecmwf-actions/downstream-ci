@@ -987,3 +987,22 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: ''
+        conda_deps:
+        - pcraster
+        - gdal
+        - libnetcdf
+        - numpy
+        - scipy
+        - eccodes
+        - python-eccodes
+        - numba
+        - netCDF4
+        - bottleneck
+        - magics
+        - magics-python
+        - geopandas
+        - fiona
+        - pyshp
+        - matplotlib
+        - pandas
+        - dask
