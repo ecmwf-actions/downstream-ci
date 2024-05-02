@@ -262,6 +262,9 @@ class Workflow:
             env.update(package_env) if package_env else None
             test_cmd = tree_get_package_var("test_cmd", dep_tree, package, self.name)
             mkdir = tree_get_package_var("mkdir", dep_tree, package, self.name) or []
+            conda_deps = tree_get_package_var(
+                "conda_deps", dep_tree, package, self.name
+            )
             steps = []
             if self.wf_type == "build-package":
                 if pkg_conf.get("type", "cmake") == "cmake":
@@ -334,6 +337,8 @@ class Workflow:
                             )
                         if test_cmd:
                             ci_python_step["with"]["test_cmd"] = test_cmd
+                        if conda_deps:
+                            ci_python_step["with"]["conda_install"] = conda_deps
                         steps.append(ci_python_step)
                     else:
                         # pure python package
@@ -358,6 +363,8 @@ class Workflow:
                             )
                         if test_cmd:
                             ci_python_step["with"]["test_cmd"] = test_cmd
+                        if conda_deps:
+                            ci_python_step["with"]["conda_install"] = conda_deps
                         steps.append(ci_python_step)
             if self.wf_type == "build-package-hpc":
                 runs_on = [
@@ -379,6 +386,8 @@ class Workflow:
                 }
                 if pkg_conf.get("requirements_path"):
                     s["with"]["python_requirements"] = pkg_conf.get("requirements_path")
+                if conda_deps:
+                    s["with"]["conda_deps"] = conda_deps
                 steps.append(s)
             self.add_job(Job(package, needs, condition, strategy, env, runs_on, steps))
 
