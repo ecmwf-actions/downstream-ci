@@ -68,6 +68,9 @@ name: downstream-ci-hpc
       thermofeel:
         required: false
         type: string
+      danu:
+        required: false
+        type: string
       skip_matrix_jobs:
         description: List of matrix jobs to be skipped.
         required: false
@@ -99,6 +102,7 @@ jobs:
       pyodc: ${{ steps.setup.outputs.pyodc }}
       skinnywms: ${{ steps.setup.outputs.skinnywms }}
       thermofeel: ${{ steps.setup.outputs.thermofeel }}
+      danu: ${{ steps.setup.outputs.danu }}
       dep_tree: ${{ steps.setup.outputs.build_package_hpc_dep_tree }}
     steps:
     - name: checkout reusable wfs repo
@@ -264,6 +268,13 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.thermofeel }}
+            optional_matrix: null
+          ecmwf/danu:
+            path: ''
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ inputs.danu }}
             optional_matrix: null
         SKIP_MATRIX_JOBS: ${{ inputs.skip_matrix_jobs }}
         PYTHON_VERSIONS: |+
@@ -900,6 +911,30 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.thermofeel) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
+  danu:
+    name: danu
+    needs:
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.danu && (inputs.danu) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.danu) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
