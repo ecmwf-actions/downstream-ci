@@ -52,8 +52,6 @@ earthkit-plots:
   deps:
     - earthkit-data
   requirements_path: tests/downstream-ci-requirements.txt
-  downstream-ci:
-    config_path: ""
 
 earthkit-regrid:
   type: python
