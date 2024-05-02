@@ -45,6 +45,9 @@ name: downstream-ci
       mir:
         required: false
         type: string
+      multio:
+        required: false
+        type: string
       multiurl:
         required: false
         type: string
