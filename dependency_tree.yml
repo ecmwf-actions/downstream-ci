@@ -188,3 +188,15 @@ thermofeel:
   type: python
   downstream-ci:
     config_path: ""
+
+dhskit:
+  type: cmake
+  deps:
+    - eckit
+
+ecfs-server:
+  type: cmake
+  deps:
+    - dhskit
+    - eckit
+
