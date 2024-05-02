@@ -168,3 +168,9 @@ thermofeel:
   type: python
   downstream-ci:
     config_path: ""
+
+cascade:
+  type: python
+  master_branch: main
+  downstream-ci: 
+    config_path: ""
