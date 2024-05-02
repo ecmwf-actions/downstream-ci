@@ -72,6 +72,9 @@ name: downstream-ci
       thermofeel:
         required: false
         type: string
+      troika:
+        required: false
+        type: string
       skip_matrix_jobs:
         description: List of matrix jobs to be skipped.
         required: false
@@ -115,6 +118,7 @@ jobs:
       pyodc: ${{ steps.setup.outputs.pyodc }}
       skinnywms: ${{ steps.setup.outputs.skinnywms }}
       thermofeel: ${{ steps.setup.outputs.thermofeel }}
+      troika: ${{ steps.setup.outputs.troika }}
       dep_tree: ${{ steps.setup.outputs.build_package_dep_tree }}
       trigger_repo: ${{ steps.setup.outputs.trigger_repo }}
       py_codecov_platform: ${{ steps.setup.outputs.py_codecov_platform }}
@@ -282,6 +286,13 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.thermofeel }}
+            optional_matrix: null
+          ecmwf/troika:
+            path: ''
+            python: true
+            master_branch: master
+            develop_branch: develop
+            input: ${{ inputs.troika }}
             optional_matrix: null
         SKIP_MATRIX_JOBS: ${{ inputs.skip_matrix_jobs }}
         PYTHON_VERSIONS: |+
@@ -1028,6 +1039,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.thermofeel) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        checkout: true
+        python_dependencies: ''
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
+  troika:
+    name: troika
+    needs:
+    - setup
+    - python-qa
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.troika && (inputs.troika) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.troika) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
