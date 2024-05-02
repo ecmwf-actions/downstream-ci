@@ -80,8 +80,8 @@ jobs:
       atlas: ${{ steps.setup.outputs.atlas }}
       cfgrib: ${{ steps.setup.outputs.cfgrib }}
       earthkit-data: ${{ steps.setup.outputs.earthkit-data }}
-      earthkit-regrid: ${{ steps.setup.outputs.earthkit-regrid }}
       earthkit-meteo: ${{ steps.setup.outputs.earthkit-meteo }}
+      earthkit-regrid: ${{ steps.setup.outputs.earthkit-regrid }}
       eccodes: ${{ steps.setup.outputs.eccodes }}
       eccodes-python: ${{ steps.setup.outputs.eccodes-python }}
       ecflow: ${{ steps.setup.outputs.ecflow }}
