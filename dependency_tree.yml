@@ -49,6 +49,8 @@ earthkit-meteo:
 earthkit-plots:
   type: python
   master_branch: main
+  deps:
+    - earthkit-data
   requirements_path: tests/downstream-ci-requirements.txt
   downstream-ci:
     config_path: ""
