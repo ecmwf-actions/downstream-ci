@@ -261,7 +261,7 @@ jobs:
           ecmwf/cascade:
             path: .github/ci-hpc-config.yml
             python: true
-            master_branch: main
+            master_branch: add-to-downstream-ci
             develop_branch: develop
             input: ${{ inputs.cascade }}
             optional_matrix: null
