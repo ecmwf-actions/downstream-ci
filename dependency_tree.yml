@@ -141,6 +141,7 @@ pgen:
 plume:
   type: cmake
   deps:
+    - eckit
     - atlas
     - fckit
 
