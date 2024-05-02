@@ -16,6 +16,19 @@ cfgrib:
   deps:
     - eccodes-python
 
+
+earthkit:
+  type: python
+  master_branch: main
+  requirements_path: tests/downstream-ci-requirements.txt
+  downstream-ci:
+    config_path: ""
+  deps:
+    - earthkit-data
+    - earthkit-geo
+    - earthkit-meteo
+    - earthkit-regrid
+
 earthkit-data:
   type: python
   master_branch: main
