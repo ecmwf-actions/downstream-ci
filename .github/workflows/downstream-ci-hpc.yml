@@ -14,6 +14,9 @@ name: downstream-ci-hpc
       earthkit-meteo:
         required: false
         type: string
+      earthkit-regrid:
+        required: false
+        type: string
       eccodes:
         required: false
         type: string
@@ -77,6 +80,7 @@ jobs:
       atlas: ${{ steps.setup.outputs.atlas }}
       cfgrib: ${{ steps.setup.outputs.cfgrib }}
       earthkit-data: ${{ steps.setup.outputs.earthkit-data }}
+      earthkit-regrid: ${{ steps.setup.outputs.earthkit-regrid }}
       earthkit-meteo: ${{ steps.setup.outputs.earthkit-meteo }}
       eccodes: ${{ steps.setup.outputs.eccodes }}
       eccodes-python: ${{ steps.setup.outputs.eccodes-python }}
@@ -134,6 +138,13 @@ jobs:
             master_branch: main
             develop_branch: develop
             input: ${{ inputs.earthkit-meteo }}
+            optional_matrix: null
+          ecmwf/earthkit-regrid:
+            path: .github/ci-hpc-config.yml
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ inputs.earthkit-regrid }}
             optional_matrix: null
           ecmwf/eccodes:
             path: .github/ci-hpc-config.yml
@@ -412,6 +423,31 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.earthkit-meteo) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
+        python_requirements: tests/downstream-ci-requirements.txt
+  earthkit-regrid:
+    name: earthkit-regrid
+    needs:
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-regrid && (inputs.earthkit-regrid) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.earthkit-regrid) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
