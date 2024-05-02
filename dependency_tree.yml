@@ -188,3 +188,8 @@ thermofeel:
   type: python
   downstream-ci:
     config_path: ""
+
+troika:
+  type: python
+  downstream-ci:
+    config_path: ""
