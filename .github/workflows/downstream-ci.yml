@@ -81,6 +81,9 @@ name: downstream-ci
       troika:
         required: false
         type: string
+      cascade:
+        required: false
+        type: string
       skip_matrix_jobs:
         description: List of matrix jobs to be skipped.
         required: false
@@ -127,6 +130,7 @@ jobs:
       skinnywms: ${{ steps.setup.outputs.skinnywms }}
       thermofeel: ${{ steps.setup.outputs.thermofeel }}
       troika: ${{ steps.setup.outputs.troika }}
+      cascade: ${{ steps.setup.outputs.cascade }}
       dep_tree: ${{ steps.setup.outputs.build_package_dep_tree }}
       trigger_repo: ${{ steps.setup.outputs.trigger_repo }}
       py_codecov_platform: ${{ steps.setup.outputs.py_codecov_platform }}
@@ -315,6 +319,13 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.troika }}
+            optional_matrix: null
+          ecmwf/cascade:
+            path: ''
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ inputs.cascade }}
             optional_matrix: null
         SKIP_MATRIX_JOBS: ${{ inputs.skip_matrix_jobs }}
         PYTHON_VERSIONS: |+
@@ -1172,3 +1183,23 @@ jobs:
         test_cmd: |
           pytest --cov=./ --cov-report=xml --basetemp=$RUNNER_TEMP/pytest_tmp
           python -m coverage report
+  cascade:
+    name: cascade
+    needs:
+    - setup
+    - python-qa
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cascade && (inputs.cascade) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.cascade) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        checkout: true
+        python_dependencies: ''
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
