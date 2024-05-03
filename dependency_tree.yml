@@ -146,8 +146,11 @@ odc:
 pdbufr:
   type: python
   master_branch: master
-  develop_branch: master
   requirements_path: tests/downstream-ci-requirements.txt
+  downstream-ci:
+   test_cmd: |
+      python -m pytest --cov=./ --cov-report=xml -k 'not test_notebooks'
+      python -m pytest -v -k 'test_notebooks'
   deps:
     - eccodes-python
 
