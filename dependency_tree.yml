@@ -22,7 +22,7 @@ earthkit:
   requirements_path: tests/downstream-ci-requirements.txt
   downstream-ci:
     test_cmd: |
-      _EKD_DIR=$(PWD) && cd .. && python -m pytest ${_EKD_DIR} -vv --cov=. --cov-report=html && cd -
+      _EKD_DIR=$(pwd) && cd .. && python -m pytest ${_EKD_DIR} -vv --cov=. --cov-report=html && cd -
   deps:
     - earthkit-data
     - earthkit-geo
