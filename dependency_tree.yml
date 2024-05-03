@@ -180,3 +180,8 @@ conflator:
   type: python
   downstream-ci:
     config_path: ""
+
+polytope:
+  type: python
+  deps:
+    - conflator

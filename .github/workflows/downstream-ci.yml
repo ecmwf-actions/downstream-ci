@@ -66,6 +66,9 @@ name: downstream-ci
       conflator:
         required: false
         type: string
+      polytope:
+        required: false
+        type: string
       pyfdb:
         required: false
         type: string
