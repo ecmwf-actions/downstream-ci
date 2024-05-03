@@ -193,5 +193,6 @@ troika:
   type: python
   downstream-ci:
     config_path: ""
-    env:
-      TMPDIR: $RUNNER_TEMP
+    test_cmd: |
+      pytest --cov=./ --cov-report=xml --basetemp=$RUNNER_TEMP
+      python -m coverage report
