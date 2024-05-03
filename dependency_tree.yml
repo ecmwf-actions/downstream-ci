@@ -16,6 +16,19 @@ cfgrib:
   deps:
     - eccodes-python
 
+earthkit:
+  type: python
+  master_branch: main
+  requirements_path: tests/downstream-ci-requirements.txt
+  downstream-ci:
+    test_cmd: |
+      _EKD_DIR=$(pwd) && cd .. && python -m pytest ${_EKD_DIR} -vv --cov=. --cov-report=html && cd -
+  deps:
+    - earthkit-data
+    - earthkit-geo
+    - earthkit-meteo
+    - earthkit-regrid
+
 earthkit-data:
   type: python
   master_branch: main
@@ -31,6 +44,13 @@ earthkit-data:
       python -m pytest -v -m 'notebook'
       python -m pytest --forked -vv -m 'no_cache_init'
       python -m coverage report
+
+earthkit-geo:
+  type: python
+  master_branch: main
+  requirements_path: tests/downstream-ci-requirements.txt
+  downstream-ci:
+    config_path: ""
 
 earthkit-meteo:
   type: python
@@ -141,6 +161,7 @@ pgen:
 plume:
   type: cmake
   deps:
+    - eckit
     - atlas
     - fckit
 
@@ -168,6 +189,14 @@ thermofeel:
   type: python
   downstream-ci:
     config_path: ""
+
+troika:
+  type: python
+  downstream-ci:
+    config_path: ""
+    test_cmd: |
+      pytest --cov=./ --cov-report=xml --basetemp=$RUNNER_TEMP/pytest_tmp
+      python -m coverage report
 
 cascade:
   type: python
