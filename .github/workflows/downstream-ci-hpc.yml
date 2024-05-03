@@ -258,7 +258,7 @@ jobs:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
-            develop_branch: master
+            develop_branch: develop
             input: ${{ inputs.pdbufr }}
             optional_matrix: null
           ecmwf/plume:
