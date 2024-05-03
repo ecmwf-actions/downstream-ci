@@ -174,5 +174,5 @@ troika:
   downstream-ci:
     config_path: ""
     test_cmd: |
-      pytest --cov=./ --cov-report=xml --basetemp=$RUNNER_TEMP
+      pytest --cov=./ --cov-report=xml --basetemp=$RUNNER_TEMP/pytest_tmp
       python -m coverage report
