@@ -193,3 +193,5 @@ troika:
   type: python
   downstream-ci:
     config_path: ""
+    env:
+      TMPDIR: $RUNNER_TEMP
