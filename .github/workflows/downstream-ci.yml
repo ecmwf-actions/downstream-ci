@@ -63,9 +63,6 @@ name: downstream-ci
       plume:
         required: false
         type: string
-      conflator:
-        required: false
-        type: string
       pyfdb:
         required: false
         type: string
