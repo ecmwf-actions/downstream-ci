@@ -197,3 +197,9 @@ troika:
     test_cmd: |
       pytest --cov=./ --cov-report=xml --basetemp=$RUNNER_TEMP/pytest_tmp
       python -m coverage report
+
+cascade:
+  type: python
+  master_branch: main
+  downstream-ci: 
+    config_path: ""
