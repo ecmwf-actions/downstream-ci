@@ -100,6 +100,7 @@ jobs:
       eckit: ${{ steps.setup.outputs.eckit }}
       fckit: ${{ steps.setup.outputs.fckit }}
       fdb: ${{ steps.setup.outputs.fdb }}
+      kronos: ${{ steps.setup.outputs.kronos }}
       metkit: ${{ steps.setup.outputs.metkit }}
       mir: ${{ steps.setup.outputs.mir }}
       multiurl: ${{ steps.setup.outputs.multiurl }}
@@ -219,6 +220,13 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ inputs.fdb }}
+            optional_matrix: null
+          ecmwf/kronos:
+            path: .github/ci-hpc-config.yml
+            python: true
+            master_branch: master
+            develop_branch: develop
+            input: ${{ inputs.kronos }}
             optional_matrix: null
           ecmwf/metkit:
             path: .github/ci-hpc-config.yml
@@ -741,6 +749,31 @@ jobs:
           ${{ inputs.eccodes }}
           ${{ inputs.eckit }}
         python_dependencies: ''
+  kronos:
+    name: kronos
+    needs:
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.kronos && (inputs.kronos) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.kronos) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
+        python_requirements: kronos_executor/conda_env_executor.yml
   metkit:
     name: metkit
     needs:
