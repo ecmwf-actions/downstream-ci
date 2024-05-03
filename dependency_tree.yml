@@ -112,6 +112,16 @@ fdb:
   deps:
     - metkit
 
+kronos:
+  type: python
+  master_branch: master
+  develop_branch: develop
+  requirements_path: kronos_executor/conda_env_executor.yml
+  downstream-ci:
+    config_path: ""
+    test_cmd: |
+      python -m pytest kronos_executor
+
 libaec:
   type: cmake
   input: false
