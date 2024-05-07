@@ -148,7 +148,7 @@ pdbufr:
   master_branch: master
   requirements_path: tests/downstream-ci-requirements.txt
   downstream-ci:
-   test_cmd: |
+    test_cmd: |
       python -m pytest --cov=./ --cov-report=xml -k 'not test_notebooks'
       python -m pytest -v -k 'test_notebooks'
   deps:
@@ -156,7 +156,7 @@ pdbufr:
 
 pgen:
   type: cmake
-  input: false
+  private: true
   deps:
     - mir
     - metkit
@@ -204,5 +204,5 @@ troika:
 cascade:
   type: python
   master_branch: main
-  downstream-ci: 
+  downstream-ci:
     config_path: ""

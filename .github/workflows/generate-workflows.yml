@@ -26,7 +26,7 @@ jobs:
       - run: pip install pyyaml
 
       - name: Build
-        run: python generate-workflows.py --config config.yml --dep-tree dependency_tree.yml --output .github/workflows
+        run: python generate-workflows.py --config config.yml --dep-tree dependency_tree.yml --output .github/workflows downstream-ci downstream-ci-hpc
 
       - name: Check Git status
         id: git_status
@@ -45,3 +45,57 @@ jobs:
           git add .github/workflows/*
           git commit --no-verify -m "Build workflows"
           git push origin ${{ github.head_ref || github.ref  }}
+
+  generate-private:
+    if: github.actor != 'github-actions[bot]' && !github.event.pull_request.head.repo.fork && github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout private-downstream-ci
+        uses: actions/checkout@v4
+        with:
+          repository: ecmwf-actions/private-downstream-ci
+          ref: main
+          token: ${{ secrets.REBUILD_PUSH_TOKEN }}
+          path: private-downstream-ci
+
+      - name: Checkout self
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref  }}
+          path: downstream-ci
+
+      - name: Git config
+        run: |
+          git config --global user.email "github-actions@example.com"
+          git config --global user.name "github-actions[bot]"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - run: pip install pyyaml
+
+      - name: Build
+        run: |
+          python downstream-ci/generate-workflows.py --config downstream-ci/config.yml --dep-tree downstream-ci/dependency_tree.yml --output private-downstream-ci/.github/workflows private-downstream-ci private-downstream-ci-hpc
+          mv private-downstream-ci/.github/workflows/private-downstream-ci private-downstream-ci/.github/workflows/downstream-ci
+          mv private-downstream-ci/.github/workflows/private-downstream-ci-hpc private-downstream-ci/.github/workflows/downstream-ci-hpc
+
+      - name: Check Git status
+        id: git_status
+        run: |
+          GIT_STATUS_OUTPUT=$(git -C private-downstream-ci status --porcelain)
+          if [[ -n "$GIT_STATUS_OUTPUT" ]]; then
+            echo "GIT_STATUS_MODIFIED=true" >> $GITHUB_ENV
+          else
+            echo "GIT_STATUS_MODIFIED=false" >> $GITHUB_ENV
+          fi
+
+      - name: Commit & push index.js
+        # Push only if the built workflow has changed.
+        if: env.GIT_STATUS_MODIFIED == 'true'
+        run: |
+          cd private-downstream-ci
+          git add .github/workflows/*
+          git commit --no-verify -m "Build workflows"
+          git push origin main

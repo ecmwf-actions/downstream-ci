@@ -1,5 +1,6 @@
-downstream-ci:
+downstream-ci: &downstream_ci
   type: build-package
+  repo: ecmwf-actions/downstream-ci
   inputs:
     codecov_upload:
       description: Whether to upload code coverage
@@ -103,8 +104,9 @@ downstream-ci:
       #   #OPENSSL_ROOT_DIR is taken care of in build-package
       #   env: *macos_env
   optional_matrix: null
-downstream-ci-hpc:
+downstream-ci-hpc: &downstream_ci_hpc
   type: build-package-hpc
+  repo: ecmwf-actions/downstream-ci
   python_jobs:
     - gnu-8.5.0
   python_versions:
@@ -155,3 +157,14 @@ downstream-ci-hpc:
         compiler_cxx: g++
         compiler_fc: gfortran
         compiler_modules: LUMI/23.09,cpeGNU/23.09
+
+private-downstream-ci:
+  <<: *downstream_ci
+  repo: ecmwf-actions/private-downstream-ci
+  private: true
+  inputs: []
+
+private-downstream-ci-hpc:
+  <<: *downstream_ci_hpc
+  repo: ecmwf-actions/private-downstream-ci
+  private: true
