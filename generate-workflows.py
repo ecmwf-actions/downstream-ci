@@ -287,6 +287,7 @@ class Workflow:
                                 "build_config": "${{ matrix.config_path }}",
                                 "build_dependencies": "\n".join(cmake_deps),
                                 "codecov_token": "${{ secrets.CODECOV_UPLOAD_TOKEN }}",
+                                "github_token": "${{ secrets.GH_REPO_READ_TOKEN }}",
                             },
                         }
                     )
@@ -310,6 +311,7 @@ class Workflow:
                                     ),
                                     "build_config": "${{ matrix.config_path }}",
                                     "build_dependencies": "\n".join(cmake_deps),
+                                    "github_token": "${{ secrets.GH_REPO_READ_TOKEN }}",
                                 },
                             }
                         )
@@ -329,6 +331,7 @@ class Workflow:
                                     "== matrix.name }}"
                                 ),
                                 "codecov_token": "${{ secrets.CODECOV_UPLOAD_TOKEN }}",
+                                "github_token": "${{ secrets.GH_REPO_READ_TOKEN }}",
                             },
                         }
                         if pkg_conf.get("requirements_path"):
@@ -355,6 +358,7 @@ class Workflow:
                                     "matrix.name }}"
                                 ),
                                 "codecov_token": "${{ secrets.CODECOV_UPLOAD_TOKEN }}",
+                                "github_token": "${{ secrets.GH_REPO_READ_TOKEN }}",
                             },
                         }
                         if pkg_conf.get("requirements_path"):
