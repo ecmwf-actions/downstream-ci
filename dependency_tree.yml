@@ -7,6 +7,13 @@ atlas:
   deps:
     - eckit
     - fckit
+    
+atlas-orca:
+  type: cmake
+  master_branch: master
+  develop_branch: develop
+  deps:
+    - atlas
 
 cfgrib:
   type: python
