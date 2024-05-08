@@ -6,7 +6,7 @@
 #
 #
 name: downstream-ci-hpc
-"on":
+'on':
   workflow_call:
     inputs:
       atlas:
@@ -130,6 +130,8 @@ jobs:
       fckit_matrix: ${{ steps.setup.outputs.fckit }}
       fdb: ${{ steps.prepare-inputs.outputs.fdb }}
       fdb_matrix: ${{ steps.setup.outputs.fdb }}
+      infero: ${{ steps.prepare-inputs.outputs.infero }}
+      infero_matrix: ${{ steps.setup.outputs.infero }}
       metkit: ${{ steps.prepare-inputs.outputs.metkit }}
       metkit_matrix: ${{ steps.setup.outputs.metkit }}
       mir: ${{ steps.prepare-inputs.outputs.mir }}
@@ -175,6 +177,7 @@ jobs:
         echo eckit="${{ inputs.eckit }}" >> $GITHUB_OUTPUT
         echo fckit="${{ inputs.fckit }}" >> $GITHUB_OUTPUT
         echo fdb="${{ inputs.fdb }}" >> $GITHUB_OUTPUT
+        echo infero="${{ inputs.infero }}" >> $GITHUB_OUTPUT
         echo metkit="${{ inputs.metkit }}" >> $GITHUB_OUTPUT
         echo mir="${{ inputs.mir }}" >> $GITHUB_OUTPUT
         echo multio="${{ inputs.multio }}" >> $GITHUB_OUTPUT
@@ -296,6 +299,13 @@ jobs:
             develop_branch: develop
             input: ${{ steps.prepare-inputs.fdb }}
             optional_matrix: null
+          ecmwf/infero:
+            path: .github/ci-hpc-config.yml
+            python: false
+            master_branch: master
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.infero }}
+            optional_matrix: null
           ecmwf/metkit:
             path: .github/ci-hpc-config.yml
             python: false
@@ -391,56 +401,56 @@ jobs:
         PYTHON_VERSIONS: |+
           - '3.10'
 
-          PYTHON_JOBS: |+
-            - gnu-8.5.0
+        PYTHON_JOBS: |+
+          - gnu-8.5.0
 
-          MATRIX: |
-            include:
-            - compiler: gnu-12.2.0
-              compiler_cc: gcc
-              compiler_cxx: g++
-              compiler_fc: gfortran
-              compiler_modules: gcc/12.2.0
-              name: gnu-12.2.0
-              site: atos
-            - compiler: gnu-8.5.0
-              compiler_cc: gcc
-              compiler_cxx: g++
-              compiler_fc: gfortran
-              compiler_modules: gcc/8.5.0
-              name: gnu-8.5.0
-              site: atos
-            - compiler: nvidia-22.11
-              compiler_cc: nvc
-              compiler_cxx: nvc++
-              compiler_fc: nvfortran
-              compiler_modules: prgenv/nvidia,nvidia/22.11
-              name: nvidia-22.11
-              site: atos
-            - compiler: intel-2021.4.0
-              compiler_cc: icc
-              compiler_cxx: icpc
-              compiler_fc: ifort
-              compiler_modules: prgenv/intel,intel/2021.4.0
-              name: intel-2021.4.0
-              site: atos
-            name:
-            - gnu-12.2.0
-            - gnu-8.5.0
-            - nvidia-22.11
-            - intel-2021.4.0
-          OPTIONAL_MATRIX: |
-            include:
-            - compiler: gnu-12.2.0
-              compiler_cc: gcc
-              compiler_cxx: g++
-              compiler_fc: gfortran
-              compiler_modules: LUMI/23.09,cpeGNU/23.09
-              name: lumi-gnu-12.2.0
-              site: lumi
-            name:
-            - lumi
-        run: python setup_downstream_ci.py
+        MATRIX: |
+          include:
+          - compiler: gnu-12.2.0
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+            compiler_modules: gcc/12.2.0
+            name: gnu-12.2.0
+            site: atos
+          - compiler: gnu-8.5.0
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+            compiler_modules: gcc/8.5.0
+            name: gnu-8.5.0
+            site: atos
+          - compiler: nvidia-22.11
+            compiler_cc: nvc
+            compiler_cxx: nvc++
+            compiler_fc: nvfortran
+            compiler_modules: prgenv/nvidia,nvidia/22.11
+            name: nvidia-22.11
+            site: atos
+          - compiler: intel-2021.4.0
+            compiler_cc: icc
+            compiler_cxx: icpc
+            compiler_fc: ifort
+            compiler_modules: prgenv/intel,intel/2021.4.0
+            name: intel-2021.4.0
+            site: atos
+          name:
+          - gnu-12.2.0
+          - gnu-8.5.0
+          - nvidia-22.11
+          - intel-2021.4.0
+        OPTIONAL_MATRIX: |
+          include:
+          - compiler: gnu-12.2.0
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+            compiler_modules: LUMI/23.09,cpeGNU/23.09
+            name: lumi-gnu-12.2.0
+            site: lumi
+          name:
+          - lumi
+      run: python setup_downstream_ci.py
   atlas:
     name: atlas
     needs:
@@ -454,9 +464,9 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
@@ -482,9 +492,9 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
@@ -564,9 +574,9 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
@@ -597,20 +607,20 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
-        with:
-          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
-          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-          troika_user: ${{ secrets.HPC_CI_SSH_USER }}
-          repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          dependencies: ""
-          python_dependencies: ""
-          python_requirements: tests/downstream-ci-requirements.txt
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
+        python_requirements: tests/downstream-ci-requirements.txt
   earthkit-meteo:
     name: earthkit-meteo
     needs:
@@ -622,20 +632,20 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
-        with:
-          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
-          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-          troika_user: ${{ secrets.HPC_CI_SSH_USER }}
-          repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          dependencies: ""
-          python_dependencies: ""
-          python_requirements: tests/downstream-ci-requirements.txt
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
+        python_requirements: tests/downstream-ci-requirements.txt
   earthkit-regrid:
     name: earthkit-regrid
     needs:
@@ -647,20 +657,20 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
-        with:
-          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
-          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-          troika_user: ${{ secrets.HPC_CI_SSH_USER }}
-          repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          dependencies: ""
-          python_dependencies: ""
-          python_requirements: tests/downstream-ci-requirements.txt
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
+        python_requirements: tests/downstream-ci-requirements.txt
   eccodes:
     name: eccodes
     needs:
@@ -672,19 +682,19 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
-        with:
-          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
-          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-          troika_user: ${{ secrets.HPC_CI_SSH_USER }}
-          repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          dependencies: ""
-          python_dependencies: ""
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
   eccodes-python:
     name: eccodes-python
     needs:
@@ -697,9 +707,9 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
@@ -721,19 +731,19 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
-        with:
-          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
-          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-          troika_user: ${{ secrets.HPC_CI_SSH_USER }}
-          repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          dependencies: ""
-          python_dependencies: ""
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
   ecflow-light:
     name: ecflow-light
     needs:
@@ -746,9 +756,9 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
@@ -770,19 +780,19 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
-        with:
-          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
-          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-          troika_user: ${{ secrets.HPC_CI_SSH_USER }}
-          repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          dependencies: ""
-          python_dependencies: ""
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
   fckit:
     name: fckit
     needs:
@@ -795,9 +805,9 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
@@ -822,9 +832,9 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
@@ -836,6 +846,34 @@ jobs:
         dependencies: |-
           ${{ needs.setup.outputs.metkit }}
           ${{ needs.setup.outputs.eccodes }}
+          ${{ needs.setup.outputs.eckit }}
+        python_dependencies: ''
+  infero:
+    name: infero
+    needs:
+    - fckit
+    - eckit
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.infero_matrix && (needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.infero) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.infero_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: |-
+          ${{ needs.setup.outputs.fckit }}
           ${{ needs.setup.outputs.eckit }}
         python_dependencies: ''
   metkit:
@@ -851,9 +889,9 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
@@ -881,9 +919,9 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
@@ -947,19 +985,19 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
-        with:
-          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
-          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-          troika_user: ${{ secrets.HPC_CI_SSH_USER }}
-          repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          dependencies: ""
-          python_dependencies: ""
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
   odc:
     name: odc
     needs:
@@ -972,9 +1010,9 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
@@ -998,9 +1036,9 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
@@ -1026,9 +1064,9 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
@@ -1057,9 +1095,9 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
@@ -1087,9 +1125,9 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
@@ -1113,19 +1151,19 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
-        with:
-          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
-          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-          troika_user: ${{ secrets.HPC_CI_SSH_USER }}
-          repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          dependencies: ""
-          python_dependencies: ""
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
   thermofeel:
     name: thermofeel
     needs:
@@ -1185,64 +1223,16 @@ jobs:
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
-      - self-hosted
-      - linux
-      - hpc
+    - self-hosted
+    - linux
+    - hpc
     steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
-        with:
-          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
-          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-          troika_user: ${{ secrets.HPC_CI_SSH_USER }}
-          repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          dependencies: ""
-          python_dependencies: ""
-  troika:
-    name: troika
-    needs:
-      - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.troika_matrix && (needs.setup.outputs.troika) }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.troika_matrix) }}
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on:
-      - self-hosted
-      - linux
-      - hpc
-    steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
-        with:
-          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
-          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-          troika_user: ${{ secrets.HPC_CI_SSH_USER }}
-          repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          dependencies: ""
-          python_dependencies: ""
-  cascade:
-    name: cascade
-    needs:
-      - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cascade_matrix && (needs.setup.outputs.cascade) }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.cascade_matrix) }}
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on:
-      - self-hosted
-      - linux
-      - hpc
-    steps:
-      - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
-        with:
-          github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
-          github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-          troika_user: ${{ secrets.HPC_CI_SSH_USER }}
-          repository: ${{ matrix.owner_repo_ref }}
-          build_config: ${{ matrix.config_path }}
-          dependencies: ""
-          python_dependencies: ""
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
