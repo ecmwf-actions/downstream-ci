@@ -112,6 +112,11 @@ fdb:
   deps:
     - metkit
 
+findlibs:
+  type: python
+  downstream-ci:
+    config_path: ""
+
 infero:
   type: cmake
   master_branch: master
