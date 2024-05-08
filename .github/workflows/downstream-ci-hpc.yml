@@ -78,6 +78,9 @@ name: downstream-ci-hpc
       pyfdb:
         required: false
         type: string
+      pyflow:
+        required: false
+        type: string
       pyodc:
         required: false
         type: string
@@ -148,6 +151,8 @@ jobs:
       plume_matrix: ${{ steps.setup.outputs.plume }}
       pyfdb: ${{ steps.prepare-inputs.outputs.pyfdb }}
       pyfdb_matrix: ${{ steps.setup.outputs.pyfdb }}
+      pyflow: ${{ steps.prepare-inputs.outputs.pyflow }}
+      pyflow_matrix: ${{ steps.setup.outputs.pyflow }}
       pyodc: ${{ steps.prepare-inputs.outputs.pyodc }}
       pyodc_matrix: ${{ steps.setup.outputs.pyodc }}
       skinnywms: ${{ steps.prepare-inputs.outputs.skinnywms }}
@@ -186,6 +191,7 @@ jobs:
         echo pdbufr="${{ inputs.pdbufr }}" >> $GITHUB_OUTPUT
         echo plume="${{ inputs.plume }}" >> $GITHUB_OUTPUT
         echo pyfdb="${{ inputs.pyfdb }}" >> $GITHUB_OUTPUT
+        echo pyflow="${{ inputs.pyflow }}" >> $GITHUB_OUTPUT
         echo pyodc="${{ inputs.pyodc }}" >> $GITHUB_OUTPUT
         echo skinnywms="${{ inputs.skinnywms }}" >> $GITHUB_OUTPUT
         echo thermofeel="${{ inputs.thermofeel }}" >> $GITHUB_OUTPUT
@@ -361,6 +367,13 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.pyfdb }}
+            optional_matrix: null
+          ecmwf/pyflow:
+            path: .github/ci-hpc-config.yml
+            python: true
+            master_branch: master
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.pyflow }}
             optional_matrix: null
           ecmwf/pyodc:
             path: .github/ci-hpc-config.yml
@@ -1112,6 +1125,32 @@ jobs:
           ${{ needs.setup.outputs.eccodes }}
           ${{ needs.setup.outputs.eckit }}
         python_dependencies: ''
+  pyflow:
+    name: pyflow
+    needs:
+    - ecflow
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pyflow_matrix && (needs.setup.outputs.ecflow || needs.setup.outputs.pyflow) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.pyflow_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ${{ needs.setup.outputs.ecflow }}
+        python_dependencies: ''
+        python_requirements: requirements.txt
   pyodc:
     name: pyodc
     needs:
