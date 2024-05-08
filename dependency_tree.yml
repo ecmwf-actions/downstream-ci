@@ -145,6 +145,7 @@ multio:
   develop_branch: develop
   deps:
     - atlas
+    - atlas-orca
     - eccodes
     - eckit
     - fckit
