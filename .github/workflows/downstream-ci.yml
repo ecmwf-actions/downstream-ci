@@ -1293,6 +1293,7 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.pyflow_matrix) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+      ECFLOW_DIR: /opt/actions-runner/work/_work/_temp/install/ecflow
     runs-on: ${{ matrix.labels }}
     steps:
     - name: Build dependencies
