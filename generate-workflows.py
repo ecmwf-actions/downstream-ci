@@ -271,20 +271,27 @@ class Workflow:
             cmake_deps = [
                 "${{ " + f"needs.setup.outputs.{dep}" + " }}"
                 for dep in get_type_deps(package, dep_tree, self.name, "cmake")
-                if tree_get_package_var("input", dep_tree, dep, self.name) is not False
+                if is_input(dep, dep_tree, self.name, self.private)
             ]
             python_deps = [
                 "${{ " + f"needs.setup.outputs.{dep}" + " }}"
                 for dep in get_type_deps(package, dep_tree, self.name, "python")
-                if tree_get_package_var("input", dep_tree, dep, self.name) is not False
+                if is_input(dep, dep_tree, self.name, self.private)
             ]
             needs = [
                 dep
                 for dep in package_deps
-                if tree_get_package_var("input", dep_tree, dep, self.name) is not False
+                if is_input(dep, dep_tree, self.name, self.private)
+                and self.private
+                == tree_get_package_var("private", dep_tree, dep, self.name, False)
             ]
             condition_inputs = " || ".join(
-                [f"needs.setup.outputs.{dep}" for dep in needs + [package]]
+                [
+                    f"needs.setup.outputs.{dep}"
+                    for dep in package_deps
+                    if is_input(dep, dep_tree, self.name, self.private)
+                ]
+                + [f"needs.setup.outputs.{package}"]
             )
             needs.append("setup")
 
