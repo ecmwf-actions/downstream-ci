@@ -114,6 +114,7 @@ fdb:
 
 findlibs:
   type: python
+  master_branch: master
   downstream-ci:
     config_path: ""
 
