@@ -399,6 +399,9 @@ pyflow:
   master_branch: master
   deps:
     - ecflow
+  downstream-ci:
+    env:
+      ECFLOW_DIR: /opt/actions-runner/work/_work/_temp/install/ecflow
 
 pyodc:
   type: python
