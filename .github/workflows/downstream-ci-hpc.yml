@@ -1150,7 +1150,6 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ${{ needs.setup.outputs.ecflow }}
         python_dependencies: ''
-        python_requirements: requirements.txt
   pyodc:
     name: pyodc
     needs:
