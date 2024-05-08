@@ -531,7 +531,7 @@ class Workflow:
                         "develop_branch", dep_tree, dep, self.name
                     )
                     or "develop",
-                    "input": "${{ " + f"steps.prepare-inputs.{dep}" + " }}",
+                    "input": "${{ " + f"steps.prepare-inputs.outputs.{dep}" + " }}",
                     "optional_matrix": tree_get_package_var(
                         "optional_matrix", dep_tree, dep, self.name
                     ),
