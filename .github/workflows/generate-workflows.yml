@@ -78,13 +78,22 @@ jobs:
       - name: Build
         run: |
           python downstream-ci/generate-workflows.py --config downstream-ci/config.yml --dep-tree downstream-ci/dependency_tree.yml --output private-downstream-ci/.github/workflows private-downstream-ci private-downstream-ci-hpc
-          mv private-downstream-ci/.github/workflows/private-downstream-ci private-downstream-ci/.github/workflows/downstream-ci
-          mv private-downstream-ci/.github/workflows/private-downstream-ci-hpc private-downstream-ci/.github/workflows/downstream-ci-hpc
+
+          cd private-downstream-ci/.github/workflows
+
+          if [ -f "private-downstream-ci.yml" ]; then
+            mv -f private-downstream-ci.yml downstream-ci.yml
+          fi
+
+          if [ -f "private-downstream-ci-hpc.yml" ]; then
+            mv -f private-downstream-ci-hpc.yml downstream-ci-hpc.yml
+          fi
 
       - name: Check Git status
         id: git_status
         run: |
-          GIT_STATUS_OUTPUT=$(git -C private-downstream-ci status --porcelain)
+          cd private-downstream-ci
+          GIT_STATUS_OUTPUT=$(git status --porcelain)
           if [[ -n "$GIT_STATUS_OUTPUT" ]]; then
             echo "GIT_STATUS_MODIFIED=true" >> $GITHUB_ENV
           else
