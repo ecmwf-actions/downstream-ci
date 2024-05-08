@@ -393,6 +393,14 @@ pyfdb:
         {"type":"local","engine":"toc","schema":"${{ github.workspace }}/tests/default_fdb_schema","spaces":[{"handler":"Default","roots":[{"path":"${{ github.workspace }}/data/fdb"}]}]}
     mkdir:
       - data/fdb
+
+pyflow:
+  type: python
+  master_branch: master
+  requirements_path: requirements.txt
+  deps:
+    - ecflow
+
 pyodc:
   type: python
   deps:
