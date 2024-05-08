@@ -57,6 +57,9 @@ name: downstream-ci-hpc
       mir:
         required: false
         type: string
+      multio:
+        required: false
+        type: string
       multiurl:
         required: false
         type: string

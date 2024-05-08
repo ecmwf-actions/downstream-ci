@@ -130,6 +130,20 @@ mir:
     - eckit
     - atlas
     - eccodes
+    
+multio:
+  type: cmake
+  master_branch: master
+  develop_branch: develop
+  deps:
+    - atlas
+    - atlas-orca
+    - eccodes
+    - eckit
+    - fckit
+    - fdb
+    - metkit
+    - mir
 
 multiurl:
   type: python
