@@ -372,7 +372,7 @@ class Workflow:
                         for path in mkdir:
                             steps.append({"run": f"mkdir -p {path}"})
                         ci_python_step = {
-                            "uses": "ecmwf-actions/reusable-workflows/ci-python@v2.21",
+                            "uses": "ecmwf-actions/reusable-workflows/ci-python@v2",
                             "with": {
                                 "lib_path": (
                                     "${{ steps.build-deps.outputs.lib_path }}"
