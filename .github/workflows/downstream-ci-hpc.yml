@@ -12,6 +12,9 @@ name: downstream-ci-hpc
       atlas:
         required: false
         type: string
+      atlas-orca:
+        required: false
+        type: string
       cfgrib:
         required: false
         type: string
@@ -104,6 +107,8 @@ jobs:
     outputs:
       atlas: ${{ steps.prepare-inputs.outputs.atlas }}
       atlas_matrix: ${{ steps.setup.outputs.atlas }}
+      atlas-orca: ${{ steps.prepare-inputs.outputs.atlas-orca }}
+      atlas-orca_matrix: ${{ steps.setup.outputs.atlas-orca }}
       cfgrib: ${{ steps.prepare-inputs.outputs.cfgrib }}
       cfgrib_matrix: ${{ steps.setup.outputs.cfgrib }}
       earthkit: ${{ steps.prepare-inputs.outputs.earthkit }}
@@ -164,6 +169,7 @@ jobs:
       id: prepare-inputs
       run: |-
         echo atlas="${{ inputs.atlas }}" >> $GITHUB_OUTPUT
+        echo atlas-orca="${{ inputs.atlas-orca }}" >> $GITHUB_OUTPUT
         echo cfgrib="${{ inputs.cfgrib }}" >> $GITHUB_OUTPUT
         echo earthkit="${{ inputs.earthkit }}" >> $GITHUB_OUTPUT
         echo earthkit-data="${{ inputs.earthkit-data }}" >> $GITHUB_OUTPUT
@@ -207,6 +213,13 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.atlas }}
+            optional_matrix: null
+          ecmwf/atlas-orca:
+            path: .github/ci-hpc-config.yml
+            python: false
+            master_branch: master
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.atlas-orca }}
             optional_matrix: null
           ecmwf/cfgrib:
             path: .github/ci-hpc-config.yml
@@ -476,6 +489,36 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
+          ${{ needs.setup.outputs.fckit }}
+          ${{ needs.setup.outputs.eckit }}
+        python_dependencies: ''
+  atlas-orca:
+    name: atlas-orca
+    needs:
+    - atlas
+    - fckit
+    - eckit
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.atlas-orca_matrix && (needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.atlas-orca) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.atlas-orca_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: |-
+          ${{ needs.setup.outputs.atlas }}
           ${{ needs.setup.outputs.fckit }}
           ${{ needs.setup.outputs.eckit }}
         python_dependencies: ''
@@ -939,6 +982,7 @@ jobs:
   multio:
     name: multio
     needs:
+    - atlas-orca
     - fdb
     - metkit
     - mir
@@ -947,7 +991,7 @@ jobs:
     - eckit
     - eccodes
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio_matrix && (needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.multio) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio_matrix && (needs.setup.outputs.atlas-orca || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.multio) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.multio_matrix) }}
@@ -966,6 +1010,7 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: |-
+          ${{ needs.setup.outputs.atlas-orca }}
           ${{ needs.setup.outputs.fdb }}
           ${{ needs.setup.outputs.metkit }}
           ${{ needs.setup.outputs.mir }}
