@@ -102,6 +102,10 @@ eckit:
   deps:
     - ecbuild
 
+ecmwf-toolbox:
+  type: cmake
+  private: true
+
 fckit:
   type: cmake
   deps:
@@ -188,6 +192,10 @@ pgen:
   deps:
     - mir
     - metkit
+
+pgen-bundle:
+  type: cmake
+  private: true
 
 plume:
   type: cmake
