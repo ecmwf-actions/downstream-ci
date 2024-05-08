@@ -991,6 +991,7 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.multio_matrix) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+      CTEST_PARALLEL_LEVEL: 1
     runs-on:
     - self-hosted
     - linux
