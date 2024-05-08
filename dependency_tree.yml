@@ -151,6 +151,13 @@ multio:
     - fdb
     - metkit
     - mir
+    
+multio-python:
+  type: python
+  master_branch: main
+  develop_branch: develop
+  deps:
+    - multio
 
 multiurl:
   type: python
