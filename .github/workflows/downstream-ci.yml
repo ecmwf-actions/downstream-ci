@@ -671,7 +671,7 @@ jobs:
         build_config: ${{ matrix.config_path }}
         build_dependencies: ${{ needs.setup.outputs.eccodes }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2.21
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
@@ -718,7 +718,7 @@ jobs:
           ${{ needs.setup.outputs.odc }}
           ${{ needs.setup.outputs.eckit }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2.21
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
@@ -773,7 +773,7 @@ jobs:
           ${{ needs.setup.outputs.odc }}
           ${{ needs.setup.outputs.eckit }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2.21
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
@@ -904,7 +904,7 @@ jobs:
         build_config: ${{ matrix.config_path }}
         build_dependencies: ${{ needs.setup.outputs.eccodes }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2.21
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
@@ -1217,7 +1217,7 @@ jobs:
         build_config: ${{ matrix.config_path }}
         build_dependencies: ${{ needs.setup.outputs.eccodes }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2.21
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
@@ -1292,7 +1292,7 @@ jobs:
           ${{ needs.setup.outputs.eckit }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
     - run: mkdir -p data/fdb
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2.21
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
@@ -1324,7 +1324,7 @@ jobs:
         build_config: ${{ matrix.config_path }}
         build_dependencies: ${{ needs.setup.outputs.ecflow }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2.21
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
@@ -1357,7 +1357,7 @@ jobs:
         build_config: ${{ matrix.config_path }}
         build_dependencies: ${{ needs.setup.outputs.ecflow }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2.21
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
@@ -1392,7 +1392,7 @@ jobs:
           ${{ needs.setup.outputs.odc }}
           ${{ needs.setup.outputs.eckit }}
         github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2.21
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
