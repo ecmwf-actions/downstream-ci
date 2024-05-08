@@ -51,6 +51,9 @@ name: downstream-ci-hpc
       fdb:
         required: false
         type: string
+      findlibs:
+        required: false
+        type: string
       infero:
         required: false
         type: string
@@ -130,6 +133,8 @@ jobs:
       fckit_matrix: ${{ steps.setup.outputs.fckit }}
       fdb: ${{ steps.prepare-inputs.outputs.fdb }}
       fdb_matrix: ${{ steps.setup.outputs.fdb }}
+      findlibs: ${{ steps.prepare-inputs.outputs.findlibs }}
+      findlibs_matrix: ${{ steps.setup.outputs.findlibs }}
       infero: ${{ steps.prepare-inputs.outputs.infero }}
       infero_matrix: ${{ steps.setup.outputs.infero }}
       metkit: ${{ steps.prepare-inputs.outputs.metkit }}
@@ -177,6 +182,7 @@ jobs:
         echo eckit="${{ inputs.eckit }}" >> $GITHUB_OUTPUT
         echo fckit="${{ inputs.fckit }}" >> $GITHUB_OUTPUT
         echo fdb="${{ inputs.fdb }}" >> $GITHUB_OUTPUT
+        echo findlibs="${{ inputs.findlibs }}" >> $GITHUB_OUTPUT
         echo infero="${{ inputs.infero }}" >> $GITHUB_OUTPUT
         echo metkit="${{ inputs.metkit }}" >> $GITHUB_OUTPUT
         echo mir="${{ inputs.mir }}" >> $GITHUB_OUTPUT
@@ -298,6 +304,13 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.fdb }}
+            optional_matrix: null
+          ecmwf/findlibs:
+            path: .github/ci-hpc-config.yml
+            python: true
+            master_branch: master
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.findlibs }}
             optional_matrix: null
           ecmwf/infero:
             path: .github/ci-hpc-config.yml
@@ -847,6 +860,30 @@ jobs:
           ${{ needs.setup.outputs.metkit }}
           ${{ needs.setup.outputs.eccodes }}
           ${{ needs.setup.outputs.eckit }}
+        python_dependencies: ''
+  findlibs:
+    name: findlibs
+    needs:
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.findlibs_matrix && (needs.setup.outputs.findlibs) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.findlibs_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
         python_dependencies: ''
   infero:
     name: infero
