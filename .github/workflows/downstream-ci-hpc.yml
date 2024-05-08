@@ -885,6 +885,7 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: ''
+        python_requirements: tests/downstream-ci-requirements.txt
   infero:
     name: infero
     needs:
