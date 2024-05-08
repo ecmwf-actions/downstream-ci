@@ -397,7 +397,6 @@ pyfdb:
 pyflow:
   type: python
   master_branch: master
-  requirements_path: requirements.txt
   deps:
     - ecflow
 
