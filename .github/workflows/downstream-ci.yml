@@ -61,6 +61,9 @@ name: downstream-ci
       infero:
         required: false
         type: string
+      kronos:
+        required: false
+        type: string
       metkit:
         required: false
         type: string
