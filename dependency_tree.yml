@@ -115,6 +115,7 @@ fdb:
 findlibs:
   type: python
   master_branch: master
+  requirements_path: tests/downstream-ci-requirements.txt
   downstream-ci:
     config_path: ""
 
