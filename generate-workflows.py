@@ -377,6 +377,9 @@ class Workflow:
                                 "lib_path": (
                                     "${{ steps.build-deps.outputs.lib_path }}"
                                 ),
+                                "bin_paths": (
+                                    "${{ steps.build-deps.outputs.bin_paths }}"
+                                ),
                                 "python_dependencies": "\n".join(python_deps),
                                 "github_token": "${{ secrets.GH_REPO_READ_TOKEN }}",
                             },
