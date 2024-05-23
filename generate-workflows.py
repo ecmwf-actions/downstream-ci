@@ -317,6 +317,9 @@ class Workflow:
             conda_deps = tree_get_package_var(
                 "conda_deps", dep_tree, package, self.name
             )
+            build_package_python = tree_get_package_var(
+                "build-package-python", dep_tree, package, self.name
+            )
             steps = []
             if self.wf_type == "build-package":
                 if pkg_conf.get("type", "cmake") == "cmake":
@@ -344,31 +347,34 @@ class Workflow:
                             "${{ needs.setup.outputs.trigger_repo "
                             "== github.job && inputs.codecov_upload }}"
                         )
+                    if build_package_python:
+                        s["with"]["python_version"] = build_package_python
                     steps.append(s)
                 if pkg_conf.get("type", "cmake") == "python":
                     needs.append("python-qa")
                     if len(cmake_deps):
                         # python package with cmake deps
-                        steps.append(
-                            {
-                                "name": "Build dependencies",
-                                "id": "build-deps",
-                                "uses": (
-                                    "ecmwf-actions/reusable-workflows/"
-                                    "build-package-with-config@v2"
+                        s = {
+                            "name": "Build dependencies",
+                            "id": "build-deps",
+                            "uses": (
+                                "ecmwf-actions/reusable-workflows/"
+                                "build-package-with-config@v2"
+                            ),
+                            "with": {
+                                "repository": "${{ matrix.owner_repo_ref }}",
+                                "codecov_upload": False,
+                                "build_package_inputs": (
+                                    "repository: ${{ matrix.owner_repo_ref }}"
                                 ),
-                                "with": {
-                                    "repository": "${{ matrix.owner_repo_ref }}",
-                                    "codecov_upload": False,
-                                    "build_package_inputs": (
-                                        "repository: ${{ matrix.owner_repo_ref }}"
-                                    ),
-                                    "build_config": "${{ matrix.config_path }}",
-                                    "build_dependencies": "\n".join(cmake_deps),
-                                    "github_token": "${{ secrets.GH_REPO_READ_TOKEN }}",
-                                },
-                            }
-                        )
+                                "build_config": "${{ matrix.config_path }}",
+                                "build_dependencies": "\n".join(cmake_deps),
+                                "github_token": "${{ secrets.GH_REPO_READ_TOKEN }}",
+                            },
+                        }
+                        if build_package_python:
+                            s["with"]["python_version"] = build_package_python
+                        steps.append(s)
                         for path in mkdir:
                             steps.append({"run": f"mkdir -p {path}"})
                         ci_python_step = {
