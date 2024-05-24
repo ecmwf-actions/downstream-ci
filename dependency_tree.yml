@@ -217,6 +217,21 @@ pyfdb:
         {"type":"local","engine":"toc","schema":"${{ github.workspace }}/tests/default_fdb_schema","spaces":[{"handler":"Default","roots":[{"path":"${{ github.workspace }}/data/fdb"}]}]}
     mkdir:
       - data/fdb
+
+pyflow:
+  type: python
+  master_branch: master
+  deps:
+    - ecflow
+  # downstream-ci:
+  #   env:
+  #     ECFLOW_DIR: /opt/actions-runner/work/_work/_temp/install/ecflow
+
+pyflow-wellies:
+  type: python
+  deps:
+    - pyflow
+
 pyodc:
   type: python
   deps:
