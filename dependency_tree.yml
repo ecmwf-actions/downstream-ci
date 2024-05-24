@@ -132,6 +132,11 @@ infero:
     - eckit
     - fckit
 
+kronos:
+  type: cmake
+  deps:
+    - ecbuild
+
 libaec:
   type: cmake
   input: false
