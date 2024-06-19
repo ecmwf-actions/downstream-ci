@@ -66,6 +66,12 @@ earthkit-regrid:
   downstream-ci:
     config_path: ""
 
+earthkit-time:
+  type: python
+  master_branch: main
+  downstream-ci:
+    config_path: ""
+
 ecbuild:
   type: cmake
   input: false
