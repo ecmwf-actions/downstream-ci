@@ -71,6 +71,9 @@ earthkit-time:
   master_branch: main
   downstream-ci:
     config_path: ""
+    test_cmd: |
+      python -m pytest --cov=./ --cov-report=xml
+      python -m coverage report
 
 ecbuild:
   type: cmake
