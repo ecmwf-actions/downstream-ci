@@ -336,7 +336,6 @@ class Workflow:
                             ),
                             "build_config": "${{ matrix.config_path }}",
                             "build_dependencies": "\n".join(cmake_deps),
-                            "github_token": "${{ secrets.GH_REPO_READ_TOKEN }}",
                         },
                     }
                     if not self.private:
@@ -347,6 +346,8 @@ class Workflow:
                             "${{ needs.setup.outputs.trigger_repo "
                             "== github.job && inputs.codecov_upload }}"
                         )
+                    else:
+                        s["with"]["github_token"] = "${{ secrets.GH_REPO_READ_TOKEN }}"
                     if build_package_python:
                         s["with"]["python_version"] = build_package_python
                     steps.append(s)
@@ -369,9 +370,10 @@ class Workflow:
                                 ),
                                 "build_config": "${{ matrix.config_path }}",
                                 "build_dependencies": "\n".join(cmake_deps),
-                                "github_token": "${{ secrets.GH_REPO_READ_TOKEN }}",
                             },
                         }
+                        if self.private:
+                            s["with"]["github_token"] = "${{ secrets.GH_REPO_READ_TOKEN }}"
                         if build_package_python:
                             s["with"]["python_version"] = build_package_python
                         steps.append(s)
@@ -387,7 +389,6 @@ class Workflow:
                                     "${{ steps.build-deps.outputs.bin_paths }}"
                                 ),
                                 "python_dependencies": "\n".join(python_deps),
-                                "github_token": "${{ secrets.GH_REPO_READ_TOKEN }}",
                             },
                         }
                         if pkg_conf.get("requirements_path"):
@@ -408,6 +409,8 @@ class Workflow:
                             ci_python_step["with"][
                                 "codecov_token"
                             ] = "${{ secrets.CODECOV_UPLOAD_TOKEN }}"
+                        else:
+                            ci_python_step["with"]["github_token"] = "${{ secrets.GH_REPO_READ_TOKEN }}"
                         steps.append(ci_python_step)
                     else:
                         # pure python package
@@ -417,7 +420,6 @@ class Workflow:
                                 "repository": "${{ matrix.owner_repo_ref }}",
                                 "checkout": True,
                                 "python_dependencies": "\n".join(python_deps),
-                                "github_token": "${{ secrets.GH_REPO_READ_TOKEN }}",
                             },
                         }
                         if pkg_conf.get("requirements_path"):
@@ -438,6 +440,8 @@ class Workflow:
                             ci_python_step["with"][
                                 "codecov_token"
                             ] = "${{ secrets.CODECOV_UPLOAD_TOKEN }}"
+                        else:
+                            ci_python_step["with"]["github_token"] = "${{ secrets.GH_REPO_READ_TOKEN }}"
                         steps.append(ci_python_step)
             if self.wf_type == "build-package-hpc":
                 runs_on = [
