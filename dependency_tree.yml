@@ -164,6 +164,7 @@ multio:
     CTEST_PARALLEL_LEVEL: 1
   deps:
     - atlas
+    - atlas-orca
     - eccodes
     - eckit
     - fckit
