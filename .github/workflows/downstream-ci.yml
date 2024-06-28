@@ -696,7 +696,6 @@ jobs:
           ${{ needs.setup.outputs.atlas }}
           ${{ needs.setup.outputs.fckit }}
           ${{ needs.setup.outputs.eckit }}
-        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
         codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
   cfgrib:
@@ -1230,6 +1229,7 @@ jobs:
     name: multio-python
     needs:
     - multio
+    - atlas-orca
     - fdb
     - metkit
     - mir
@@ -1239,7 +1239,7 @@ jobs:
     - eccodes
     - setup
     - python-qa
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio-python_matrix && (needs.setup.outputs.multio || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.multio-python) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio-python_matrix && (needs.setup.outputs.multio || needs.setup.outputs.atlas-orca || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.multio-python) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.multio-python_matrix) }}
@@ -1257,6 +1257,7 @@ jobs:
         build_config: ${{ matrix.config_path }}
         build_dependencies: |-
           ${{ needs.setup.outputs.multio }}
+          ${{ needs.setup.outputs.atlas-orca }}
           ${{ needs.setup.outputs.fdb }}
           ${{ needs.setup.outputs.metkit }}
           ${{ needs.setup.outputs.mir }}
@@ -1264,12 +1265,11 @@ jobs:
           ${{ needs.setup.outputs.fckit }}
           ${{ needs.setup.outputs.eckit }}
           ${{ needs.setup.outputs.eccodes }}
-        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
+        bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
         python_dependencies: ''
-        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
         codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   multiurl:

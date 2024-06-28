@@ -1112,6 +1112,7 @@ jobs:
     name: multio-python
     needs:
     - multio
+    - atlas-orca
     - fdb
     - metkit
     - mir
@@ -1120,7 +1121,7 @@ jobs:
     - eckit
     - eccodes
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio-python_matrix && (needs.setup.outputs.multio || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.multio-python) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio-python_matrix && (needs.setup.outputs.multio || needs.setup.outputs.atlas-orca || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.multio-python) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.multio-python_matrix) }}
@@ -1140,6 +1141,7 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: |-
           ${{ needs.setup.outputs.multio }}
+          ${{ needs.setup.outputs.atlas-orca }}
           ${{ needs.setup.outputs.fdb }}
           ${{ needs.setup.outputs.metkit }}
           ${{ needs.setup.outputs.mir }}
