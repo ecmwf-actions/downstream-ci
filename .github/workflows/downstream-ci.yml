@@ -76,6 +76,9 @@ name: downstream-ci
       multio:
         required: false
         type: string
+      multio-python:
+        required: false
+        type: string
       multiurl:
         required: false
         type: string
@@ -169,6 +172,8 @@ jobs:
       mir_matrix: ${{ steps.setup.outputs.mir }}
       multio: ${{ steps.prepare-inputs.outputs.multio }}
       multio_matrix: ${{ steps.setup.outputs.multio }}
+      multio-python: ${{ steps.prepare-inputs.outputs.multio-python }}
+      multio-python_matrix: ${{ steps.setup.outputs.multio-python }}
       multiurl: ${{ steps.prepare-inputs.outputs.multiurl }}
       multiurl_matrix: ${{ steps.setup.outputs.multiurl }}
       odc: ${{ steps.prepare-inputs.outputs.odc }}
@@ -217,6 +222,7 @@ jobs:
         echo metkit="${{ inputs.metkit }}" >> $GITHUB_OUTPUT
         echo mir="${{ inputs.mir }}" >> $GITHUB_OUTPUT
         echo multio="${{ inputs.multio }}" >> $GITHUB_OUTPUT
+        echo multio-python="${{ inputs.multio-python }}" >> $GITHUB_OUTPUT
         echo multiurl="${{ inputs.multiurl }}" >> $GITHUB_OUTPUT
         echo odc="${{ inputs.odc }}" >> $GITHUB_OUTPUT
         echo pdbufr="${{ inputs.pdbufr }}" >> $GITHUB_OUTPUT
@@ -383,6 +389,13 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.multio }}
+            optional_matrix: null
+          ecmwf/multio-python:
+            path: .github/ci-config.yml
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.multio-python }}
             optional_matrix: null
           ecmwf/multiurl:
             path: ''
@@ -1213,6 +1226,52 @@ jobs:
           ${{ needs.setup.outputs.eccodes }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
         codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
+  multio-python:
+    name: multio-python
+    needs:
+    - multio
+    - fdb
+    - metkit
+    - mir
+    - atlas
+    - fckit
+    - eckit
+    - eccodes
+    - setup
+    - python-qa
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio-python_matrix && (needs.setup.outputs.multio || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.multio-python) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.multio-python_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+    - name: Build dependencies
+      id: build-deps
+      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        codecov_upload: false
+        build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
+        build_config: ${{ matrix.config_path }}
+        build_dependencies: |-
+          ${{ needs.setup.outputs.multio }}
+          ${{ needs.setup.outputs.fdb }}
+          ${{ needs.setup.outputs.metkit }}
+          ${{ needs.setup.outputs.mir }}
+          ${{ needs.setup.outputs.atlas }}
+          ${{ needs.setup.outputs.fckit }}
+          ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.eccodes }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+      with:
+        lib_path: ${{ steps.build-deps.outputs.lib_path }}
+        python_dependencies: ''
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   multiurl:
     name: multiurl
     needs:

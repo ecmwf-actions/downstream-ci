@@ -72,6 +72,9 @@ name: downstream-ci-hpc
       multio:
         required: false
         type: string
+      multio-python:
+        required: false
+        type: string
       multiurl:
         required: false
         type: string
@@ -153,6 +156,8 @@ jobs:
       mir_matrix: ${{ steps.setup.outputs.mir }}
       multio: ${{ steps.prepare-inputs.outputs.multio }}
       multio_matrix: ${{ steps.setup.outputs.multio }}
+      multio-python: ${{ steps.prepare-inputs.outputs.multio-python }}
+      multio-python_matrix: ${{ steps.setup.outputs.multio-python }}
       multiurl: ${{ steps.prepare-inputs.outputs.multiurl }}
       multiurl_matrix: ${{ steps.setup.outputs.multiurl }}
       odc: ${{ steps.prepare-inputs.outputs.odc }}
@@ -199,6 +204,7 @@ jobs:
         echo metkit="${{ inputs.metkit }}" >> $GITHUB_OUTPUT
         echo mir="${{ inputs.mir }}" >> $GITHUB_OUTPUT
         echo multio="${{ inputs.multio }}" >> $GITHUB_OUTPUT
+        echo multio-python="${{ inputs.multio-python }}" >> $GITHUB_OUTPUT
         echo multiurl="${{ inputs.multiurl }}" >> $GITHUB_OUTPUT
         echo odc="${{ inputs.odc }}" >> $GITHUB_OUTPUT
         echo pdbufr="${{ inputs.pdbufr }}" >> $GITHUB_OUTPUT
@@ -365,6 +371,13 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.multio }}
+            optional_matrix: null
+          ecmwf/multio-python:
+            path: .github/ci-hpc-config.yml
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.multio-python }}
             optional_matrix: null
           ecmwf/multiurl:
             path: .github/ci-hpc-config.yml
@@ -1087,6 +1100,46 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: |-
           ${{ needs.setup.outputs.atlas-orca }}
+          ${{ needs.setup.outputs.fdb }}
+          ${{ needs.setup.outputs.metkit }}
+          ${{ needs.setup.outputs.mir }}
+          ${{ needs.setup.outputs.atlas }}
+          ${{ needs.setup.outputs.fckit }}
+          ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.eccodes }}
+        python_dependencies: ''
+  multio-python:
+    name: multio-python
+    needs:
+    - multio
+    - fdb
+    - metkit
+    - mir
+    - atlas
+    - fckit
+    - eckit
+    - eccodes
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio-python_matrix && (needs.setup.outputs.multio || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.multio-python) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.multio-python_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: |-
+          ${{ needs.setup.outputs.multio }}
           ${{ needs.setup.outputs.fdb }}
           ${{ needs.setup.outputs.metkit }}
           ${{ needs.setup.outputs.mir }}
