@@ -12,6 +12,9 @@ atlas-orca:
   type: cmake
   master_branch: master
   develop_branch: develop
+  env:
+    ATLAS_ORCA_CACHING: 1
+    CTEST_PARALLEL_LEVEL: 1
   deps:
     - atlas
 
