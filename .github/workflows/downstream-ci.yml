@@ -687,6 +687,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
       ATLAS_ORCA_CACHING: 1
       CTEST_PARALLEL_LEVEL: 1
+      AUTO_LOAD_PLUGINS: 1
     runs-on: ${{ matrix.labels }}
     steps:
     - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
