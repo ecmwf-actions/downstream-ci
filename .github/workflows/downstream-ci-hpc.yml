@@ -33,6 +33,9 @@ name: downstream-ci-hpc
       earthkit-regrid:
         required: false
         type: string
+      earthkit-time:
+        required: false
+        type: string
       eccodes:
         required: false
         type: string
@@ -130,6 +133,8 @@ jobs:
       earthkit-meteo_matrix: ${{ steps.setup.outputs.earthkit-meteo }}
       earthkit-regrid: ${{ steps.prepare-inputs.outputs.earthkit-regrid }}
       earthkit-regrid_matrix: ${{ steps.setup.outputs.earthkit-regrid }}
+      earthkit-time: ${{ steps.prepare-inputs.outputs.earthkit-time }}
+      earthkit-time_matrix: ${{ steps.setup.outputs.earthkit-time }}
       eccodes: ${{ steps.prepare-inputs.outputs.eccodes }}
       eccodes_matrix: ${{ steps.setup.outputs.eccodes }}
       eccodes-python: ${{ steps.prepare-inputs.outputs.eccodes-python }}
@@ -191,6 +196,7 @@ jobs:
         echo earthkit-geo="${{ inputs.earthkit-geo }}" >> $GITHUB_OUTPUT
         echo earthkit-meteo="${{ inputs.earthkit-meteo }}" >> $GITHUB_OUTPUT
         echo earthkit-regrid="${{ inputs.earthkit-regrid }}" >> $GITHUB_OUTPUT
+        echo earthkit-time="${{ inputs.earthkit-time }}" >> $GITHUB_OUTPUT
         echo eccodes="${{ inputs.eccodes }}" >> $GITHUB_OUTPUT
         echo eccodes-python="${{ inputs.eccodes-python }}" >> $GITHUB_OUTPUT
         echo ecflow="${{ inputs.ecflow }}" >> $GITHUB_OUTPUT
@@ -280,6 +286,13 @@ jobs:
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.earthkit-regrid }}
+            optional_matrix: null
+          ecmwf/earthkit-time:
+            path: .github/ci-hpc-config.yml
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.earthkit-time }}
             optional_matrix: null
           ecmwf/eccodes:
             path: .github/ci-hpc-config.yml
@@ -753,6 +766,30 @@ jobs:
         dependencies: ''
         python_dependencies: ''
         python_requirements: tests/downstream-ci-requirements.txt
+  earthkit-time:
+    name: earthkit-time
+    needs:
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-time_matrix && (needs.setup.outputs.earthkit-time) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.earthkit-time_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
   eccodes:
     name: eccodes
     needs:
