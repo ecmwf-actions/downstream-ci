@@ -932,7 +932,6 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
         python_dependencies: ''
-        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
         test_cmd: |
           python -m pytest --cov=./ --cov-report=xml
           python -m coverage report
