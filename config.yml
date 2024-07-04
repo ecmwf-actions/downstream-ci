@@ -13,8 +13,8 @@ downstream-ci: &downstream_ci
   matrix:
     name:
       - gnu@debian-11
-      - gnu-7@centos-7.9
-      - gnu-8@centos-7.9
+      # - gnu-7@centos-7.9
+      # - gnu-8@centos-7.9
       - gnu@rocky-8.6
       - clang@rocky-8.6
       - gnu@ubuntu-22.04
@@ -33,22 +33,22 @@ downstream-ci: &downstream_ci
           BOOST_ROOT_DIR=/usr
           BOOST_INCLUDE_DIR=/usr/include/boost169
           BOOST_LIB_DIR=/usr/lib64/boost169
-      - name: gnu-7@centos-7.9
-        labels: [self-hosted, platform-builder-centos-7.9]
-        os: centos-7.9
-        compiler: gnu-7
-        compiler_cc: gcc-7
-        compiler_cxx: g++-7
-        compiler_fc: gfortran-7
-        env: *linux_env
-      - name: gnu-8@centos-7.9
-        labels: [self-hosted, platform-builder-centos-7.9]
-        os: centos-7.9
-        compiler: gnu-8
-        compiler_cc: gcc-8
-        compiler_cxx: g++-8
-        compiler_fc: gfortran-8
-        env: *linux_env
+      # - name: gnu-7@centos-7.9
+      #   labels: [self-hosted, platform-builder-centos-7.9]
+      #   os: centos-7.9
+      #   compiler: gnu-7
+      #   compiler_cc: gcc-7
+      #   compiler_cxx: g++-7
+      #   compiler_fc: gfortran-7
+      #   env: *linux_env
+      # - name: gnu-8@centos-7.9
+      #   labels: [self-hosted, platform-builder-centos-7.9]
+      #   os: centos-7.9
+      #   compiler: gnu-8
+      #   compiler_cc: gcc-8
+      #   compiler_cxx: g++-8
+      #   compiler_fc: gfortran-8
+      #   env: *linux_env
       - name: gnu@rocky-8.6
         labels: [self-hosted, platform-builder-rocky-8.6]
         os: rocky-8.6
