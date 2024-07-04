@@ -502,32 +502,6 @@ jobs:
             - platform-builder-debian-11
             name: gnu@debian-11
             os: debian-11
-          - compiler: gnu-7
-            compiler_cc: gcc-7
-            compiler_cxx: g++-7
-            compiler_fc: gfortran-7
-            env: |
-              BOOST_ROOT_DIR=/usr
-              BOOST_INCLUDE_DIR=/usr/include/boost169
-              BOOST_LIB_DIR=/usr/lib64/boost169
-            labels:
-            - self-hosted
-            - platform-builder-centos-7.9
-            name: gnu-7@centos-7.9
-            os: centos-7.9
-          - compiler: gnu-8
-            compiler_cc: gcc-8
-            compiler_cxx: g++-8
-            compiler_fc: gfortran-8
-            env: |
-              BOOST_ROOT_DIR=/usr
-              BOOST_INCLUDE_DIR=/usr/include/boost169
-              BOOST_LIB_DIR=/usr/lib64/boost169
-            labels:
-            - self-hosted
-            - platform-builder-centos-7.9
-            name: gnu-8@centos-7.9
-            os: centos-7.9
           - compiler: gnu
             compiler_cc: gcc
             compiler_cxx: g++
@@ -583,8 +557,6 @@ jobs:
             os: fedora-37
           name:
           - gnu@debian-11
-          - gnu-7@centos-7.9
-          - gnu-8@centos-7.9
           - gnu@rocky-8.6
           - clang@rocky-8.6
           - gnu@ubuntu-22.04
