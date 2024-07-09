@@ -380,7 +380,7 @@ class Workflow:
                         for path in mkdir:
                             steps.append({"run": f"mkdir -p {path}"})
                         ci_python_step = {
-                            "uses": "ecmwf-actions/reusable-workflows/ci-python@v2",
+                            "uses": "ecmwf-actions/reusable-workflows/ci-python@support-toml",
                             "with": {
                                 "lib_path": (
                                     "${{ steps.build-deps.outputs.lib_path }}"
@@ -394,6 +394,10 @@ class Workflow:
                         if pkg_conf.get("requirements_path"):
                             ci_python_step["with"]["requirements_path"] = pkg_conf.get(
                                 "requirements_path"
+                            )
+                        if pkg_conf.get("toml_opt_dep_sections"):
+                            ci_python_step["with"]["toml_opt_dep_sections"] = (
+                                pkg_conf.get("toml_opt_dep_sections")
                             )
                         if test_cmd:
                             ci_python_step["with"]["test_cmd"] = test_cmd
@@ -415,7 +419,7 @@ class Workflow:
                     else:
                         # pure python package
                         ci_python_step = {
-                            "uses": "ecmwf-actions/reusable-workflows/ci-python@v2",
+                            "uses": "ecmwf-actions/reusable-workflows/ci-python@support-toml",
                             "with": {
                                 "repository": "${{ matrix.owner_repo_ref }}",
                                 "checkout": True,
@@ -425,6 +429,10 @@ class Workflow:
                         if pkg_conf.get("requirements_path"):
                             ci_python_step["with"]["requirements_path"] = pkg_conf.get(
                                 "requirements_path"
+                            )
+                        if pkg_conf.get("toml_opt_dep_sections"):
+                            ci_python_step["with"]["toml_opt_dep_sections"] = (
+                                pkg_conf.get("toml_opt_dep_sections")
                             )
                         if test_cmd:
                             ci_python_step["with"]["test_cmd"] = test_cmd
