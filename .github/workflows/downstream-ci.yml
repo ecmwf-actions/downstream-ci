@@ -707,7 +707,7 @@ jobs:
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
         build_config: ${{ matrix.config_path }}
         build_dependencies: ${{ needs.setup.outputs.eccodes }}
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
@@ -752,7 +752,7 @@ jobs:
           ${{ needs.setup.outputs.eccodes }}
           ${{ needs.setup.outputs.odc }}
           ${{ needs.setup.outputs.eckit }}
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
@@ -805,7 +805,7 @@ jobs:
           ${{ needs.setup.outputs.eccodes }}
           ${{ needs.setup.outputs.odc }}
           ${{ needs.setup.outputs.eckit }}
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
@@ -836,7 +836,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
@@ -857,7 +857,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
@@ -878,7 +878,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
@@ -899,7 +899,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
@@ -953,7 +953,7 @@ jobs:
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
         build_config: ${{ matrix.config_path }}
         build_dependencies: ${{ needs.setup.outputs.eccodes }}
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
@@ -1087,7 +1087,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
@@ -1273,7 +1273,7 @@ jobs:
           ${{ needs.setup.outputs.fckit }}
           ${{ needs.setup.outputs.eckit }}
           ${{ needs.setup.outputs.eccodes }}
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
@@ -1293,7 +1293,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
@@ -1346,7 +1346,7 @@ jobs:
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
         build_config: ${{ matrix.config_path }}
         build_dependencies: ${{ needs.setup.outputs.eccodes }}
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
@@ -1418,7 +1418,7 @@ jobs:
           ${{ needs.setup.outputs.eccodes }}
           ${{ needs.setup.outputs.eckit }}
     - run: mkdir -p data/fdb
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
@@ -1451,7 +1451,7 @@ jobs:
         build_dependencies: |-
           ${{ needs.setup.outputs.odc }}
           ${{ needs.setup.outputs.eckit }}
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
@@ -1471,7 +1471,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
@@ -1491,7 +1491,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
@@ -1511,7 +1511,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
@@ -1534,7 +1534,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+    - uses: ecmwf-actions/reusable-workflows/ci-python@support-toml
       with:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
