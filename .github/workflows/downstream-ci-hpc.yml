@@ -649,6 +649,7 @@ jobs:
           ${{ needs.setup.outputs.earthkit-geo }}
           ${{ needs.setup.outputs.earthkit-meteo }}
           ${{ needs.setup.outputs.earthkit-regrid }}
+        python_requirements: tests/downstream-ci-requirements.txt
   earthkit-data:
     name: earthkit-data
     needs:
@@ -689,7 +690,6 @@ jobs:
           ${{ needs.setup.outputs.pdbufr }}
           ${{ needs.setup.outputs.eccodes-python }}
           ${{ needs.setup.outputs.pyodc }}
-        python_requirements: tests/downstream-ci-requirements.txt
   earthkit-geo:
     name: earthkit-geo
     needs:
