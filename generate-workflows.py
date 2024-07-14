@@ -471,6 +471,10 @@ class Workflow:
                 }
                 if pkg_conf.get("requirements_path"):
                     s["with"]["python_requirements"] = pkg_conf.get("requirements_path")
+                if pkg_conf.get("toml_opt_dep_sections"):
+                    s["with"]["python_toml_opt_dep_sections"] = pkg_conf.get(
+                        "toml_opt_dep_sections"
+                    )
                 if conda_deps:
                     s["with"]["conda_deps"] = conda_deps
                 steps.append(s)
