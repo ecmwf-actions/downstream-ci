@@ -455,7 +455,7 @@ class Workflow:
                 runs_on = [
                     "self-hosted",
                     "linux",
-                    "hpc",
+                    "hpc-dev",
                 ]
                 s = {
                     "uses": "ecmwf-actions/reusable-workflows/ci-hpc@v2",
