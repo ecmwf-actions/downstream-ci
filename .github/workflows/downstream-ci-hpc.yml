@@ -671,7 +671,7 @@ jobs:
     runs-on:
     - self-hosted
     - linux
-    - hpc
+    - hpc-dev
     steps:
     - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
       with:
