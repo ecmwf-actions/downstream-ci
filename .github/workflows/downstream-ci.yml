@@ -815,7 +815,6 @@ jobs:
           ${{ needs.setup.outputs.pdbufr }}
           ${{ needs.setup.outputs.eccodes-python }}
           ${{ needs.setup.outputs.pyodc }}
-        toml_opt_dep_sections: all,test,ci
         test_cmd: |
           python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
           python -m pytest -v -m 'notebook'
