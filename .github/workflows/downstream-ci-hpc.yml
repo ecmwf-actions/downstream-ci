@@ -690,6 +690,7 @@ jobs:
           ${{ needs.setup.outputs.pdbufr }}
           ${{ needs.setup.outputs.eccodes-python }}
           ${{ needs.setup.outputs.pyodc }}
+        python_toml_opt_dep_sections: all,test,ci
   earthkit-geo:
     name: earthkit-geo
     needs:
