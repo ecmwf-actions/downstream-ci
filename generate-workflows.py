@@ -380,7 +380,7 @@ class Workflow:
                         for path in mkdir:
                             steps.append({"run": f"mkdir -p {path}"})
                         ci_python_step = {
-                            "uses": "ecmwf-actions/reusable-workflows/ci-python@support-toml",
+                            "uses": "ecmwf-actions/reusable-workflows/ci-python@v2",
                             "with": {
                                 "lib_path": (
                                     "${{ steps.build-deps.outputs.lib_path }}"
@@ -419,7 +419,7 @@ class Workflow:
                     else:
                         # pure python package
                         ci_python_step = {
-                            "uses": "ecmwf-actions/reusable-workflows/ci-python@support-toml",
+                            "uses": "ecmwf-actions/reusable-workflows/ci-python@v2",
                             "with": {
                                 "repository": "${{ matrix.owner_repo_ref }}",
                                 "checkout": True,
@@ -455,10 +455,10 @@ class Workflow:
                 runs_on = [
                     "self-hosted",
                     "linux",
-                    "hpc-dev",
+                    "hpc",
                 ]
                 s = {
-                    "uses": "ecmwf-actions/reusable-workflows/ci-hpc@support-toml",
+                    "uses": "ecmwf-actions/reusable-workflows/ci-hpc@v2",
                     "with": {
                         "github_user": ("${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}"),
                         "github_token": "${{ secrets.GH_REPO_READ_TOKEN }}",
