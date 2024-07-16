@@ -395,6 +395,10 @@ class Workflow:
                             ci_python_step["with"]["requirements_path"] = pkg_conf.get(
                                 "requirements_path"
                             )
+                        if pkg_conf.get("toml_opt_dep_sections"):
+                            ci_python_step["with"]["toml_opt_dep_sections"] = (
+                                pkg_conf.get("toml_opt_dep_sections")
+                            )
                         if test_cmd:
                             ci_python_step["with"]["test_cmd"] = test_cmd
                         if conda_deps:
@@ -425,6 +429,10 @@ class Workflow:
                         if pkg_conf.get("requirements_path"):
                             ci_python_step["with"]["requirements_path"] = pkg_conf.get(
                                 "requirements_path"
+                            )
+                        if pkg_conf.get("toml_opt_dep_sections"):
+                            ci_python_step["with"]["toml_opt_dep_sections"] = (
+                                pkg_conf.get("toml_opt_dep_sections")
                             )
                         if test_cmd:
                             ci_python_step["with"]["test_cmd"] = test_cmd
@@ -463,6 +471,10 @@ class Workflow:
                 }
                 if pkg_conf.get("requirements_path"):
                     s["with"]["python_requirements"] = pkg_conf.get("requirements_path")
+                if pkg_conf.get("toml_opt_dep_sections"):
+                    s["with"]["python_toml_opt_dep_sections"] = pkg_conf.get(
+                        "toml_opt_dep_sections"
+                    )
                 if conda_deps:
                     s["with"]["conda_deps"] = conda_deps
                 steps.append(s)
