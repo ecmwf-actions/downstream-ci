@@ -561,37 +561,45 @@ class Workflow:
                         "optional_matrix", dep_tree, dep, self.name
                     ),
                 }
-        steps.append(
-            {
-                "name": "Run setup script",
-                "id": "setup",
-                "env": {
-                    "TOKEN": "${{ secrets.GH_REPO_READ_TOKEN }}",
-                    "CONFIG": yaml.dump(
-                        setup_config,
-                        indent=2,
-                        default_flow_style=False,
-                        sort_keys=False,
-                    ),
-                    "SKIP_MATRIX_JOBS": "${{ inputs.skip_matrix_jobs }}",
-                    "PYTHON_VERSIONS": yaml.dump(
-                        wf_config["python_versions"], indent=2, default_flow_style=False
-                    )
-                    + "\n",
-                    "PYTHON_JOBS": yaml.dump(
-                        wf_config.get("python_jobs", []),
-                        indent=2,
-                        default_flow_style=False,
-                    )
-                    + "\n",
-                    "MATRIX": yaml.dump(wf_config["matrix"], indent=2),
-                    "OPTIONAL_MATRIX": yaml.dump(
-                        wf_config["optional_matrix"], indent=2, default_flow_style=False
-                    ),
-                },
-                "run": "python setup_downstream_ci.py",
-            }
+
+        s = {
+            "name": "Run setup script",
+            "id": "setup",
+            "env": {
+                "TOKEN": "${{ secrets.GH_REPO_READ_TOKEN }}",
+                "CONFIG": yaml.dump(
+                    setup_config,
+                    indent=2,
+                    default_flow_style=False,
+                    sort_keys=False,
+                ),
+                "PYTHON_VERSIONS": yaml.dump(
+                    wf_config["python_versions"], indent=2, default_flow_style=False
+                )
+                + "\n",
+                "PYTHON_JOBS": yaml.dump(
+                    wf_config.get("python_jobs", []),
+                    indent=2,
+                    default_flow_style=False,
+                )
+                + "\n",
+                "MATRIX": yaml.dump(wf_config["matrix"], indent=2),
+                "OPTIONAL_MATRIX": yaml.dump(
+                    wf_config["optional_matrix"], indent=2, default_flow_style=False
+                ),
+            },
+            "run": "python setup_downstream_ci.py",
+        }
+
+        s["env"]["SKIP_MATRIX_JOBS"] = (
+            (
+                "${{ inputs.skip_matrix_jobs || github.event.client_payload.inputs."
+                "skip_matrix_jobs}}"
+            )
+            if self.private
+            else "${{ inputs.skip_matrix_jobs }}"
         )
+        steps.append(s)
         self.add_job(Job("setup", steps=steps, outputs=outputs))
 
 
