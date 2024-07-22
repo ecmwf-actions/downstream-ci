@@ -387,9 +387,9 @@ covjsonkit:
 danu:
   type: python
   master_branch: main
-  #requirements_path: environment.yml
+  requirements_path: requirements.txt
   test_cmd: "python -m pytest"
-  conda_deps: numpy xarray pyproj pcraster gdal netcdf4
+  conda_deps: numpy scipy pcraster gdal netCDF4 pandas dask lz4 eccodes magics
   downstream-ci:
     config_path: ""
   downstream-ci-hpc:
