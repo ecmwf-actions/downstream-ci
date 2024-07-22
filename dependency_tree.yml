@@ -389,7 +389,7 @@ danu:
   master_branch: main
   #requirements_path: environment.yml
   test_cmd: "python -m pytest"
-  conda_deps: "pcraster gdal netcdf4"
+  conda_deps: numpy xarray pyproj pcraster gdal netcdf4
   downstream-ci:
     config_path: ""
   downstream-ci-hpc:
