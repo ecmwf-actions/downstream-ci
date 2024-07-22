@@ -1985,4 +1985,5 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: ''
-        conda_deps: numpy xarray pyproj pcraster gdal netcdf4
+        python_requirements: requirements.txt
+        conda_deps: numpy scipy pcraster gdal netCDF4 pandas dask lz4 eccodes magics
