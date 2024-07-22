@@ -100,6 +100,8 @@ eccodes:
 
 eccodes-python:
   type: python
+  env:
+    ECCODES_PYTHON_TRACE_LIB_SEARCH: 1
   deps:
     - eccodes
 
