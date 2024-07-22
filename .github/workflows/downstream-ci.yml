@@ -942,6 +942,7 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.eccodes-python_matrix) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+      ECCODES_PYTHON_TRACE_LIB_SEARCH: 1
     runs-on: ${{ matrix.labels }}
     steps:
     - name: Build dependencies
