@@ -52,6 +52,22 @@ earthkit-data:
       python -m pytest --forked -vv -m 'no_cache_init'
       python -m coverage report
 
+anemoi-datasets:
+  type: python
+  master_branch: main
+  toml_opt_dep_sections: all,test
+  deps:
+    - earthkit-data
+    - earthkit-geo
+    - earthkit-meteo
+    - ecmwflibs
+  downstream-ci:
+    test_cmd: |
+      python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
+      python -m pytest -v -m 'notebook'
+      python -m pytest --forked -vv -m 'no_cache_init'
+      python -m coverage report
+
 earthkit-geo:
   type: python
   master_branch: main
