@@ -106,13 +106,13 @@ name: downstream-ci
       thermofeel:
         required: false
         type: string
+      danu:
+        required: false
+        type: string
       troika:
         required: false
         type: string
       cascade:
-        required: false
-        type: string
-      danu:
         required: false
         type: string
       skip_matrix_jobs:
@@ -198,6 +198,8 @@ jobs:
       skinnywms_matrix: ${{ steps.setup.outputs.skinnywms }}
       thermofeel: ${{ steps.prepare-inputs.outputs.thermofeel }}
       thermofeel_matrix: ${{ steps.setup.outputs.thermofeel }}
+      danu: ${{ steps.prepare-inputs.outputs.danu }}
+      danu_matrix: ${{ steps.setup.outputs.danu }}
       troika: ${{ steps.prepare-inputs.outputs.troika }}
       troika_matrix: ${{ steps.setup.outputs.troika }}
       cascade: ${{ steps.prepare-inputs.outputs.cascade }}
@@ -205,7 +207,6 @@ jobs:
       dep_tree: ${{ steps.setup.outputs.build_package_dep_tree }}
       trigger_repo: ${{ steps.setup.outputs.trigger_repo }}
       py_codecov_platform: ${{ steps.setup.outputs.py_codecov_platform }}
-      danu: ${{ steps.setup.outputs.danu }}
     steps:
     - name: Prepare inputs
       id: prepare-inputs
@@ -241,6 +242,7 @@ jobs:
         echo pyodc="${{ inputs.pyodc }}" >> $GITHUB_OUTPUT
         echo skinnywms="${{ inputs.skinnywms }}" >> $GITHUB_OUTPUT
         echo thermofeel="${{ inputs.thermofeel }}" >> $GITHUB_OUTPUT
+        echo danu="${{ inputs.danu }}" >> $GITHUB_OUTPUT
         echo troika="${{ inputs.troika }}" >> $GITHUB_OUTPUT
         echo cascade="${{ inputs.cascade }}" >> $GITHUB_OUTPUT
     - name: checkout reusable wfs repo
@@ -294,13 +296,6 @@ jobs:
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.earthkit-geo }}
-            optional_matrix: null
-          ecmwf/earthkit-geo:
-            path: ''
-            python: true
-            master_branch: main
-            develop_branch: develop
-            input: ${{ inputs.earthkit-geo }}
             optional_matrix: null
           ecmwf/earthkit-meteo:
             path: ''
@@ -482,7 +477,7 @@ jobs:
             python: true
             master_branch: main
             develop_branch: develop
-            input: ${{ inputs.danu }}
+            input: ${{ steps.prepare-inputs.outputs.danu }}
             optional_matrix: null
           ecmwf/troika:
             path: ''
@@ -1517,6 +1512,29 @@ jobs:
         python_dependencies: ''
         codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
+  danu:
+    name: danu
+    needs:
+    - setup
+    - python-qa
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.danu_matrix && (needs.setup.outputs.danu) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.danu_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        checkout: true
+        python_dependencies: ''
+        requirements_path: requirements.txt
+        test_cmd: python -m pytest
+        conda_install: numpy scipy pcraster gdal netCDF4 pandas dask lz4 eccodes magics
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   troika:
     name: troika
     needs:
@@ -1560,26 +1578,3 @@ jobs:
         python_dependencies: ''
         codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
-  danu:
-    name: danu
-    needs:
-    - setup
-    - python-qa
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.danu && (inputs.danu) }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.danu) }}
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: ${{ matrix.labels }}
-    steps:
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
-      with:
-        repository: ${{ matrix.owner_repo_ref }}
-        checkout: true
-        python_dependencies: ''
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
-        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
-        requirements_path: requirements.txt
-        test_cmd: python -m pytest
-        conda_install: numpy scipy pcraster gdal netCDF4 pandas dask lz4 eccodes magics
