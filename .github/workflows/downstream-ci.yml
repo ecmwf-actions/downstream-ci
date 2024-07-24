@@ -473,7 +473,7 @@ jobs:
             input: ${{ steps.prepare-inputs.outputs.thermofeel }}
             optional_matrix: null
           ecmwf/danu:
-            path: ''
+            path: .github/ci-config.yml
             python: true
             master_branch: main
             develop_branch: develop
