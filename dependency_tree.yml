@@ -66,6 +66,8 @@ anemoi-datasets:
       python -m pytest -v -m 'notebook'
       python -m pytest --forked -vv -m 'no_cache_init'
       python -m coverage report
+    config_path: ""
+
 
 earthkit-geo:
   type: python
