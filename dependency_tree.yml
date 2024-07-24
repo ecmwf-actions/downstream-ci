@@ -60,7 +60,6 @@ anemoi-datasets:
     - earthkit-data
     - earthkit-geo
     - earthkit-meteo
-    - ecmwflibs
   downstream-ci:
     test_cmd: |
       python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
