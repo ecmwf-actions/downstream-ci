@@ -1,5 +1,6 @@
-downstream-ci:
+downstream-ci: &downstream_ci
   type: build-package
+  repo: ecmwf-actions/downstream-ci
   inputs:
     codecov_upload:
       description: Whether to upload code coverage
@@ -12,8 +13,8 @@ downstream-ci:
   matrix:
     name:
       - gnu@debian-11
-      - gnu-7@centos-7.9
-      - gnu-8@centos-7.9
+      # - gnu-7@centos-7.9
+      # - gnu-8@centos-7.9
       - gnu@rocky-8.6
       - clang@rocky-8.6
       - gnu@ubuntu-22.04
@@ -32,22 +33,22 @@ downstream-ci:
           BOOST_ROOT_DIR=/usr
           BOOST_INCLUDE_DIR=/usr/include/boost169
           BOOST_LIB_DIR=/usr/lib64/boost169
-      - name: gnu-7@centos-7.9
-        labels: [self-hosted, platform-builder-centos-7.9]
-        os: centos-7.9
-        compiler: gnu-7
-        compiler_cc: gcc-7
-        compiler_cxx: g++-7
-        compiler_fc: gfortran-7
-        env: *linux_env
-      - name: gnu-8@centos-7.9
-        labels: [self-hosted, platform-builder-centos-7.9]
-        os: centos-7.9
-        compiler: gnu-8
-        compiler_cc: gcc-8
-        compiler_cxx: g++-8
-        compiler_fc: gfortran-8
-        env: *linux_env
+      # - name: gnu-7@centos-7.9
+      #   labels: [self-hosted, platform-builder-centos-7.9]
+      #   os: centos-7.9
+      #   compiler: gnu-7
+      #   compiler_cc: gcc-7
+      #   compiler_cxx: g++-7
+      #   compiler_fc: gfortran-7
+      #   env: *linux_env
+      # - name: gnu-8@centos-7.9
+      #   labels: [self-hosted, platform-builder-centos-7.9]
+      #   os: centos-7.9
+      #   compiler: gnu-8
+      #   compiler_cc: gcc-8
+      #   compiler_cxx: g++-8
+      #   compiler_fc: gfortran-8
+      #   env: *linux_env
       - name: gnu@rocky-8.6
         labels: [self-hosted, platform-builder-rocky-8.6]
         os: rocky-8.6
@@ -103,8 +104,9 @@ downstream-ci:
       #   #OPENSSL_ROOT_DIR is taken care of in build-package
       #   env: *macos_env
   optional_matrix: null
-downstream-ci-hpc:
+downstream-ci-hpc: &downstream_ci_hpc
   type: build-package-hpc
+  repo: ecmwf-actions/downstream-ci
   python_jobs:
     - gnu-8.5.0
   python_versions:
@@ -155,3 +157,14 @@ downstream-ci-hpc:
         compiler_cxx: g++
         compiler_fc: gfortran
         compiler_modules: LUMI/23.09,cpeGNU/23.09
+
+private-downstream-ci:
+  <<: *downstream_ci
+  repo: ecmwf-actions/private-downstream-ci
+  private: true
+  inputs: []
+
+private-downstream-ci-hpc:
+  <<: *downstream_ci_hpc
+  repo: ecmwf-actions/private-downstream-ci
+  private: true

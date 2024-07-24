@@ -7,6 +7,13 @@ atlas:
   deps:
     - eckit
     - fckit
+    
+atlas-orca:
+  type: cmake
+  master_branch: master
+  develop_branch: develop
+  deps:
+    - atlas
 
 cfgrib:
   type: python
@@ -16,10 +23,23 @@ cfgrib:
   deps:
     - eccodes-python
 
-earthkit-data:
+earthkit:
   type: python
   master_branch: main
   requirements_path: tests/downstream-ci-requirements.txt
+  downstream-ci:
+    test_cmd: |
+      _EKD_DIR=$(pwd) && cd .. && python -m pytest ${_EKD_DIR} -vv --cov=. --cov-report=html && cd -
+  deps:
+    - earthkit-data
+    - earthkit-geo
+    - earthkit-meteo
+    - earthkit-regrid
+
+earthkit-data:
+  type: python
+  master_branch: main
+  toml_opt_dep_sections: all,test,ci
   deps:
     - cfgrib
     - multiurl
@@ -53,6 +73,15 @@ earthkit-regrid:
   downstream-ci:
     config_path: ""
 
+earthkit-time:
+  type: python
+  master_branch: main
+  downstream-ci:
+    config_path: ""
+    test_cmd: |
+      python -m pytest --cov=./ --cov-report=xml
+      python -m coverage report
+
 ecbuild:
   type: cmake
   input: false
@@ -71,11 +100,14 @@ eccodes:
 
 eccodes-python:
   type: python
+  env:
+    ECCODES_PYTHON_TRACE_LIB_SEARCH: 1
   deps:
     - eccodes
 
 ecflow:
   type: cmake
+  build-package-python: "3.10"
   deps:
     - ecbuild
 
@@ -89,6 +121,10 @@ eckit:
   deps:
     - ecbuild
 
+ecmwf-toolbox:
+  type: cmake
+  private: true
+
 fckit:
   type: cmake
   deps:
@@ -98,6 +134,26 @@ fdb:
   type: cmake
   deps:
     - metkit
+
+findlibs:
+  type: python
+  master_branch: master
+  requirements_path: tests/downstream-ci-requirements.txt
+  downstream-ci:
+    config_path: ""
+
+infero:
+  type: cmake
+  master_branch: master
+  develop_branch: develop
+  deps:
+    - eckit
+    - fckit
+
+kronos:
+  type: cmake
+  deps:
+    - ecbuild
 
 libaec:
   type: cmake
@@ -118,6 +174,29 @@ mir:
     - atlas
     - eccodes
 
+multio:
+  type: cmake
+  master_branch: master
+  develop_branch: develop
+  env:
+    CTEST_PARALLEL_LEVEL: 1
+  deps:
+    - atlas
+    - atlas-orca
+    - eccodes
+    - eckit
+    - fckit
+    - fdb
+    - metkit
+    - mir
+    
+multio-python:
+  type: python
+  master_branch: main
+  develop_branch: develop
+  deps:
+    - multio
+
 multiurl:
   type: python
   master_branch: main
@@ -133,21 +212,29 @@ odc:
 pdbufr:
   type: python
   master_branch: master
-  develop_branch: master
   requirements_path: tests/downstream-ci-requirements.txt
+  downstream-ci:
+    test_cmd: |
+      python -m pytest --cov=./ --cov-report=xml -k 'not test_notebooks'
+      python -m pytest -v -k 'test_notebooks'
   deps:
     - eccodes-python
 
 pgen:
   type: cmake
-  input: false
+  private: true
   deps:
     - mir
     - metkit
 
+pgen-bundle:
+  type: cmake
+  private: true
+
 plume:
   type: cmake
   deps:
+    - eckit
     - atlas
     - fckit
 
@@ -186,3 +273,16 @@ danu:
     config_path: ""
   downstream-ci-hpc:
     config_path: ".github/ci-hpc-config.yml"
+troika:
+  type: python
+  downstream-ci:
+    config_path: ""
+    test_cmd: |
+      pytest --cov=./ --cov-report=xml --basetemp=$RUNNER_TEMP/pytest_tmp
+      python -m coverage report
+
+cascade:
+  type: python
+  master_branch: main
+  downstream-ci:
+    config_path: ""
