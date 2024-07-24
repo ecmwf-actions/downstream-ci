@@ -39,7 +39,7 @@ earthkit:
 earthkit-data:
   type: python
   master_branch: main
-  requirements_path: tests/downstream-ci-requirements.txt
+  toml_opt_dep_sections: all,test,ci
   deps:
     - cfgrib
     - multiurl
@@ -116,6 +116,8 @@ eccodes:
 
 eccodes-python:
   type: python
+  env:
+    ECCODES_PYTHON_TRACE_LIB_SEARCH: 1
   deps:
     - eccodes
 

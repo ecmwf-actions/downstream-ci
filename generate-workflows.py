@@ -395,6 +395,10 @@ class Workflow:
                             ci_python_step["with"]["requirements_path"] = pkg_conf.get(
                                 "requirements_path"
                             )
+                        if pkg_conf.get("toml_opt_dep_sections"):
+                            ci_python_step["with"]["toml_opt_dep_sections"] = (
+                                pkg_conf.get("toml_opt_dep_sections")
+                            )
                         if test_cmd:
                             ci_python_step["with"]["test_cmd"] = test_cmd
                         if conda_deps:
@@ -425,6 +429,10 @@ class Workflow:
                         if pkg_conf.get("requirements_path"):
                             ci_python_step["with"]["requirements_path"] = pkg_conf.get(
                                 "requirements_path"
+                            )
+                        if pkg_conf.get("toml_opt_dep_sections"):
+                            ci_python_step["with"]["toml_opt_dep_sections"] = (
+                                pkg_conf.get("toml_opt_dep_sections")
                             )
                         if test_cmd:
                             ci_python_step["with"]["test_cmd"] = test_cmd
@@ -463,6 +471,10 @@ class Workflow:
                 }
                 if pkg_conf.get("requirements_path"):
                     s["with"]["python_requirements"] = pkg_conf.get("requirements_path")
+                if pkg_conf.get("toml_opt_dep_sections"):
+                    s["with"]["python_toml_opt_dep_sections"] = pkg_conf.get(
+                        "toml_opt_dep_sections"
+                    )
                 if conda_deps:
                     s["with"]["conda_deps"] = conda_deps
                 steps.append(s)
@@ -549,37 +561,45 @@ class Workflow:
                         "optional_matrix", dep_tree, dep, self.name
                     ),
                 }
-        steps.append(
-            {
-                "name": "Run setup script",
-                "id": "setup",
-                "env": {
-                    "TOKEN": "${{ secrets.GH_REPO_READ_TOKEN }}",
-                    "CONFIG": yaml.dump(
-                        setup_config,
-                        indent=2,
-                        default_flow_style=False,
-                        sort_keys=False,
-                    ),
-                    "SKIP_MATRIX_JOBS": "${{ inputs.skip_matrix_jobs }}",
-                    "PYTHON_VERSIONS": yaml.dump(
-                        wf_config["python_versions"], indent=2, default_flow_style=False
-                    )
-                    + "\n",
-                    "PYTHON_JOBS": yaml.dump(
-                        wf_config.get("python_jobs", []),
-                        indent=2,
-                        default_flow_style=False,
-                    )
-                    + "\n",
-                    "MATRIX": yaml.dump(wf_config["matrix"], indent=2),
-                    "OPTIONAL_MATRIX": yaml.dump(
-                        wf_config["optional_matrix"], indent=2, default_flow_style=False
-                    ),
-                },
-                "run": "python setup_downstream_ci.py",
-            }
+
+        s = {
+            "name": "Run setup script",
+            "id": "setup",
+            "env": {
+                "TOKEN": "${{ secrets.GH_REPO_READ_TOKEN }}",
+                "CONFIG": yaml.dump(
+                    setup_config,
+                    indent=2,
+                    default_flow_style=False,
+                    sort_keys=False,
+                ),
+                "PYTHON_VERSIONS": yaml.dump(
+                    wf_config["python_versions"], indent=2, default_flow_style=False
+                )
+                + "\n",
+                "PYTHON_JOBS": yaml.dump(
+                    wf_config.get("python_jobs", []),
+                    indent=2,
+                    default_flow_style=False,
+                )
+                + "\n",
+                "MATRIX": yaml.dump(wf_config["matrix"], indent=2),
+                "OPTIONAL_MATRIX": yaml.dump(
+                    wf_config["optional_matrix"], indent=2, default_flow_style=False
+                ),
+            },
+            "run": "python setup_downstream_ci.py",
+        }
+
+        s["env"]["SKIP_MATRIX_JOBS"] = (
+            (
+                "${{ inputs.skip_matrix_jobs || github.event.client_payload.inputs."
+                "skip_matrix_jobs}}"
+            )
+            if self.private
+            else "${{ inputs.skip_matrix_jobs }}"
         )
+        steps.append(s)
         self.add_job(Job("setup", steps=steps, outputs=outputs))
 
 

@@ -462,7 +462,6 @@ jobs:
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.cascade }}
             optional_matrix: null
-        SKIP_MATRIX_JOBS: ${{ inputs.skip_matrix_jobs }}
         PYTHON_VERSIONS: |+
           - '3.10'
 
@@ -515,6 +514,7 @@ jobs:
             site: lumi
           name:
           - lumi
+        SKIP_MATRIX_JOBS: ${{ inputs.skip_matrix_jobs }}
       run: python setup_downstream_ci.py
   atlas:
     name: atlas
@@ -690,7 +690,7 @@ jobs:
           ${{ needs.setup.outputs.pdbufr }}
           ${{ needs.setup.outputs.eccodes-python }}
           ${{ needs.setup.outputs.pyodc }}
-        python_requirements: tests/downstream-ci-requirements.txt
+        python_toml_opt_dep_sections: all,test,ci
   earthkit-geo:
     name: earthkit-geo
     needs:
@@ -825,6 +825,7 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.eccodes-python_matrix) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+      ECCODES_PYTHON_TRACE_LIB_SEARCH: 1
     runs-on:
     - self-hosted
     - linux
