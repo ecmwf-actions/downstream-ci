@@ -276,3 +276,9 @@ cascade:
   master_branch: main
   downstream-ci:
     config_path: ""
+
+covjsonkit:
+  type: python
+  master_branch: main
+  downstream-ci:
+    config_path: ""
