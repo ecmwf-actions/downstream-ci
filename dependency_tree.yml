@@ -7,7 +7,7 @@ atlas:
   deps:
     - eckit
     - fckit
-    
+
 atlas-orca:
   type: cmake
   master_branch: master
@@ -107,7 +107,6 @@ eccodes-python:
 
 ecflow:
   type: cmake
-  build-package-python: "3.10"
   deps:
     - ecbuild
 
@@ -189,7 +188,7 @@ multio:
     - fdb
     - metkit
     - mir
-    
+
 multio-python:
   type: python
   master_branch: main
