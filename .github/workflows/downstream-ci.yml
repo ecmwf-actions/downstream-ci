@@ -858,6 +858,7 @@ jobs:
       matrix: ${{ fromJson(needs.setup.outputs.anemoi-datasets_matrix) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+      RUNNER_TYPE: self-hosted
     runs-on: ${{ matrix.labels }}
     steps:
     - name: Build dependencies
