@@ -61,7 +61,8 @@ anemoi-datasets:
     - earthkit-geo
     - earthkit-meteo
   downstream-ci:
-    RUNNER_TYPE: "self-hosted" 
+    env:
+      RUNNER_TYPE: "self-hosted" 
     test_cmd: |
       python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
       python -m coverage report
