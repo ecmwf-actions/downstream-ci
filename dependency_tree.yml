@@ -82,6 +82,15 @@ earthkit-time:
       python -m pytest --cov=./ --cov-report=xml
       python -m coverage report
 
+anemoi-utils:
+  type: python
+  master_branch: main
+  toml_opt_dep_sections: all,test
+  downstream-ci:
+    test_cmd: |
+      python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
+      python -m coverage report
+
 ecbuild:
   type: cmake
   input: false
