@@ -40,6 +40,9 @@ name: downstream-ci
       earthkit-time:
         required: false
         type: string
+      anemoi-utils:
+        required: false
+        type: string
       eccodes:
         required: false
         type: string
@@ -154,6 +157,8 @@ jobs:
       earthkit-regrid_matrix: ${{ steps.setup.outputs.earthkit-regrid }}
       earthkit-time: ${{ steps.prepare-inputs.outputs.earthkit-time }}
       earthkit-time_matrix: ${{ steps.setup.outputs.earthkit-time }}
+      anemoi-utils: ${{ steps.prepare-inputs.outputs.anemoi-utils }}
+      anemoi-utils_matrix: ${{ steps.setup.outputs.anemoi-utils }}
       eccodes: ${{ steps.prepare-inputs.outputs.eccodes }}
       eccodes_matrix: ${{ steps.setup.outputs.eccodes }}
       eccodes-python: ${{ steps.prepare-inputs.outputs.eccodes-python }}
@@ -220,6 +225,7 @@ jobs:
         echo earthkit-meteo="${{ inputs.earthkit-meteo }}" >> $GITHUB_OUTPUT
         echo earthkit-regrid="${{ inputs.earthkit-regrid }}" >> $GITHUB_OUTPUT
         echo earthkit-time="${{ inputs.earthkit-time }}" >> $GITHUB_OUTPUT
+        echo anemoi-utils="${{ inputs.anemoi-utils }}" >> $GITHUB_OUTPUT
         echo eccodes="${{ inputs.eccodes }}" >> $GITHUB_OUTPUT
         echo eccodes-python="${{ inputs.eccodes-python }}" >> $GITHUB_OUTPUT
         echo ecflow="${{ inputs.ecflow }}" >> $GITHUB_OUTPUT
@@ -317,6 +323,13 @@ jobs:
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.earthkit-time }}
+            optional_matrix: null
+          ecmwf/anemoi-utils:
+            path: .github/ci-config.yml
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.anemoi-utils }}
             optional_matrix: null
           ecmwf/eccodes:
             path: .github/ci-config.yml
@@ -919,6 +932,30 @@ jobs:
         python_dependencies: ''
         test_cmd: |
           python -m pytest --cov=./ --cov-report=xml
+          python -m coverage report
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
+  anemoi-utils:
+    name: anemoi-utils
+    needs:
+    - setup
+    - python-qa
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-utils_matrix && (needs.setup.outputs.anemoi-utils) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.anemoi-utils_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        checkout: true
+        python_dependencies: ''
+        toml_opt_dep_sections: all,test
+        test_cmd: |
+          python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
           python -m coverage report
         codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
