@@ -100,7 +100,7 @@ anemoi-datasets:
 anemoi-utils:
   type: python
   master_branch: main
-  toml_opt_dep_sections: all, tests
+  toml_opt_dep_sections: all,test
   downstream-ci:
     config_path: ""
     test_cmd: |
