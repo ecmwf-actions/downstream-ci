@@ -85,7 +85,7 @@ earthkit-time:
 anemoi-utils:
   type: python
   master_branch: main
-  toml_opt_dep_sections: all,test
+  toml_opt_dep_sections: all,tests
   downstream-ci:
     config_path: ""
     test_cmd: |
