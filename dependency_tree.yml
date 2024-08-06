@@ -85,12 +85,8 @@ earthkit-time:
 anemoi-graphs:
   type: python
   master_branch: main
-  toml_opt_dep_sections: all,test
-  deps:
-    - anemoi-datasets
+  toml_opt_dep_sections: all,tests
   downstream-ci:
-    env:
-      RUNNER_TYPE: "self-hosted" 
     test_cmd: |
       python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
       python -m coverage report
