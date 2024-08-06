@@ -325,7 +325,7 @@ jobs:
             input: ${{ steps.prepare-inputs.outputs.earthkit-time }}
             optional_matrix: null
           ecmwf/anemoi-utils:
-            path: .github/ci-config.yml
+            path: ''
             python: true
             master_branch: main
             develop_branch: develop
