@@ -110,7 +110,7 @@ anemoi-utils:
 anemoi-graphs:
   type: python
   master_branch: main
-  toml_opt_dep_sections: all,test
+  toml_opt_dep_sections: all,tests
   deps:
     - anemoi-datasets
     - anemoi-utils
