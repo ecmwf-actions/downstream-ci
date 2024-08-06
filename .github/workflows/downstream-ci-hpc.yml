@@ -36,6 +36,12 @@ name: downstream-ci-hpc
       earthkit-time:
         required: false
         type: string
+      anemoi-datasets:
+        required: false
+        type: string
+      anemoi-utils:
+        required: false
+        type: string
       eccodes:
         required: false
         type: string
@@ -138,6 +144,10 @@ jobs:
       earthkit-regrid_matrix: ${{ steps.setup.outputs.earthkit-regrid }}
       earthkit-time: ${{ steps.prepare-inputs.outputs.earthkit-time }}
       earthkit-time_matrix: ${{ steps.setup.outputs.earthkit-time }}
+      anemoi-datasets: ${{ steps.prepare-inputs.outputs.anemoi-datasets }}
+      anemoi-datasets_matrix: ${{ steps.setup.outputs.anemoi-datasets }}
+      anemoi-utils: ${{ steps.prepare-inputs.outputs.anemoi-utils }}
+      anemoi-utils_matrix: ${{ steps.setup.outputs.anemoi-utils }}
       eccodes: ${{ steps.prepare-inputs.outputs.eccodes }}
       eccodes_matrix: ${{ steps.setup.outputs.eccodes }}
       eccodes-python: ${{ steps.prepare-inputs.outputs.eccodes-python }}
@@ -202,6 +212,8 @@ jobs:
         echo earthkit-meteo="${{ inputs.earthkit-meteo }}" >> $GITHUB_OUTPUT
         echo earthkit-regrid="${{ inputs.earthkit-regrid }}" >> $GITHUB_OUTPUT
         echo earthkit-time="${{ inputs.earthkit-time }}" >> $GITHUB_OUTPUT
+        echo anemoi-datasets="${{ inputs.anemoi-datasets }}" >> $GITHUB_OUTPUT
+        echo anemoi-utils="${{ inputs.anemoi-utils }}" >> $GITHUB_OUTPUT
         echo eccodes="${{ inputs.eccodes }}" >> $GITHUB_OUTPUT
         echo eccodes-python="${{ inputs.eccodes-python }}" >> $GITHUB_OUTPUT
         echo ecflow="${{ inputs.ecflow }}" >> $GITHUB_OUTPUT
@@ -299,6 +311,20 @@ jobs:
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.earthkit-time }}
+            optional_matrix: null
+          ecmwf/anemoi-datasets:
+            path: .github/ci-hpc-config.yml
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.anemoi-datasets }}
+            optional_matrix: null
+          ecmwf/anemoi-utils:
+            path: .github/ci-hpc-config.yml
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.anemoi-utils }}
             optional_matrix: null
           ecmwf/eccodes:
             path: .github/ci-hpc-config.yml
@@ -803,6 +829,78 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: ''
+  anemoi-datasets:
+    name: anemoi-datasets
+    needs:
+    - earthkit-data
+    - cfgrib
+    - multiurl
+    - pdbufr
+    - eccodes-python
+    - eccodes
+    - pyodc
+    - odc
+    - eckit
+    - earthkit-geo
+    - earthkit-meteo
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-datasets_matrix && (needs.setup.outputs.earthkit-data || needs.setup.outputs.cfgrib || needs.setup.outputs.multiurl || needs.setup.outputs.pdbufr || needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.pyodc || needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.earthkit-geo || needs.setup.outputs.earthkit-meteo || needs.setup.outputs.anemoi-datasets) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.anemoi-datasets_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: |-
+          ${{ needs.setup.outputs.eccodes }}
+          ${{ needs.setup.outputs.odc }}
+          ${{ needs.setup.outputs.eckit }}
+        python_dependencies: |-
+          ${{ needs.setup.outputs.earthkit-data }}
+          ${{ needs.setup.outputs.cfgrib }}
+          ${{ needs.setup.outputs.multiurl }}
+          ${{ needs.setup.outputs.pdbufr }}
+          ${{ needs.setup.outputs.eccodes-python }}
+          ${{ needs.setup.outputs.pyodc }}
+          ${{ needs.setup.outputs.earthkit-geo }}
+          ${{ needs.setup.outputs.earthkit-meteo }}
+        python_toml_opt_dep_sections: all,test
+  anemoi-utils:
+    name: anemoi-utils
+    needs:
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-utils_matrix && (needs.setup.outputs.anemoi-utils) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.anemoi-utils_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
+        python_toml_opt_dep_sections: all,test
   eccodes:
     name: eccodes
     needs:
