@@ -1094,7 +1094,7 @@ jobs:
           ${{ needs.setup.outputs.earthkit-geo }}
           ${{ needs.setup.outputs.earthkit-meteo }}
           ${{ needs.setup.outputs.anemoi-utils }}
-        toml_opt_dep_sections: all,test
+        toml_opt_dep_sections: all,tests
         test_cmd: |
           python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
           python -m coverage report

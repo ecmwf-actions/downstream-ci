@@ -964,7 +964,7 @@ jobs:
           ${{ needs.setup.outputs.earthkit-geo }}
           ${{ needs.setup.outputs.earthkit-meteo }}
           ${{ needs.setup.outputs.anemoi-utils }}
-        python_toml_opt_dep_sections: all,test
+        python_toml_opt_dep_sections: all,tests
   eccodes:
     name: eccodes
     needs:
