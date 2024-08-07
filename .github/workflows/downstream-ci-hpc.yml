@@ -901,7 +901,7 @@ jobs:
           ${{ needs.setup.outputs.pyodc }}
           ${{ needs.setup.outputs.earthkit-geo }}
           ${{ needs.setup.outputs.earthkit-meteo }}
-        python_toml_opt_dep_sections: all,test
+        python_toml_opt_dep_sections: all,tests
   anemoi-utils:
     name: anemoi-utils
     needs:
@@ -926,7 +926,7 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: ''
-        python_toml_opt_dep_sections: all,test
+        python_toml_opt_dep_sections: all,tests
   anemoi-graphs:
     name: anemoi-graphs
     needs:

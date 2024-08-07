@@ -1024,7 +1024,7 @@ jobs:
           ${{ needs.setup.outputs.pyodc }}
           ${{ needs.setup.outputs.earthkit-geo }}
           ${{ needs.setup.outputs.earthkit-meteo }}
-        toml_opt_dep_sections: all,test
+        toml_opt_dep_sections: all,tests
         test_cmd: |
           python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
           python -m coverage report
@@ -1048,7 +1048,7 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
         python_dependencies: ''
-        toml_opt_dep_sections: all,test
+        toml_opt_dep_sections: all,tests
         test_cmd: |
           python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
           python -m coverage report
