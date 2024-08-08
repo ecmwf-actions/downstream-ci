@@ -51,6 +51,9 @@ name: downstream-ci-hpc
       anemoi-training:
         required: false
         type: string
+      anemoi-inference:
+        required: false
+        type: string
       eccodes:
         required: false
         type: string
@@ -163,6 +166,8 @@ jobs:
       anemoi-models_matrix: ${{ steps.setup.outputs.anemoi-models }}
       anemoi-training: ${{ steps.prepare-inputs.outputs.anemoi-training }}
       anemoi-training_matrix: ${{ steps.setup.outputs.anemoi-training }}
+      anemoi-inference: ${{ steps.prepare-inputs.outputs.anemoi-inference }}
+      anemoi-inference_matrix: ${{ steps.setup.outputs.anemoi-inference }}
       eccodes: ${{ steps.prepare-inputs.outputs.eccodes }}
       eccodes_matrix: ${{ steps.setup.outputs.eccodes }}
       eccodes-python: ${{ steps.prepare-inputs.outputs.eccodes-python }}
@@ -232,6 +237,7 @@ jobs:
         echo anemoi-graphs="${{ inputs.anemoi-graphs }}" >> $GITHUB_OUTPUT
         echo anemoi-models="${{ inputs.anemoi-models }}" >> $GITHUB_OUTPUT
         echo anemoi-training="${{ inputs.anemoi-training }}" >> $GITHUB_OUTPUT
+        echo anemoi-inference="${{ inputs.anemoi-inference }}" >> $GITHUB_OUTPUT
         echo eccodes="${{ inputs.eccodes }}" >> $GITHUB_OUTPUT
         echo eccodes-python="${{ inputs.eccodes-python }}" >> $GITHUB_OUTPUT
         echo ecflow="${{ inputs.ecflow }}" >> $GITHUB_OUTPUT
@@ -364,6 +370,13 @@ jobs:
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.anemoi-training }}
+            optional_matrix: null
+          ecmwf/anemoi-inference:
+            path: .github/ci-hpc-config.yml
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.anemoi-inference }}
             optional_matrix: null
           ecmwf/eccodes:
             path: .github/ci-hpc-config.yml
@@ -1071,6 +1084,32 @@ jobs:
           ${{ needs.setup.outputs.earthkit-geo }}
           ${{ needs.setup.outputs.earthkit-meteo }}
           ${{ needs.setup.outputs.anemoi-utils }}
+        python_toml_opt_dep_sections: all,tests
+  anemoi-inference:
+    name: anemoi-inference
+    needs:
+    - anemoi-utils
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-inference_matrix && (needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-inference) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.anemoi-inference_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ${{ needs.setup.outputs.anemoi-utils }}
         python_toml_opt_dep_sections: all,tests
   eccodes:
     name: eccodes
