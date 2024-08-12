@@ -1917,7 +1917,7 @@ jobs:
         dependencies: ''
         python_dependencies: ''
         python_requirements: requirements.txt
-        conda_deps: '''numpy<2'' scipy pcraster gdal netCDF4 pandas dask lz4 eccodes magics'
+        conda_deps: '''numpy<2'' scipy pcraster gdal netCDF4 pandas lz4 eccodes python-eccodes magics magics-python'
   troika:
     name: troika
     needs:
