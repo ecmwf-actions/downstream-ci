@@ -598,6 +598,19 @@ jobs:
             compiler_fc: gfortran
             env: |
               BOOST_ROOT_DIR=/usr
+              BOOST_INCLUDE_DIR=/usr/include/boost
+              BOOST_LIB_DIR=/usr/lib/x86_64-linux-gnu/
+            labels:
+            - self-hosted
+            - platform-builder-debian-12
+            name: gnu@debian-12
+            os: debian-12
+          - compiler: gnu
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+            env: |
+              BOOST_ROOT_DIR=/usr
               BOOST_INCLUDE_DIR=/usr/include/boost169
               BOOST_LIB_DIR=/usr/lib64/boost169
             labels:
@@ -647,6 +660,7 @@ jobs:
             os: fedora-37
           name:
           - gnu@debian-11
+          - gnu@debian-12
           - gnu@rocky-8.6
           - clang@rocky-8.6
           - gnu@ubuntu-22.04
