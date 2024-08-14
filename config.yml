@@ -13,6 +13,7 @@ downstream-ci: &downstream_ci
   matrix:
     name:
       - gnu@debian-11
+      - gnu@debian-12
       # - gnu-7@centos-7.9
       # - gnu-8@centos-7.9
       - gnu@rocky-8.6
@@ -33,6 +34,13 @@ downstream-ci: &downstream_ci
           BOOST_ROOT_DIR=/usr
           BOOST_INCLUDE_DIR=/usr/include/boost169
           BOOST_LIB_DIR=/usr/lib64/boost169
+      - name: gnu@debian-12
+        labels: [self-hosted, platform-builder-debian-12]
+        os: debian-12
+        compiler: gnu
+        compiler_cc: gcc
+        compiler_cxx: g++
+        compiler_fc: gfortran
       # - name: gnu-7@centos-7.9
       #   labels: [self-hosted, platform-builder-centos-7.9]
       #   os: centos-7.9
