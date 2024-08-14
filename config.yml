@@ -41,6 +41,10 @@ downstream-ci: &downstream_ci
         compiler_cc: gcc
         compiler_cxx: g++
         compiler_fc: gfortran
+        env: |
+          BOOST_ROOT_DIR=/usr
+          BOOST_INCLUDE_DIR=/usr/include/boost
+          BOOST_LIB_DIR=/usr/lib/x86_64-linux-gnu/
       # - name: gnu-7@centos-7.9
       #   labels: [self-hosted, platform-builder-centos-7.9]
       #   os: centos-7.9
