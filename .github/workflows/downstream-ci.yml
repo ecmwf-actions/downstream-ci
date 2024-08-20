@@ -150,7 +150,7 @@ name: downstream-ci
         type: string
         required: false
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-downstream-ci
   cancel-in-progress: true
 jobs:
   setup:

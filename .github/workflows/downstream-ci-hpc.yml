@@ -134,7 +134,7 @@ name: downstream-ci-hpc
         required: false
         type: string
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-downstream-ci-hpc
   cancel-in-progress: true
 jobs:
   setup:
