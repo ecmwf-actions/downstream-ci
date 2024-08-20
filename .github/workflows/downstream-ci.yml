@@ -149,6 +149,9 @@ name: downstream-ci
         description: A list of paths to be skipped during formatting check.
         type: string
         required: false
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: 'true'
 jobs:
   setup:
     name: setup
@@ -1918,6 +1921,3 @@ jobs:
         python_dependencies: ''
         codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: 'true'

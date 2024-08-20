@@ -133,6 +133,9 @@ name: downstream-ci-hpc
         description: List of matrix jobs to be skipped.
         required: false
         type: string
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: 'true'
 jobs:
   setup:
     name: setup
@@ -1795,6 +1798,3 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: ''
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: 'true'
