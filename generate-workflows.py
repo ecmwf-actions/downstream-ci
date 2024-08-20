@@ -137,8 +137,8 @@ class Workflow:
         d = {
             "name": self.name,
             "on": {"workflow_call": {"inputs": self.inputs}},
-            "jobs": self.jobs,
             "concurrency": self.concurrency(),
+            "jobs": self.jobs,
         }
         if self.private:
             dispatch_type = (
