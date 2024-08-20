@@ -125,10 +125,21 @@ class Workflow:
             if is_input(package, dep_tree, self.name, self.private):
                 self.inputs[package] = {"required": False, "type": "string"}
 
+    # this setting ensures that multiple pushes to the same branch of a repo
+    # will result in all but the latest ci workflows being cancelled
+    def concurrency(self) -> object:
+        c = {
+            "group": "${{ github.workflow }}-${{ github.ref }}-" + self.name,
+            "cancel-in-progress": True,
+        }
+
+        return c
+    
     def __getstate__(self) -> object:
         d = {
             "name": self.name,
             "on": {"workflow_call": {"inputs": self.inputs}},
+            "concurrency": self.concurrency(),
             "jobs": self.jobs,
         }
         if self.private:

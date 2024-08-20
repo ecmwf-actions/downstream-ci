@@ -149,6 +149,9 @@ name: downstream-ci
         description: A list of paths to be skipped during formatting check.
         type: string
         required: false
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-downstream-ci
+  cancel-in-progress: true
 jobs:
   setup:
     name: setup
