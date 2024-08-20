@@ -128,7 +128,7 @@ class Workflow:
     def concurrency(self) -> object:
         c = {
             "group": "${{ github.workflow }}-${{ github.ref }}",
-            "cancel-in-progress": "true",
+            "cancel-in-progress": True,
         }
 
         return c
