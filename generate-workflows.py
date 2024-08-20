@@ -125,11 +125,22 @@ class Workflow:
             if is_input(package, dep_tree, self.name, self.private):
                 self.inputs[package] = {"required": False, "type": "string"}
 
+    def concurrency(self) -> object:
+        c = {
+            "concurrency": {
+                "group": "${{ github.workflow }}-${{ github.ref }}",
+                "cancel-in-progress": "true",
+            },
+        }
+
+        return c
+    
     def __getstate__(self) -> object:
         d = {
             "name": self.name,
             "on": {"workflow_call": {"inputs": self.inputs}},
             "jobs": self.jobs,
+            self.concurrency(),
         }
         if self.private:
             dispatch_type = (
