@@ -586,10 +586,6 @@ jobs:
             compiler_cc: gcc
             compiler_cxx: g++
             compiler_fc: gfortran
-            env: |
-              BOOST_ROOT_DIR=/usr
-              BOOST_INCLUDE_DIR=/usr/include/boost169
-              BOOST_LIB_DIR=/usr/lib64/boost169
             labels:
             - self-hosted
             - platform-builder-debian-11
@@ -599,10 +595,6 @@ jobs:
             compiler_cc: gcc
             compiler_cxx: g++
             compiler_fc: gfortran
-            env: |
-              BOOST_ROOT_DIR=/usr
-              BOOST_INCLUDE_DIR=/usr/include/boost
-              BOOST_LIB_DIR=/usr/lib/x86_64-linux-gnu/
             labels:
             - self-hosted
             - platform-builder-debian-12
@@ -612,10 +604,6 @@ jobs:
             compiler_cc: gcc
             compiler_cxx: g++
             compiler_fc: gfortran
-            env: |
-              BOOST_ROOT_DIR=/usr
-              BOOST_INCLUDE_DIR=/usr/include/boost169
-              BOOST_LIB_DIR=/usr/lib64/boost169
             labels:
             - self-hosted
             - platform-builder-rocky-8.6
@@ -625,10 +613,6 @@ jobs:
             compiler_cc: clang
             compiler_cxx: clang++
             compiler_fc: gfortran
-            env: |
-              BOOST_ROOT_DIR=/usr
-              BOOST_INCLUDE_DIR=/usr/include/boost169
-              BOOST_LIB_DIR=/usr/lib64/boost169
             labels:
             - self-hosted
             - platform-builder-rocky-8.6
@@ -639,10 +623,6 @@ jobs:
             compiler_cc: gcc
             compiler_cxx: g++
             compiler_fc: gfortran
-            env: |
-              BOOST_ROOT_DIR=/usr
-              BOOST_INCLUDE_DIR=/usr/include/boost169
-              BOOST_LIB_DIR=/usr/lib64/boost169
             labels:
             - self-hosted
             - platform-builder-ubuntu-22.04
@@ -652,10 +632,6 @@ jobs:
             compiler_cc: gcc
             compiler_cxx: g++
             compiler_fc: gfortran
-            env: |
-              BOOST_ROOT_DIR=/usr
-              BOOST_INCLUDE_DIR=/usr/include/boost169
-              BOOST_LIB_DIR=/usr/lib64/boost169
             labels:
             - self-hosted
             - platform-builder-fedora-37
