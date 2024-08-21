@@ -30,10 +30,6 @@ downstream-ci: &downstream_ci
         compiler_cc: gcc
         compiler_cxx: g++
         compiler_fc: gfortran
-        env: &linux_env |
-          BOOST_ROOT_DIR=/usr
-          BOOST_INCLUDE_DIR=/usr/include/boost169
-          BOOST_LIB_DIR=/usr/lib64/boost169
       - name: gnu@debian-12
         labels: [self-hosted, platform-builder-debian-12]
         os: debian-12
@@ -41,10 +37,6 @@ downstream-ci: &downstream_ci
         compiler_cc: gcc
         compiler_cxx: g++
         compiler_fc: gfortran
-        env: |
-          BOOST_ROOT_DIR=/usr
-          BOOST_INCLUDE_DIR=/usr/include/boost
-          BOOST_LIB_DIR=/usr/lib/x86_64-linux-gnu/
       # - name: gnu-7@centos-7.9
       #   labels: [self-hosted, platform-builder-centos-7.9]
       #   os: centos-7.9
@@ -52,7 +44,6 @@ downstream-ci: &downstream_ci
       #   compiler_cc: gcc-7
       #   compiler_cxx: g++-7
       #   compiler_fc: gfortran-7
-      #   env: *linux_env
       # - name: gnu-8@centos-7.9
       #   labels: [self-hosted, platform-builder-centos-7.9]
       #   os: centos-7.9
@@ -60,7 +51,6 @@ downstream-ci: &downstream_ci
       #   compiler_cc: gcc-8
       #   compiler_cxx: g++-8
       #   compiler_fc: gfortran-8
-      #   env: *linux_env
       - name: gnu@rocky-8.6
         labels: [self-hosted, platform-builder-rocky-8.6]
         os: rocky-8.6
@@ -68,7 +58,6 @@ downstream-ci: &downstream_ci
         compiler_cc: gcc
         compiler_cxx: g++
         compiler_fc: gfortran
-        env: *linux_env
       - name: clang@rocky-8.6
         labels: [self-hosted, platform-builder-rocky-8.6]
         os: rocky-8.6
@@ -76,7 +65,6 @@ downstream-ci: &downstream_ci
         compiler_cc: clang
         compiler_cxx: clang++
         compiler_fc: gfortran
-        env: *linux_env
         toolchain_file: /opt/actions-runner/files/toolchain-clang-rocky-8.6.cmake
       - name: gnu@ubuntu-22.04
         labels: [self-hosted, platform-builder-ubuntu-22.04]
@@ -85,7 +73,6 @@ downstream-ci: &downstream_ci
         compiler_cc: gcc
         compiler_cxx: g++
         compiler_fc: gfortran
-        env: *linux_env
       - name: gnu@fedora-37
         labels: [self-hosted, platform-builder-fedora-37]
         os: fedora-37
@@ -93,7 +80,6 @@ downstream-ci: &downstream_ci
         compiler_cc: gcc
         compiler_cxx: g++
         compiler_fc: gfortran
-        env: *linux_env
       # - name: clang@macos-13-arm
       #   labels: [self-hosted, platform-builder-macosx-13.4.1-arm64]
       #   os: macos-13-arm
