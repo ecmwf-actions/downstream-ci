@@ -214,6 +214,14 @@ findlibs:
   downstream-ci:
     config_path: ""
 
+gribjump:
+  type: cmake
+  deps:
+    - fdb
+  downstream-ci-hpc:
+    modules:
+      - aec
+
 infero:
   type: cmake
   master_branch: master
