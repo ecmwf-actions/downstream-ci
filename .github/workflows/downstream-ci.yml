@@ -82,6 +82,9 @@ name: downstream-ci
       findlibs:
         required: false
         type: string
+      gribjump:
+        required: false
+        type: string
       infero:
         required: false
         type: string
@@ -203,6 +206,8 @@ jobs:
       fdb_matrix: ${{ steps.setup.outputs.fdb }}
       findlibs: ${{ steps.prepare-inputs.outputs.findlibs }}
       findlibs_matrix: ${{ steps.setup.outputs.findlibs }}
+      gribjump: ${{ steps.prepare-inputs.outputs.gribjump }}
+      gribjump_matrix: ${{ steps.setup.outputs.gribjump }}
       infero: ${{ steps.prepare-inputs.outputs.infero }}
       infero_matrix: ${{ steps.setup.outputs.infero }}
       kronos: ${{ steps.prepare-inputs.outputs.kronos }}
@@ -267,6 +272,7 @@ jobs:
         echo fckit="${{ inputs.fckit }}" >> $GITHUB_OUTPUT
         echo fdb="${{ inputs.fdb }}" >> $GITHUB_OUTPUT
         echo findlibs="${{ inputs.findlibs }}" >> $GITHUB_OUTPUT
+        echo gribjump="${{ inputs.gribjump }}" >> $GITHUB_OUTPUT
         echo infero="${{ inputs.infero }}" >> $GITHUB_OUTPUT
         echo kronos="${{ inputs.kronos }}" >> $GITHUB_OUTPUT
         echo metkit="${{ inputs.metkit }}" >> $GITHUB_OUTPUT
@@ -454,6 +460,13 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.findlibs }}
+            optional_matrix: null
+          ecmwf/gribjump:
+            path: .github/ci-config.yml
+            python: false
+            master_branch: master
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.gribjump }}
             optional_matrix: null
           ecmwf/infero:
             path: .github/ci-config.yml
@@ -1431,6 +1444,35 @@ jobs:
         requirements_path: tests/downstream-ci-requirements.txt
         codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
+  gribjump:
+    name: gribjump
+    needs:
+    - fdb
+    - metkit
+    - eccodes
+    - eckit
+    - setup
+    - clang-format
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.gribjump_matrix && (needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.gribjump) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.gribjump_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
+        build_config: ${{ matrix.config_path }}
+        build_dependencies: |-
+          ${{ needs.setup.outputs.fdb }}
+          ${{ needs.setup.outputs.metkit }}
+          ${{ needs.setup.outputs.eccodes }}
+          ${{ needs.setup.outputs.eckit }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload }}
   infero:
     name: infero
     needs:
