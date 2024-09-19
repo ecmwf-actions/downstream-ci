@@ -579,6 +579,14 @@ class Workflow:
                     ),
                 }
 
+        match self.name:
+            case "private-downstream-ci":
+                wf_name = "downstream-ci"
+            case "private-downstream-ci-hpc":
+                wf_name = "downstream-ci-hpc"
+            case _:
+                wf_name = self.name
+
         s = {
             "name": "Run setup script",
             "id": "setup",
@@ -604,7 +612,7 @@ class Workflow:
                 "OPTIONAL_MATRIX": yaml.dump(
                     wf_config["optional_matrix"], indent=2, default_flow_style=False
                 ),
-                "WORKFLOW_NAME": self.name,
+                "WORKFLOW_NAME": wf_name,
             },
             "run": "python setup_downstream_ci.py",
         }
