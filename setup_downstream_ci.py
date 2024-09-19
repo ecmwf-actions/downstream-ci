@@ -54,6 +54,7 @@ optional_matrix = yaml.safe_load(os.getenv("OPTIONAL_MATRIX", "")) or {}
 skip_jobs = os.getenv("SKIP_MATRIX_JOBS", "").splitlines()
 token = os.getenv("TOKEN", "")
 trigger_ref_name = os.getenv("DISPATCH_REF_NAME") or os.getenv("GITHUB_REF_NAME", "")
+workflow_name = os.getenv("WORKFLOW_NAME", "")
 
 github_repository = os.getenv("DISPATCH_REPOSITORY") or os.getenv(
     "GITHUB_REPOSITORY", ""
@@ -64,6 +65,9 @@ print(f"Triggered from: {trigger_repo}")
 
 DEFAULT_MASTER_BRANCH_NAME = "master"
 DEFAULT_DEVELOP_BRANCH_NAME = "develop"
+
+with open("dependency_tree.yml", "r") as f:
+    dep_tree = yaml.safe_load(f)
 
 
 def tree_get_package_var(var_name: str, dep_tree: dict, package: str, wf_name: str):
@@ -152,6 +156,15 @@ for owner_repo, val in ci_config.items():
     if config["matrix"]:
         matrices[repo]["config"] = config["matrix"]
 
+    repo_skip = tree_get_package_var("skip", dep_tree, repo, workflow_name) or []
+    if repo_skip:
+        matrices[repo]["name"] = [
+            name for name in matrices[repo]["name"] if name not in repo_skip
+        ]
+        matrices[repo]["include"] = [
+            d for d in matrices[repo]["include"] if d["name"] not in repo_skip
+        ]
+
     for index, item in enumerate(matrices[repo]["include"]):
         matrices[repo]["include"][index]["owner_repo_ref"] = f"{owner}/{repo}@{ref}"
         matrices[repo]["include"][index]["config_path"] = path
@@ -171,14 +184,6 @@ for owner_repo, val in ci_config.items():
             )
 
 
-print("Build matrices:")
-yaml.Dumper.ignore_aliases = lambda *args: True
-print(yaml.dump(matrices, sort_keys=False))
-
-
-with open("dependency_tree.yml", "r") as f:
-    dep_tree = yaml.safe_load(f)
-
 build_package_dep_tree = {}
 build_package_hpc_dep_tree = {}
 
@@ -196,6 +201,11 @@ for package, conf in dep_tree.items():
         "modules", dep_tree, package, "downstream-ci-hpc"
     ):
         build_package_hpc_dep_tree[package]["modules"] = hpc_modules
+
+
+print("Build matrices:")
+yaml.Dumper.ignore_aliases = lambda *args: True
+print(yaml.dump(matrices, sort_keys=False))
 
 print(
     "build-package dependency tree:\n",

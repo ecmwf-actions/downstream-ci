@@ -134,7 +134,7 @@ class Workflow:
         }
 
         return c
-    
+
     def __getstate__(self) -> object:
         d = {
             "name": self.name,
@@ -384,7 +384,9 @@ class Workflow:
                             },
                         }
                         if self.private:
-                            s["with"]["github_token"] = "${{ secrets.GH_REPO_READ_TOKEN }}"
+                            s["with"][
+                                "github_token"
+                            ] = "${{ secrets.GH_REPO_READ_TOKEN }}"
                         if build_package_python:
                             s["with"]["python_version"] = build_package_python
                         steps.append(s)
@@ -425,7 +427,9 @@ class Workflow:
                                 "codecov_token"
                             ] = "${{ secrets.CODECOV_UPLOAD_TOKEN }}"
                         else:
-                            ci_python_step["with"]["github_token"] = "${{ secrets.GH_REPO_READ_TOKEN }}"
+                            ci_python_step["with"][
+                                "github_token"
+                            ] = "${{ secrets.GH_REPO_READ_TOKEN }}"
                         steps.append(ci_python_step)
                     else:
                         # pure python package
@@ -460,7 +464,9 @@ class Workflow:
                                 "codecov_token"
                             ] = "${{ secrets.CODECOV_UPLOAD_TOKEN }}"
                         else:
-                            ci_python_step["with"]["github_token"] = "${{ secrets.GH_REPO_READ_TOKEN }}"
+                            ci_python_step["with"][
+                                "github_token"
+                            ] = "${{ secrets.GH_REPO_READ_TOKEN }}"
                         steps.append(ci_python_step)
             if self.wf_type == "build-package-hpc":
                 runs_on = [
@@ -598,6 +604,7 @@ class Workflow:
                 "OPTIONAL_MATRIX": yaml.dump(
                     wf_config["optional_matrix"], indent=2, default_flow_style=False
                 ),
+                "WORKFLOW_NAME": self.name,
             },
             "run": "python setup_downstream_ci.py",
         }

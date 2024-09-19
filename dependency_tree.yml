@@ -92,7 +92,7 @@ anemoi-datasets:
     - earthkit-meteo
   downstream-ci:
     env:
-      RUNNER_TYPE: "self-hosted" 
+      RUNNER_TYPE: "self-hosted"
     test_cmd: |
       python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
       python -m coverage report
@@ -306,6 +306,9 @@ pgen:
   deps:
     - mir
     - metkit
+  downstream-ci-hpc:
+    skip:
+      - nvidia-22.11
 
 pgen-bundle:
   type: cmake
