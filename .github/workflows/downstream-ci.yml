@@ -660,6 +660,7 @@ jobs:
         OPTIONAL_MATRIX: |
           null
           ...
+        WORKFLOW_NAME: downstream-ci
         SKIP_MATRIX_JOBS: ${{ inputs.skip_matrix_jobs }}
       run: python setup_downstream_ci.py
   python-qa:

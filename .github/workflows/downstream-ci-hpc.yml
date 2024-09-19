@@ -621,6 +621,7 @@ jobs:
             site: lumi
           name:
           - lumi
+        WORKFLOW_NAME: downstream-ci-hpc
         SKIP_MATRIX_JOBS: ${{ inputs.skip_matrix_jobs }}
       run: python setup_downstream_ci.py
   atlas:
