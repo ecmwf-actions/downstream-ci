@@ -13,7 +13,6 @@ downstream-ci: &downstream_ci
   matrix:
     name:
       - gnu@debian-11
-      - gnu@debian-12
       # - gnu-7@centos-7.9
       # - gnu-8@centos-7.9
       - gnu@rocky-8.6
@@ -26,13 +25,6 @@ downstream-ci: &downstream_ci
       - name: gnu@debian-11
         labels: [self-hosted, platform-builder-debian-11]
         os: debian-11
-        compiler: gnu
-        compiler_cc: gcc
-        compiler_cxx: g++
-        compiler_fc: gfortran
-      - name: gnu@debian-12
-        labels: [self-hosted, platform-builder-debian-12]
-        os: debian-12
         compiler: gnu
         compiler_cc: gcc
         compiler_cxx: g++
@@ -101,7 +93,18 @@ downstream-ci: &downstream_ci
       #   compiler_fc: gfortran
       #   #OPENSSL_ROOT_DIR is taken care of in build-package
       #   env: *macos_env
-  optional_matrix: null
+  optional_matrix:
+    name:
+      - gnu@debian-12
+    include:
+      - name: gnu@debian-12
+        labels: [self-hosted, platform-builder-debian-12]
+        os: debian-12
+        compiler: gnu
+        compiler_cc: gcc
+        compiler_cxx: g++
+        compiler_fc: gfortran
+
 downstream-ci-hpc: &downstream_ci_hpc
   type: build-package-hpc
   repo: ecmwf-actions/downstream-ci
