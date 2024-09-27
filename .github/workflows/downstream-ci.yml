@@ -610,15 +610,6 @@ jobs:
             compiler_fc: gfortran
             labels:
             - self-hosted
-            - platform-builder-debian-12
-            name: gnu@debian-12
-            os: debian-12
-          - compiler: gnu
-            compiler_cc: gcc
-            compiler_cxx: g++
-            compiler_fc: gfortran
-            labels:
-            - self-hosted
             - platform-builder-rocky-8.6
             name: gnu@rocky-8.6
             os: rocky-8.6
@@ -652,14 +643,23 @@ jobs:
             os: fedora-37
           name:
           - gnu@debian-11
-          - gnu@debian-12
           - gnu@rocky-8.6
           - clang@rocky-8.6
           - gnu@ubuntu-22.04
           - gnu@fedora-37
         OPTIONAL_MATRIX: |
-          null
-          ...
+          include:
+          - compiler: gnu
+            compiler_cc: gcc
+            compiler_cxx: g++
+            compiler_fc: gfortran
+            labels:
+            - self-hosted
+            - platform-builder-debian-12
+            name: gnu@debian-12
+            os: debian-12
+          name:
+          - gnu@debian-12
         WORKFLOW_NAME: downstream-ci
         SKIP_MATRIX_JOBS: ${{ inputs.skip_matrix_jobs }}
       run: python setup_downstream_ci.py
