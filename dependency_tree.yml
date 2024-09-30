@@ -182,6 +182,10 @@ ecflow:
   type: cmake
   deps:
     - ecbuild
+  optional_matrix:
+    - clang@macos-13-arm
+    - clang@macos-13-x86
+    - gnu@debian-12
 
 ecflow-light:
   type: cmake
