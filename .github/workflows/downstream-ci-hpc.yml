@@ -407,7 +407,10 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.ecflow }}
-            optional_matrix: null
+            optional_matrix:
+            - clang@macos-13-arm
+            - clang@macos-13-x86
+            - gnu@debian-12
           ecmwf/ecflow-light:
             path: .github/ci-hpc-config.yml
             python: false
