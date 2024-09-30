@@ -658,8 +658,36 @@ jobs:
             - platform-builder-debian-12
             name: gnu@debian-12
             os: debian-12
+          - compiler: clang
+            compiler_cc: clang
+            compiler_cxx: clang++
+            compiler_fc: gfortran
+            env: |
+              BOOST_ROOT_DIR=$(brew --prefix)
+              BOOST_INCLUDE_DIR=$(brew --prefix)/include
+              BOOST_LIB_DIR=$(brew --prefix)/lib
+            labels:
+            - self-hosted
+            - platform-builder-macosx-13.4.1-arm64
+            name: clang@macos-13-arm
+            os: macos-13-arm
+          - compiler: clang
+            compiler_cc: clang
+            compiler_cxx: clang++
+            compiler_fc: gfortran
+            env: |
+              BOOST_ROOT_DIR=$(brew --prefix)
+              BOOST_INCLUDE_DIR=$(brew --prefix)/include
+              BOOST_LIB_DIR=$(brew --prefix)/lib
+            labels:
+            - self-hosted
+            - platform-builder-macosx-13.4.1-x86_64
+            name: clang@macos-13-x86
+            os: macos-13-x86
           name:
           - gnu@debian-12
+          - clang@macos-13-arm
+          - clang@macos-13-x86
         WORKFLOW_NAME: downstream-ci
         SKIP_MATRIX_JOBS: ${{ inputs.skip_matrix_jobs }}
       run: python setup_downstream_ci.py
