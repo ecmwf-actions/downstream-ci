@@ -19,8 +19,6 @@ downstream-ci: &downstream_ci
       - clang@rocky-8.6
       - gnu@ubuntu-22.04
       - gnu@fedora-37
-      # - clang@macos-13-arm
-      # - clang@macos-13-x86
     include:
       - name: gnu@debian-11
         labels: [self-hosted, platform-builder-debian-11]
@@ -72,30 +70,11 @@ downstream-ci: &downstream_ci
         compiler_cc: gcc
         compiler_cxx: g++
         compiler_fc: gfortran
-      # - name: clang@macos-13-arm
-      #   labels: [self-hosted, platform-builder-macosx-13.4.1-arm64]
-      #   os: macos-13-arm
-      #   compiler: clang
-      #   compiler_cc: clang
-      #   compiler_cxx: clang++
-      #   compiler_fc: gfortran
-      #   #OPENSSL_ROOT_DIR is taken care of in build-package
-      #   env: &macos_env |
-      #     BOOST_ROOT_DIR=$(brew --prefix)
-      #     BOOST_INCLUDE_DIR=$(brew --prefix)/include
-      #     BOOST_LIB_DIR=$(brew --prefix)/lib
-      # - name: clang@macos-13-x86
-      #   labels: [self-hosted, platform-builder-macosx-13.4.1-x86_64]
-      #   os: macos-13-x86
-      #   compiler: clang
-      #   compiler_cc: clang
-      #   compiler_cxx: clang++
-      #   compiler_fc: gfortran
-      #   #OPENSSL_ROOT_DIR is taken care of in build-package
-      #   env: *macos_env
   optional_matrix:
     name:
       - gnu@debian-12
+      - clang@macos-13-arm
+      - clang@macos-13-x86
     include:
       - name: gnu@debian-12
         labels: [self-hosted, platform-builder-debian-12]
@@ -104,6 +83,27 @@ downstream-ci: &downstream_ci
         compiler_cc: gcc
         compiler_cxx: g++
         compiler_fc: gfortran
+      - name: clang@macos-13-arm
+        labels: [self-hosted, platform-builder-macosx-13.4.1-arm64]
+        os: macos-13-arm
+        compiler: clang
+        compiler_cc: clang
+        compiler_cxx: clang++
+        compiler_fc: gfortran
+        #OPENSSL_ROOT_DIR is taken care of in build-package
+        env: &macos_env |
+          BOOST_ROOT_DIR=$(brew --prefix)
+          BOOST_INCLUDE_DIR=$(brew --prefix)/include
+          BOOST_LIB_DIR=$(brew --prefix)/lib
+      - name: clang@macos-13-x86
+        labels: [self-hosted, platform-builder-macosx-13.4.1-x86_64]
+        os: macos-13-x86
+        compiler: clang
+        compiler_cc: clang
+        compiler_cxx: clang++
+        compiler_fc: gfortran
+        #OPENSSL_ROOT_DIR is taken care of in build-package
+        env: *macos_env
 
 downstream-ci-hpc: &downstream_ci_hpc
   type: build-package-hpc
