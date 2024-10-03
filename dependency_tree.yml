@@ -35,7 +35,6 @@ earthkit:
     - earthkit-geo
     - earthkit-meteo
     - earthkit-regrid
-    - earthkit-plots
     - earthkit-transforms
 
 earthkit-data:
