@@ -1041,20 +1041,9 @@ jobs:
   anemoi-datasets:
     name: anemoi-datasets
     needs:
-    - earthkit-data
-    - cfgrib
-    - multiurl
-    - pdbufr
-    - eccodes-python
-    - eccodes
-    - pyodc
-    - odc
-    - eckit
-    - earthkit-geo
-    - earthkit-meteo
     - setup
     - python-qa
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-datasets_matrix && (needs.setup.outputs.earthkit-data || needs.setup.outputs.cfgrib || needs.setup.outputs.multiurl || needs.setup.outputs.pdbufr || needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.pyodc || needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.earthkit-geo || needs.setup.outputs.earthkit-meteo || needs.setup.outputs.anemoi-datasets) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-datasets_matrix && (needs.setup.outputs.anemoi-datasets) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.anemoi-datasets_matrix) }}
@@ -1063,31 +1052,11 @@ jobs:
       RUNNER_TYPE: self-hosted
     runs-on: ${{ matrix.labels }}
     steps:
-    - name: Build dependencies
-      id: build-deps
-      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
-      with:
-        repository: ${{ matrix.owner_repo_ref }}
-        codecov_upload: false
-        build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
-        build_config: ${{ matrix.config_path }}
-        build_dependencies: |-
-          ${{ needs.setup.outputs.eccodes }}
-          ${{ needs.setup.outputs.odc }}
-          ${{ needs.setup.outputs.eckit }}
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
-        lib_path: ${{ steps.build-deps.outputs.lib_path }}
-        bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
-        python_dependencies: |-
-          ${{ needs.setup.outputs.earthkit-data }}
-          ${{ needs.setup.outputs.cfgrib }}
-          ${{ needs.setup.outputs.multiurl }}
-          ${{ needs.setup.outputs.pdbufr }}
-          ${{ needs.setup.outputs.eccodes-python }}
-          ${{ needs.setup.outputs.pyodc }}
-          ${{ needs.setup.outputs.earthkit-geo }}
-          ${{ needs.setup.outputs.earthkit-meteo }}
+        repository: ${{ matrix.owner_repo_ref }}
+        checkout: true
+        python_dependencies: ''
         toml_opt_dep_sections: all,tests
         test_cmd: |
           python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
@@ -1122,21 +1091,10 @@ jobs:
     name: anemoi-graphs
     needs:
     - anemoi-datasets
-    - earthkit-data
-    - cfgrib
-    - multiurl
-    - pdbufr
-    - eccodes-python
-    - eccodes
-    - pyodc
-    - odc
-    - eckit
-    - earthkit-geo
-    - earthkit-meteo
     - anemoi-utils
     - setup
     - python-qa
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-graphs_matrix && (needs.setup.outputs.anemoi-datasets || needs.setup.outputs.earthkit-data || needs.setup.outputs.cfgrib || needs.setup.outputs.multiurl || needs.setup.outputs.pdbufr || needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.pyodc || needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.earthkit-geo || needs.setup.outputs.earthkit-meteo || needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-graphs) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-graphs_matrix && (needs.setup.outputs.anemoi-datasets || needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-graphs) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.anemoi-graphs_matrix) }}
@@ -1144,32 +1102,12 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - name: Build dependencies
-      id: build-deps
-      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
-      with:
-        repository: ${{ matrix.owner_repo_ref }}
-        codecov_upload: false
-        build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
-        build_config: ${{ matrix.config_path }}
-        build_dependencies: |-
-          ${{ needs.setup.outputs.eccodes }}
-          ${{ needs.setup.outputs.odc }}
-          ${{ needs.setup.outputs.eckit }}
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
-        lib_path: ${{ steps.build-deps.outputs.lib_path }}
-        bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
+        repository: ${{ matrix.owner_repo_ref }}
+        checkout: true
         python_dependencies: |-
           ${{ needs.setup.outputs.anemoi-datasets }}
-          ${{ needs.setup.outputs.earthkit-data }}
-          ${{ needs.setup.outputs.cfgrib }}
-          ${{ needs.setup.outputs.multiurl }}
-          ${{ needs.setup.outputs.pdbufr }}
-          ${{ needs.setup.outputs.eccodes-python }}
-          ${{ needs.setup.outputs.pyodc }}
-          ${{ needs.setup.outputs.earthkit-geo }}
-          ${{ needs.setup.outputs.earthkit-meteo }}
           ${{ needs.setup.outputs.anemoi-utils }}
         toml_opt_dep_sections: all,tests
         test_cmd: |
@@ -1208,21 +1146,10 @@ jobs:
     - anemoi-models
     - anemoi-graphs
     - anemoi-datasets
-    - earthkit-data
-    - cfgrib
-    - multiurl
-    - pdbufr
-    - eccodes-python
-    - eccodes
-    - pyodc
-    - odc
-    - eckit
-    - earthkit-geo
-    - earthkit-meteo
     - anemoi-utils
     - setup
     - python-qa
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-training_matrix && (needs.setup.outputs.anemoi-models || needs.setup.outputs.anemoi-graphs || needs.setup.outputs.anemoi-datasets || needs.setup.outputs.earthkit-data || needs.setup.outputs.cfgrib || needs.setup.outputs.multiurl || needs.setup.outputs.pdbufr || needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.pyodc || needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.earthkit-geo || needs.setup.outputs.earthkit-meteo || needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-training) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-training_matrix && (needs.setup.outputs.anemoi-models || needs.setup.outputs.anemoi-graphs || needs.setup.outputs.anemoi-datasets || needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-training) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.anemoi-training_matrix) }}
@@ -1230,34 +1157,14 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - name: Build dependencies
-      id: build-deps
-      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
-      with:
-        repository: ${{ matrix.owner_repo_ref }}
-        codecov_upload: false
-        build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
-        build_config: ${{ matrix.config_path }}
-        build_dependencies: |-
-          ${{ needs.setup.outputs.eccodes }}
-          ${{ needs.setup.outputs.odc }}
-          ${{ needs.setup.outputs.eckit }}
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
-        lib_path: ${{ steps.build-deps.outputs.lib_path }}
-        bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
+        repository: ${{ matrix.owner_repo_ref }}
+        checkout: true
         python_dependencies: |-
           ${{ needs.setup.outputs.anemoi-models }}
           ${{ needs.setup.outputs.anemoi-graphs }}
           ${{ needs.setup.outputs.anemoi-datasets }}
-          ${{ needs.setup.outputs.earthkit-data }}
-          ${{ needs.setup.outputs.cfgrib }}
-          ${{ needs.setup.outputs.multiurl }}
-          ${{ needs.setup.outputs.pdbufr }}
-          ${{ needs.setup.outputs.eccodes-python }}
-          ${{ needs.setup.outputs.pyodc }}
-          ${{ needs.setup.outputs.earthkit-geo }}
-          ${{ needs.setup.outputs.earthkit-meteo }}
           ${{ needs.setup.outputs.anemoi-utils }}
         toml_opt_dep_sections: all,tests
         test_cmd: |

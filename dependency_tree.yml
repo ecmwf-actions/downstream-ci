@@ -86,10 +86,6 @@ anemoi-datasets:
   type: python
   master_branch: main
   toml_opt_dep_sections: all,tests
-  deps:
-    - earthkit-data
-    - earthkit-geo
-    - earthkit-meteo
   downstream-ci:
     env:
       RUNNER_TYPE: "self-hosted"
