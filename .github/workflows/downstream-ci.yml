@@ -46,6 +46,9 @@ name: downstream-ci
       anemoi-utils:
         required: false
         type: string
+      anemoi-transforms:
+        required: false
+        type: string
       anemoi-graphs:
         required: false
         type: string
@@ -182,6 +185,8 @@ jobs:
       anemoi-datasets_matrix: ${{ steps.setup.outputs.anemoi-datasets }}
       anemoi-utils: ${{ steps.prepare-inputs.outputs.anemoi-utils }}
       anemoi-utils_matrix: ${{ steps.setup.outputs.anemoi-utils }}
+      anemoi-transforms: ${{ steps.prepare-inputs.outputs.anemoi-transforms }}
+      anemoi-transforms_matrix: ${{ steps.setup.outputs.anemoi-transforms }}
       anemoi-graphs: ${{ steps.prepare-inputs.outputs.anemoi-graphs }}
       anemoi-graphs_matrix: ${{ steps.setup.outputs.anemoi-graphs }}
       anemoi-models: ${{ steps.prepare-inputs.outputs.anemoi-models }}
@@ -260,6 +265,7 @@ jobs:
         echo earthkit-time="${{ inputs.earthkit-time }}" >> $GITHUB_OUTPUT
         echo anemoi-datasets="${{ inputs.anemoi-datasets }}" >> $GITHUB_OUTPUT
         echo anemoi-utils="${{ inputs.anemoi-utils }}" >> $GITHUB_OUTPUT
+        echo anemoi-transforms="${{ inputs.anemoi-transforms }}" >> $GITHUB_OUTPUT
         echo anemoi-graphs="${{ inputs.anemoi-graphs }}" >> $GITHUB_OUTPUT
         echo anemoi-models="${{ inputs.anemoi-models }}" >> $GITHUB_OUTPUT
         echo anemoi-training="${{ inputs.anemoi-training }}" >> $GITHUB_OUTPUT
@@ -376,6 +382,13 @@ jobs:
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.anemoi-utils }}
+            optional_matrix: null
+          ecmwf/anemoi-transforms:
+            path: ''
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.anemoi-transforms }}
             optional_matrix: null
           ecmwf/anemoi-graphs:
             path: .github/ci-config.yml
@@ -1041,9 +1054,11 @@ jobs:
   anemoi-datasets:
     name: anemoi-datasets
     needs:
+    - anemoi-utils
+    - anemoi-transforms
     - setup
     - python-qa
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-datasets_matrix && (needs.setup.outputs.anemoi-datasets) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-datasets_matrix && (needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-transforms || needs.setup.outputs.anemoi-datasets) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.anemoi-datasets_matrix) }}
@@ -1056,7 +1071,9 @@ jobs:
       with:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
-        python_dependencies: ''
+        python_dependencies: |-
+          ${{ needs.setup.outputs.anemoi-utils }}
+          ${{ needs.setup.outputs.anemoi-transforms }}
         toml_opt_dep_sections: all,tests
         test_cmd: |
           python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
@@ -1087,14 +1104,39 @@ jobs:
           python -m coverage report
         codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
+  anemoi-transforms:
+    name: anemoi-transforms
+    needs:
+    - setup
+    - python-qa
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-transforms_matrix && (needs.setup.outputs.anemoi-transforms) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.anemoi-transforms_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        checkout: true
+        python_dependencies: ''
+        toml_opt_dep_sections: all,tests
+        test_cmd: |
+          python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
+          python -m coverage report
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   anemoi-graphs:
     name: anemoi-graphs
     needs:
     - anemoi-datasets
+    - anemoi-transforms
     - anemoi-utils
     - setup
     - python-qa
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-graphs_matrix && (needs.setup.outputs.anemoi-datasets || needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-graphs) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-graphs_matrix && (needs.setup.outputs.anemoi-datasets || needs.setup.outputs.anemoi-transforms || needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-graphs) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.anemoi-graphs_matrix) }}
@@ -1108,6 +1150,7 @@ jobs:
         checkout: true
         python_dependencies: |-
           ${{ needs.setup.outputs.anemoi-datasets }}
+          ${{ needs.setup.outputs.anemoi-transforms }}
           ${{ needs.setup.outputs.anemoi-utils }}
         toml_opt_dep_sections: all,tests
         test_cmd: |
@@ -1147,9 +1190,10 @@ jobs:
     - anemoi-graphs
     - anemoi-datasets
     - anemoi-utils
+    - anemoi-transforms
     - setup
     - python-qa
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-training_matrix && (needs.setup.outputs.anemoi-models || needs.setup.outputs.anemoi-graphs || needs.setup.outputs.anemoi-datasets || needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-training) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-training_matrix && (needs.setup.outputs.anemoi-models || needs.setup.outputs.anemoi-graphs || needs.setup.outputs.anemoi-datasets || needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-transforms || needs.setup.outputs.anemoi-training) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.anemoi-training_matrix) }}
@@ -1166,6 +1210,7 @@ jobs:
           ${{ needs.setup.outputs.anemoi-graphs }}
           ${{ needs.setup.outputs.anemoi-datasets }}
           ${{ needs.setup.outputs.anemoi-utils }}
+          ${{ needs.setup.outputs.anemoi-transforms }}
         toml_opt_dep_sections: all,tests
         test_cmd: |
           python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
@@ -1176,9 +1221,10 @@ jobs:
     name: anemoi-inference
     needs:
     - anemoi-utils
+    - anemoi-transforms
     - setup
     - python-qa
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-inference_matrix && (needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-inference) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-inference_matrix && (needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-transforms || needs.setup.outputs.anemoi-inference) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.anemoi-inference_matrix) }}
@@ -1190,7 +1236,9 @@ jobs:
       with:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
-        python_dependencies: ${{ needs.setup.outputs.anemoi-utils }}
+        python_dependencies: |-
+          ${{ needs.setup.outputs.anemoi-utils }}
+          ${{ needs.setup.outputs.anemoi-transforms }}
         toml_opt_dep_sections: all,tests
         test_cmd: |
           python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
