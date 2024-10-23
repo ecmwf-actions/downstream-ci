@@ -86,6 +86,9 @@ anemoi-datasets:
   type: python
   master_branch: main
   toml_opt_dep_sections: all,tests
+  deps:
+    - anemoi-utils
+    - anemoi-transforms
   downstream-ci:
     env:
       RUNNER_TYPE: "self-hosted"
@@ -94,6 +97,16 @@ anemoi-datasets:
       python -m coverage report
 
 anemoi-utils:
+  type: python
+  master_branch: main
+  toml_opt_dep_sections: all,tests
+  downstream-ci:
+    config_path: ""
+    test_cmd: |
+      python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
+      python -m coverage report
+
+anemoi-transforms:
   type: python
   master_branch: main
   toml_opt_dep_sections: all,tests
@@ -135,6 +148,7 @@ anemoi-training:
     - anemoi-models
     - anemoi-datasets
     - anemoi-graphs
+    - anemoi-transforms
   downstream-ci:
     test_cmd: |
       python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
@@ -146,6 +160,7 @@ anemoi-inference:
   toml_opt_dep_sections: all,tests
   deps:
     - anemoi-utils
+    - anemoi-transforms
   downstream-ci:
     test_cmd: |
       python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
