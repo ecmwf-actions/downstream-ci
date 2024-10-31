@@ -168,7 +168,6 @@ anemoi-inference:
 
 ecbuild:
   type: cmake
-  input: false
 
 eccodes:
   type: cmake
