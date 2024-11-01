@@ -197,6 +197,10 @@ ecflow:
     - clang@macos-13-arm
     - clang@macos-13-x86
     - gnu@debian-12
+  downstream-ci-hpc:
+    skip:
+      - nvidia-22.11
+      - intel-2021.4.0
 
 ecflow-light:
   type: cmake
