@@ -237,6 +237,7 @@ jobs:
       covjsonkit: ${{ steps.prepare-inputs.outputs.covjsonkit }}
       covjsonkit_matrix: ${{ steps.setup.outputs.covjsonkit }}
       dep_tree: ${{ steps.setup.outputs.build_package_hpc_dep_tree }}
+      use_master: ${{ steps.setup.outputs.use_master }}
     steps:
     - name: Prepare inputs
       id: prepare-inputs
@@ -786,15 +787,15 @@ jobs:
           ${{ needs.setup.outputs.eckit }}
           ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: |-
-          ${{ needs.setup.outputs.earthkit-data }}
-          ${{ needs.setup.outputs.cfgrib }}
-          ${{ needs.setup.outputs.multiurl }}
-          ${{ needs.setup.outputs.pdbufr }}
-          ${{ needs.setup.outputs.eccodes-python }}
-          ${{ needs.setup.outputs.pyodc }}
-          ${{ needs.setup.outputs.earthkit-geo }}
-          ${{ needs.setup.outputs.earthkit-meteo }}
-          ${{ needs.setup.outputs.earthkit-regrid }}
+          ${{ needs.setup.outputs.earthkit-data || (needs.setup.outputs.use_master == 'True' && 'ecmwf/earthkit-data@main') || 'ecmwf/earthkit-data@develop' }}
+          ${{ needs.setup.outputs.cfgrib || (needs.setup.outputs.use_master == 'True' && 'ecmwf/cfgrib@master') || 'ecmwf/cfgrib@master' }}
+          ${{ needs.setup.outputs.multiurl || (needs.setup.outputs.use_master == 'True' && 'ecmwf/multiurl@main') || 'ecmwf/multiurl@main' }}
+          ${{ needs.setup.outputs.pdbufr || (needs.setup.outputs.use_master == 'True' && 'ecmwf/pdbufr@master') || 'ecmwf/pdbufr@develop' }}
+          ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'ecmwf/eccodes-python@master') || 'ecmwf/eccodes-python@develop' }}
+          ${{ needs.setup.outputs.pyodc || (needs.setup.outputs.use_master == 'True' && 'ecmwf/pyodc@master') || 'ecmwf/pyodc@develop' }}
+          ${{ needs.setup.outputs.earthkit-geo || (needs.setup.outputs.use_master == 'True' && 'ecmwf/earthkit-geo@main') || 'ecmwf/earthkit-geo@develop' }}
+          ${{ needs.setup.outputs.earthkit-meteo || (needs.setup.outputs.use_master == 'True' && 'ecmwf/earthkit-meteo@main') || 'ecmwf/earthkit-meteo@develop' }}
+          ${{ needs.setup.outputs.earthkit-regrid || (needs.setup.outputs.use_master == 'True' && 'ecmwf/earthkit-regrid@main') || 'ecmwf/earthkit-regrid@develop' }}
         python_requirements: tests/downstream-ci-requirements.txt
   earthkit-data:
     name: earthkit-data
@@ -833,11 +834,11 @@ jobs:
           ${{ needs.setup.outputs.eckit }}
           ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: |-
-          ${{ needs.setup.outputs.cfgrib }}
-          ${{ needs.setup.outputs.multiurl }}
-          ${{ needs.setup.outputs.pdbufr }}
-          ${{ needs.setup.outputs.eccodes-python }}
-          ${{ needs.setup.outputs.pyodc }}
+          ${{ needs.setup.outputs.cfgrib || (needs.setup.outputs.use_master == 'True' && 'ecmwf/cfgrib@master') || 'ecmwf/cfgrib@master' }}
+          ${{ needs.setup.outputs.multiurl || (needs.setup.outputs.use_master == 'True' && 'ecmwf/multiurl@main') || 'ecmwf/multiurl@main' }}
+          ${{ needs.setup.outputs.pdbufr || (needs.setup.outputs.use_master == 'True' && 'ecmwf/pdbufr@master') || 'ecmwf/pdbufr@develop' }}
+          ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'ecmwf/eccodes-python@master') || 'ecmwf/eccodes-python@develop' }}
+          ${{ needs.setup.outputs.pyodc || (needs.setup.outputs.use_master == 'True' && 'ecmwf/pyodc@master') || 'ecmwf/pyodc@develop' }}
         python_toml_opt_dep_sections: all,test,ci
   earthkit-geo:
     name: earthkit-geo
@@ -964,8 +965,8 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: |-
-          ${{ needs.setup.outputs.anemoi-utils }}
-          ${{ needs.setup.outputs.anemoi-transform }}
+          ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-utils@main') || 'ecmwf/anemoi-utils@develop' }}
+          ${{ needs.setup.outputs.anemoi-transform || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-transform@main') || 'ecmwf/anemoi-transform@develop' }}
         python_toml_opt_dep_sections: all,tests
   anemoi-utils:
     name: anemoi-utils
@@ -1044,9 +1045,9 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: |-
-          ${{ needs.setup.outputs.anemoi-datasets }}
-          ${{ needs.setup.outputs.anemoi-transform }}
-          ${{ needs.setup.outputs.anemoi-utils }}
+          ${{ needs.setup.outputs.anemoi-datasets || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-datasets@main') || 'ecmwf/anemoi-datasets@develop' }}
+          ${{ needs.setup.outputs.anemoi-transform || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-transform@main') || 'ecmwf/anemoi-transform@develop' }}
+          ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-utils@main') || 'ecmwf/anemoi-utils@develop' }}
         python_toml_opt_dep_sections: all,tests
   anemoi-models:
     name: anemoi-models
@@ -1072,7 +1073,7 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: ''
-        python_dependencies: ${{ needs.setup.outputs.anemoi-utils }}
+        python_dependencies: ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-utils@main') || 'ecmwf/anemoi-utils@develop' }}
         python_toml_opt_dep_sections: all,tests
   anemoi-training:
     name: anemoi-training
@@ -1103,11 +1104,11 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: |-
-          ${{ needs.setup.outputs.anemoi-models }}
-          ${{ needs.setup.outputs.anemoi-graphs }}
-          ${{ needs.setup.outputs.anemoi-datasets }}
-          ${{ needs.setup.outputs.anemoi-utils }}
-          ${{ needs.setup.outputs.anemoi-transform }}
+          ${{ needs.setup.outputs.anemoi-models || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-models@main') || 'ecmwf/anemoi-models@develop' }}
+          ${{ needs.setup.outputs.anemoi-graphs || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-graphs@main') || 'ecmwf/anemoi-graphs@develop' }}
+          ${{ needs.setup.outputs.anemoi-datasets || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-datasets@main') || 'ecmwf/anemoi-datasets@develop' }}
+          ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-utils@main') || 'ecmwf/anemoi-utils@develop' }}
+          ${{ needs.setup.outputs.anemoi-transform || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-transform@main') || 'ecmwf/anemoi-transform@develop' }}
         python_toml_opt_dep_sections: all,tests
   anemoi-inference:
     name: anemoi-inference
@@ -1135,8 +1136,8 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: |-
-          ${{ needs.setup.outputs.anemoi-utils }}
-          ${{ needs.setup.outputs.anemoi-transform }}
+          ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-utils@main') || 'ecmwf/anemoi-utils@develop' }}
+          ${{ needs.setup.outputs.anemoi-transform || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-transform@main') || 'ecmwf/anemoi-transform@develop' }}
         python_toml_opt_dep_sections: all,tests
   ecbuild:
     name: ecbuild

@@ -220,6 +220,7 @@ print(f"Python codecov platform: {py_codecov_platform}")
 with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
     print("trigger_repo", trigger_repo, sep="=", file=f)
     print("py_codecov_platform", py_codecov_platform, sep="=", file=f)
+    print("use_master", use_master, sep="=", file=f)
 
     print("build_package_dep_tree<<EOF", file=f)
     print(yaml.dump(build_package_dep_tree), file=f)

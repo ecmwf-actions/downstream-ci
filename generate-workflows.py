@@ -284,11 +284,29 @@ class Workflow:
                 for dep in get_type_deps(package, dep_tree, self.name, "cmake")
                 if is_input(dep, dep_tree, self.name, self.private)
             ]
-            python_deps = [
-                "${{ " + f"needs.setup.outputs.{dep}" + " }}"
-                for dep in get_type_deps(package, dep_tree, self.name, "python")
-                if is_input(dep, dep_tree, self.name, self.private)
-            ]
+
+            python_deps = []
+            for dep in get_type_deps(package, dep_tree, self.name, "python"):
+                if is_input(dep, dep_tree, self.name, self.private):
+                    # Python deps need a default input value for ci-python
+                    # because there's no ci-config for it. ==>
+                    # input || (use_master == 'True' && master_branch) || develop_branch
+                    master_branch = tree_get_package_var(
+                        "master_branch", dep_tree, dep, self.name, "master"
+                    )
+                    develop_branch = tree_get_package_var(
+                        "develop_branch", dep_tree, dep, self.name, "develop"
+                    )
+
+                    python_deps.append(
+                        "${{ "
+                        + f"needs.setup.outputs.{dep} || "
+                        + "(needs.setup.outputs.use_master == 'True' && "
+                        + f"'ecmwf/{dep}@{master_branch}') || "
+                        + f"'ecmwf/{dep}@{develop_branch}'"
+                        + " }}"
+                    )
+
             needs = [
                 dep
                 for dep in package_deps
@@ -516,6 +534,7 @@ class Workflow:
             outputs["dep_tree"] = (
                 "${{ steps.setup.outputs.build_package_hpc_dep_tree }}"
             )
+        outputs["use_master"] = "${{ steps.setup.outputs.use_master }}"
         self.inputs.update(
             {
                 "skip_matrix_jobs": {
