@@ -744,7 +744,7 @@ jobs:
         dependencies: |-
           ${{ needs.setup.outputs.eccodes }}
           ${{ needs.setup.outputs.ecbuild }}
-        python_dependencies: ${{ needs.setup.outputs.eccodes-python }}
+        python_dependencies: ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'ecmwf/eccodes-python@master') || 'ecmwf/eccodes-python@develop' }}
         python_requirements: ci/requirements-tests.in
   earthkit:
     name: earthkit
@@ -1700,7 +1700,7 @@ jobs:
         dependencies: |-
           ${{ needs.setup.outputs.eccodes }}
           ${{ needs.setup.outputs.ecbuild }}
-        python_dependencies: ${{ needs.setup.outputs.eccodes-python }}
+        python_dependencies: ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'ecmwf/eccodes-python@master') || 'ecmwf/eccodes-python@develop' }}
         python_requirements: tests/downstream-ci-requirements.txt
   plume:
     name: plume
