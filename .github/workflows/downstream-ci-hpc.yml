@@ -57,6 +57,9 @@ name: downstream-ci-hpc
       anemoi-inference:
         required: false
         type: string
+      ecbuild:
+        required: false
+        type: string
       eccodes:
         required: false
         type: string
@@ -179,6 +182,8 @@ jobs:
       anemoi-training_matrix: ${{ steps.setup.outputs.anemoi-training }}
       anemoi-inference: ${{ steps.prepare-inputs.outputs.anemoi-inference }}
       anemoi-inference_matrix: ${{ steps.setup.outputs.anemoi-inference }}
+      ecbuild: ${{ steps.prepare-inputs.outputs.ecbuild }}
+      ecbuild_matrix: ${{ steps.setup.outputs.ecbuild }}
       eccodes: ${{ steps.prepare-inputs.outputs.eccodes }}
       eccodes_matrix: ${{ steps.setup.outputs.eccodes }}
       eccodes-python: ${{ steps.prepare-inputs.outputs.eccodes-python }}
@@ -253,6 +258,7 @@ jobs:
         echo anemoi-models="${{ inputs.anemoi-models }}" >> $GITHUB_OUTPUT
         echo anemoi-training="${{ inputs.anemoi-training }}" >> $GITHUB_OUTPUT
         echo anemoi-inference="${{ inputs.anemoi-inference }}" >> $GITHUB_OUTPUT
+        echo ecbuild="${{ inputs.ecbuild }}" >> $GITHUB_OUTPUT
         echo eccodes="${{ inputs.eccodes }}" >> $GITHUB_OUTPUT
         echo eccodes-python="${{ inputs.eccodes-python }}" >> $GITHUB_OUTPUT
         echo ecflow="${{ inputs.ecflow }}" >> $GITHUB_OUTPUT
@@ -400,6 +406,13 @@ jobs:
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.anemoi-inference }}
+            optional_matrix: null
+          ecmwf/ecbuild:
+            path: .github/ci-hpc-config.yml
+            python: false
+            master_branch: master
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.ecbuild }}
             optional_matrix: null
           ecmwf/eccodes:
             path: .github/ci-hpc-config.yml
@@ -646,8 +659,9 @@ jobs:
     needs:
     - fckit
     - eckit
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.atlas_matrix && (needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.atlas) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.atlas_matrix && (needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.atlas) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.atlas_matrix) }}
@@ -668,6 +682,7 @@ jobs:
         dependencies: |-
           ${{ needs.setup.outputs.fckit }}
           ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   atlas-orca:
     name: atlas-orca
@@ -675,8 +690,9 @@ jobs:
     - atlas
     - fckit
     - eckit
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.atlas-orca_matrix && (needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.atlas-orca) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.atlas-orca_matrix && (needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.atlas-orca) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.atlas-orca_matrix) }}
@@ -698,14 +714,16 @@ jobs:
           ${{ needs.setup.outputs.atlas }}
           ${{ needs.setup.outputs.fckit }}
           ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   cfgrib:
     name: cfgrib
     needs:
     - eccodes-python
     - eccodes
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cfgrib_matrix && (needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.cfgrib) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cfgrib_matrix && (needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.cfgrib) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.cfgrib_matrix) }}
@@ -723,7 +741,9 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: ${{ needs.setup.outputs.eccodes }}
+        dependencies: |-
+          ${{ needs.setup.outputs.eccodes }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'ecmwf/eccodes-python@master') || 'ecmwf/eccodes-python@develop' }}
         python_requirements: ci/requirements-tests.in
   earthkit:
@@ -738,11 +758,12 @@ jobs:
     - pyodc
     - odc
     - eckit
+    - ecbuild
     - earthkit-geo
     - earthkit-meteo
     - earthkit-regrid
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit_matrix && (needs.setup.outputs.earthkit-data || needs.setup.outputs.cfgrib || needs.setup.outputs.multiurl || needs.setup.outputs.pdbufr || needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.pyodc || needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.earthkit-geo || needs.setup.outputs.earthkit-meteo || needs.setup.outputs.earthkit-regrid || needs.setup.outputs.earthkit) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit_matrix && (needs.setup.outputs.earthkit-data || needs.setup.outputs.cfgrib || needs.setup.outputs.multiurl || needs.setup.outputs.pdbufr || needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.pyodc || needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.earthkit-geo || needs.setup.outputs.earthkit-meteo || needs.setup.outputs.earthkit-regrid || needs.setup.outputs.earthkit) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.earthkit_matrix) }}
@@ -764,6 +785,7 @@ jobs:
           ${{ needs.setup.outputs.eccodes }}
           ${{ needs.setup.outputs.odc }}
           ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: |-
           ${{ needs.setup.outputs.earthkit-data || (needs.setup.outputs.use_master == 'True' && 'ecmwf/earthkit-data@main') || 'ecmwf/earthkit-data@develop' }}
           ${{ needs.setup.outputs.cfgrib || (needs.setup.outputs.use_master == 'True' && 'ecmwf/cfgrib@master') || 'ecmwf/cfgrib@master' }}
@@ -786,8 +808,9 @@ jobs:
     - pyodc
     - odc
     - eckit
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-data_matrix && (needs.setup.outputs.cfgrib || needs.setup.outputs.multiurl || needs.setup.outputs.pdbufr || needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.pyodc || needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.earthkit-data) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-data_matrix && (needs.setup.outputs.cfgrib || needs.setup.outputs.multiurl || needs.setup.outputs.pdbufr || needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.pyodc || needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.earthkit-data) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.earthkit-data_matrix) }}
@@ -809,6 +832,7 @@ jobs:
           ${{ needs.setup.outputs.eccodes }}
           ${{ needs.setup.outputs.odc }}
           ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: |-
           ${{ needs.setup.outputs.cfgrib || (needs.setup.outputs.use_master == 'True' && 'ecmwf/cfgrib@master') || 'ecmwf/cfgrib@master' }}
           ${{ needs.setup.outputs.multiurl || (needs.setup.outputs.use_master == 'True' && 'ecmwf/multiurl@main') || 'ecmwf/multiurl@main' }}
@@ -1115,11 +1139,36 @@ jobs:
           ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-utils@main') || 'ecmwf/anemoi-utils@develop' }}
           ${{ needs.setup.outputs.anemoi-transform || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-transform@main') || 'ecmwf/anemoi-transform@develop' }}
         python_toml_opt_dep_sections: all,tests
+  ecbuild:
+    name: ecbuild
+    needs:
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.ecbuild_matrix && (needs.setup.outputs.ecbuild) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.ecbuild_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
   eccodes:
     name: eccodes
     needs:
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.eccodes_matrix && (needs.setup.outputs.eccodes) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.eccodes_matrix && (needs.setup.outputs.ecbuild || needs.setup.outputs.eccodes) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.eccodes_matrix) }}
@@ -1137,14 +1186,15 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: ''
+        dependencies: ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   eccodes-python:
     name: eccodes-python
     needs:
     - eccodes
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.eccodes-python_matrix && (needs.setup.outputs.eccodes || needs.setup.outputs.eccodes-python) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.eccodes-python_matrix && (needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.eccodes-python) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.eccodes-python_matrix) }}
@@ -1163,13 +1213,16 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: ${{ needs.setup.outputs.eccodes }}
+        dependencies: |-
+          ${{ needs.setup.outputs.eccodes }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   ecflow:
     name: ecflow
     needs:
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.ecflow_matrix && (needs.setup.outputs.ecflow) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.ecflow_matrix && (needs.setup.outputs.ecbuild || needs.setup.outputs.ecflow) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.ecflow_matrix) }}
@@ -1187,14 +1240,15 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: ''
+        dependencies: ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   ecflow-light:
     name: ecflow-light
     needs:
     - eckit
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.ecflow-light_matrix && (needs.setup.outputs.eckit || needs.setup.outputs.ecflow-light) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.ecflow-light_matrix && (needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.ecflow-light) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.ecflow-light_matrix) }}
@@ -1212,13 +1266,16 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: ${{ needs.setup.outputs.eckit }}
+        dependencies: |-
+          ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   eckit:
     name: eckit
     needs:
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.eckit_matrix && (needs.setup.outputs.eckit) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.eckit_matrix && (needs.setup.outputs.ecbuild || needs.setup.outputs.eckit) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.eckit_matrix) }}
@@ -1236,14 +1293,15 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: ''
+        dependencies: ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   fckit:
     name: fckit
     needs:
     - eckit
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.fckit_matrix && (needs.setup.outputs.eckit || needs.setup.outputs.fckit) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.fckit_matrix && (needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.fckit) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.fckit_matrix) }}
@@ -1261,7 +1319,9 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: ${{ needs.setup.outputs.eckit }}
+        dependencies: |-
+          ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   fdb:
     name: fdb
@@ -1269,8 +1329,9 @@ jobs:
     - metkit
     - eccodes
     - eckit
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.fdb_matrix && (needs.setup.outputs.metkit || needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.fdb) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.fdb_matrix && (needs.setup.outputs.metkit || needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.fdb) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.fdb_matrix) }}
@@ -1292,6 +1353,7 @@ jobs:
           ${{ needs.setup.outputs.metkit }}
           ${{ needs.setup.outputs.eccodes }}
           ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   findlibs:
     name: findlibs
@@ -1325,8 +1387,9 @@ jobs:
     - metkit
     - eccodes
     - eckit
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.gribjump_matrix && (needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.gribjump) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.gribjump_matrix && (needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.gribjump) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.gribjump_matrix) }}
@@ -1349,14 +1412,16 @@ jobs:
           ${{ needs.setup.outputs.metkit }}
           ${{ needs.setup.outputs.eccodes }}
           ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   infero:
     name: infero
     needs:
     - fckit
     - eckit
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.infero_matrix && (needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.infero) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.infero_matrix && (needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.infero) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.infero_matrix) }}
@@ -1377,12 +1442,14 @@ jobs:
         dependencies: |-
           ${{ needs.setup.outputs.fckit }}
           ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   kronos:
     name: kronos
     needs:
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.kronos_matrix && (needs.setup.outputs.kronos) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.kronos_matrix && (needs.setup.outputs.ecbuild || needs.setup.outputs.kronos) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.kronos_matrix) }}
@@ -1400,15 +1467,16 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: ''
+        dependencies: ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   metkit:
     name: metkit
     needs:
     - eccodes
     - eckit
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.metkit_matrix && (needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.metkit) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.metkit_matrix && (needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.metkit) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.metkit_matrix) }}
@@ -1429,6 +1497,7 @@ jobs:
         dependencies: |-
           ${{ needs.setup.outputs.eccodes }}
           ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   mir:
     name: mir
@@ -1437,8 +1506,9 @@ jobs:
     - fckit
     - eckit
     - eccodes
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.mir_matrix && (needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.mir) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.mir_matrix && (needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.mir) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.mir_matrix) }}
@@ -1461,6 +1531,7 @@ jobs:
           ${{ needs.setup.outputs.fckit }}
           ${{ needs.setup.outputs.eckit }}
           ${{ needs.setup.outputs.eccodes }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   multio:
     name: multio
@@ -1473,8 +1544,9 @@ jobs:
     - fckit
     - eckit
     - eccodes
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio_matrix && (needs.setup.outputs.atlas-orca || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.multio) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio_matrix && (needs.setup.outputs.atlas-orca || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.multio) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.multio_matrix) }}
@@ -1502,6 +1574,7 @@ jobs:
           ${{ needs.setup.outputs.fckit }}
           ${{ needs.setup.outputs.eckit }}
           ${{ needs.setup.outputs.eccodes }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   multio-python:
     name: multio-python
@@ -1515,8 +1588,9 @@ jobs:
     - fckit
     - eckit
     - eccodes
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio-python_matrix && (needs.setup.outputs.multio || needs.setup.outputs.atlas-orca || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.multio-python) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio-python_matrix && (needs.setup.outputs.multio || needs.setup.outputs.atlas-orca || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.multio-python) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.multio-python_matrix) }}
@@ -1544,6 +1618,7 @@ jobs:
           ${{ needs.setup.outputs.fckit }}
           ${{ needs.setup.outputs.eckit }}
           ${{ needs.setup.outputs.eccodes }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   multiurl:
     name: multiurl
@@ -1573,8 +1648,9 @@ jobs:
     name: odc
     needs:
     - eckit
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.odc_matrix && (needs.setup.outputs.eckit || needs.setup.outputs.odc) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.odc_matrix && (needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.odc) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.odc_matrix) }}
@@ -1592,15 +1668,18 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: ${{ needs.setup.outputs.eckit }}
+        dependencies: |-
+          ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   pdbufr:
     name: pdbufr
     needs:
     - eccodes-python
     - eccodes
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pdbufr_matrix && (needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.pdbufr) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pdbufr_matrix && (needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.pdbufr) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.pdbufr_matrix) }}
@@ -1618,7 +1697,9 @@ jobs:
         troika_user: ${{ secrets.HPC_CI_SSH_USER }}
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
-        dependencies: ${{ needs.setup.outputs.eccodes }}
+        dependencies: |-
+          ${{ needs.setup.outputs.eccodes }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'ecmwf/eccodes-python@master') || 'ecmwf/eccodes-python@develop' }}
         python_requirements: tests/downstream-ci-requirements.txt
   plume:
@@ -1627,8 +1708,9 @@ jobs:
     - atlas
     - fckit
     - eckit
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.plume_matrix && (needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.plume) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.plume_matrix && (needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.plume) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.plume_matrix) }}
@@ -1650,6 +1732,7 @@ jobs:
           ${{ needs.setup.outputs.atlas }}
           ${{ needs.setup.outputs.fckit }}
           ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   pyfdb:
     name: pyfdb
@@ -1658,8 +1741,9 @@ jobs:
     - metkit
     - eccodes
     - eckit
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pyfdb_matrix && (needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.pyfdb) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pyfdb_matrix && (needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.pyfdb) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.pyfdb_matrix) }}
@@ -1682,14 +1766,16 @@ jobs:
           ${{ needs.setup.outputs.metkit }}
           ${{ needs.setup.outputs.eccodes }}
           ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   pyodc:
     name: pyodc
     needs:
     - odc
     - eckit
+    - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pyodc_matrix && (needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.pyodc) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pyodc_matrix && (needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.pyodc) }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.pyodc_matrix) }}
@@ -1710,6 +1796,7 @@ jobs:
         dependencies: |-
           ${{ needs.setup.outputs.odc }}
           ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
   skinnywms:
     name: skinnywms
