@@ -233,17 +233,16 @@ jobs:
       skinnywms_matrix: ${{ steps.setup.outputs.skinnywms }}
       thermofeel: ${{ steps.prepare-inputs.outputs.thermofeel }}
       thermofeel_matrix: ${{ steps.setup.outputs.thermofeel }}
-      danu: ${{ steps.prepare-inputs.outputs.danu }}
-      danu_matrix: ${{ steps.setup.outputs.danu }}
       troika: ${{ steps.prepare-inputs.outputs.troika }}
       troika_matrix: ${{ steps.setup.outputs.troika }}
       cascade: ${{ steps.prepare-inputs.outputs.cascade }}
       cascade_matrix: ${{ steps.setup.outputs.cascade }}
       covjsonkit: ${{ steps.prepare-inputs.outputs.covjsonkit }}
       covjsonkit_matrix: ${{ steps.setup.outputs.covjsonkit }}
+      danu: ${{ steps.prepare-inputs.outputs.danu }}
+      danu_matrix: ${{ steps.setup.outputs.danu }}
       dep_tree: ${{ steps.setup.outputs.build_package_hpc_dep_tree }}
       use_master: ${{ steps.setup.outputs.use_master }}
-      danu: ${{ steps.setup.outputs.danu }}
     steps:
     - name: Prepare inputs
       id: prepare-inputs
@@ -288,10 +287,10 @@ jobs:
         echo pyodc="${{ inputs.pyodc }}" >> $GITHUB_OUTPUT
         echo skinnywms="${{ inputs.skinnywms }}" >> $GITHUB_OUTPUT
         echo thermofeel="${{ inputs.thermofeel }}" >> $GITHUB_OUTPUT
-        echo danu="${{ inputs.danu }}" >> $GITHUB_OUTPUT
         echo troika="${{ inputs.troika }}" >> $GITHUB_OUTPUT
         echo cascade="${{ inputs.cascade }}" >> $GITHUB_OUTPUT
         echo covjsonkit="${{ inputs.covjsonkit }}" >> $GITHUB_OUTPUT
+        echo danu="${{ inputs.danu }}" >> $GITHUB_OUTPUT
     - name: checkout reusable wfs repo
       uses: actions/checkout@v4
       with:
@@ -585,13 +584,6 @@ jobs:
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.thermofeel }}
             optional_matrix: null
-          ecmwf/danu:
-            path: .github/ci-hpc-config.yml
-            python: true
-            master_branch: main
-            develop_branch: develop
-            input: ${{ steps.prepare-inputs.outputs.danu }}
-            optional_matrix: null
           ecmwf/troika:
             path: .github/ci-hpc-config.yml
             python: true
@@ -869,31 +861,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.earthkit-geo_matrix) }}
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on:
-    - self-hosted
-    - linux
-    - hpc
-    steps:
-    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
-      with:
-        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
-        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
-        repository: ${{ matrix.owner_repo_ref }}
-        build_config: ${{ matrix.config_path }}
-        dependencies: ''
-        python_dependencies: ''
-        python_requirements: tests/downstream-ci-requirements.txt
-  earthkit-geo:
-    name: earthkit-geo
-    needs:
-    - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-geo && (inputs.earthkit-geo) }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.earthkit-geo) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
@@ -1892,32 +1859,6 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: ''
-  danu:
-    name: danu
-    needs:
-    - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.danu_matrix && (needs.setup.outputs.danu) }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.danu_matrix) }}
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on:
-    - self-hosted
-    - linux
-    - hpc
-    steps:
-    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
-      with:
-        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
-        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
-        repository: ${{ matrix.owner_repo_ref }}
-        build_config: ${{ matrix.config_path }}
-        dependencies: ''
-        python_dependencies: ''
-        python_requirements: requirements.txt
-        conda_deps: '''numpy<2'' scipy pcraster gdal netCDF4 pandas lz4 eccodes python-eccodes magics magics-python'
   troika:
     name: troika
     needs:
@@ -1990,3 +1931,29 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: ''
+  danu:
+    name: danu
+    needs:
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.danu_matrix && (needs.setup.outputs.danu) }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.danu_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
+        python_requirements: requirements.txt
+        conda_deps: numpy scipy pcraster gdal netCDF4 pandas dask lz4 eccodes magics
