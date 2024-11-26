@@ -9,6 +9,9 @@ name: downstream-ci-hpc
 'on':
   workflow_call:
     inputs:
+      ci_group:
+        required: false
+        type: string
       atlas:
         required: false
         type: string
@@ -238,6 +241,7 @@ jobs:
       covjsonkit_matrix: ${{ steps.setup.outputs.covjsonkit }}
       dep_tree: ${{ steps.setup.outputs.build_package_hpc_dep_tree }}
       use_master: ${{ steps.setup.outputs.use_master }}
+      ci_group_pkgs: ${{ steps.setup.outputs.ci_group_pkgs }}
     steps:
     - name: Prepare inputs
       id: prepare-inputs
@@ -652,6 +656,7 @@ jobs:
           name:
           - lumi
         WORKFLOW_NAME: downstream-ci-hpc
+        DOWNSTREAM_CI_GROUP: ${{ inputs.ci_group }}
         SKIP_MATRIX_JOBS: ${{ inputs.skip_matrix_jobs }}
       run: python setup_downstream_ci.py
   atlas:
@@ -661,7 +666,7 @@ jobs:
     - eckit
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.atlas_matrix && (needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.atlas) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.atlas_matrix && (needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.atlas)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'atlas') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.atlas_matrix) }}
@@ -692,7 +697,7 @@ jobs:
     - eckit
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.atlas-orca_matrix && (needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.atlas-orca) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.atlas-orca_matrix && (needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.atlas-orca)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'atlas-orca') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.atlas-orca_matrix) }}
@@ -723,7 +728,7 @@ jobs:
     - eccodes
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cfgrib_matrix && (needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.cfgrib) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cfgrib_matrix && (needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.cfgrib)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'cfgrib') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.cfgrib_matrix) }}
@@ -763,7 +768,7 @@ jobs:
     - earthkit-meteo
     - earthkit-regrid
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit_matrix && (needs.setup.outputs.earthkit-data || needs.setup.outputs.cfgrib || needs.setup.outputs.multiurl || needs.setup.outputs.pdbufr || needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.pyodc || needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.earthkit-geo || needs.setup.outputs.earthkit-meteo || needs.setup.outputs.earthkit-regrid || needs.setup.outputs.earthkit) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit_matrix && (needs.setup.outputs.earthkit-data || needs.setup.outputs.cfgrib || needs.setup.outputs.multiurl || needs.setup.outputs.pdbufr || needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.pyodc || needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.earthkit-geo || needs.setup.outputs.earthkit-meteo || needs.setup.outputs.earthkit-regrid || needs.setup.outputs.earthkit)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'earthkit') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.earthkit_matrix) }}
@@ -810,7 +815,7 @@ jobs:
     - eckit
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-data_matrix && (needs.setup.outputs.cfgrib || needs.setup.outputs.multiurl || needs.setup.outputs.pdbufr || needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.pyodc || needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.earthkit-data) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-data_matrix && (needs.setup.outputs.cfgrib || needs.setup.outputs.multiurl || needs.setup.outputs.pdbufr || needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.pyodc || needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.earthkit-data)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'earthkit-data') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.earthkit-data_matrix) }}
@@ -844,7 +849,7 @@ jobs:
     name: earthkit-geo
     needs:
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-geo_matrix && (needs.setup.outputs.earthkit-geo) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-geo_matrix && (needs.setup.outputs.earthkit-geo)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'earthkit-geo') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.earthkit-geo_matrix) }}
@@ -869,7 +874,7 @@ jobs:
     name: earthkit-meteo
     needs:
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-meteo_matrix && (needs.setup.outputs.earthkit-meteo) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-meteo_matrix && (needs.setup.outputs.earthkit-meteo)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'earthkit-meteo') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.earthkit-meteo_matrix) }}
@@ -894,7 +899,7 @@ jobs:
     name: earthkit-regrid
     needs:
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-regrid_matrix && (needs.setup.outputs.earthkit-regrid) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-regrid_matrix && (needs.setup.outputs.earthkit-regrid)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'earthkit-regrid') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.earthkit-regrid_matrix) }}
@@ -919,7 +924,7 @@ jobs:
     name: earthkit-time
     needs:
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-time_matrix && (needs.setup.outputs.earthkit-time) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.earthkit-time_matrix && (needs.setup.outputs.earthkit-time)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'earthkit-time') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.earthkit-time_matrix) }}
@@ -945,7 +950,7 @@ jobs:
     - anemoi-utils
     - anemoi-transform
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-datasets_matrix && (needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-transform || needs.setup.outputs.anemoi-datasets) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-datasets_matrix && (needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-transform || needs.setup.outputs.anemoi-datasets)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'anemoi-datasets') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.anemoi-datasets_matrix) }}
@@ -972,7 +977,7 @@ jobs:
     name: anemoi-utils
     needs:
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-utils_matrix && (needs.setup.outputs.anemoi-utils) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-utils_matrix && (needs.setup.outputs.anemoi-utils)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'anemoi-utils') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.anemoi-utils_matrix) }}
@@ -997,7 +1002,7 @@ jobs:
     name: anemoi-transform
     needs:
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-transform_matrix && (needs.setup.outputs.anemoi-transform) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-transform_matrix && (needs.setup.outputs.anemoi-transform)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'anemoi-transform') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.anemoi-transform_matrix) }}
@@ -1025,7 +1030,7 @@ jobs:
     - anemoi-transform
     - anemoi-utils
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-graphs_matrix && (needs.setup.outputs.anemoi-datasets || needs.setup.outputs.anemoi-transform || needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-graphs) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-graphs_matrix && (needs.setup.outputs.anemoi-datasets || needs.setup.outputs.anemoi-transform || needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-graphs)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'anemoi-graphs') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.anemoi-graphs_matrix) }}
@@ -1054,7 +1059,7 @@ jobs:
     needs:
     - anemoi-utils
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-models_matrix && (needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-models) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-models_matrix && (needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-models)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'anemoi-models') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.anemoi-models_matrix) }}
@@ -1084,7 +1089,7 @@ jobs:
     - anemoi-utils
     - anemoi-transform
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-training_matrix && (needs.setup.outputs.anemoi-models || needs.setup.outputs.anemoi-graphs || needs.setup.outputs.anemoi-datasets || needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-transform || needs.setup.outputs.anemoi-training) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-training_matrix && (needs.setup.outputs.anemoi-models || needs.setup.outputs.anemoi-graphs || needs.setup.outputs.anemoi-datasets || needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-transform || needs.setup.outputs.anemoi-training)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'anemoi-training') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.anemoi-training_matrix) }}
@@ -1116,7 +1121,7 @@ jobs:
     - anemoi-utils
     - anemoi-transform
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-inference_matrix && (needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-transform || needs.setup.outputs.anemoi-inference) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.anemoi-inference_matrix && (needs.setup.outputs.anemoi-utils || needs.setup.outputs.anemoi-transform || needs.setup.outputs.anemoi-inference)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'anemoi-inference') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.anemoi-inference_matrix) }}
@@ -1143,7 +1148,7 @@ jobs:
     name: ecbuild
     needs:
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.ecbuild_matrix && (needs.setup.outputs.ecbuild) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.ecbuild_matrix && (needs.setup.outputs.ecbuild)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'ecbuild') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.ecbuild_matrix) }}
@@ -1168,7 +1173,7 @@ jobs:
     needs:
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.eccodes_matrix && (needs.setup.outputs.ecbuild || needs.setup.outputs.eccodes) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.eccodes_matrix && (needs.setup.outputs.ecbuild || needs.setup.outputs.eccodes)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'eccodes') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.eccodes_matrix) }}
@@ -1194,7 +1199,7 @@ jobs:
     - eccodes
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.eccodes-python_matrix && (needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.eccodes-python) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.eccodes-python_matrix && (needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.eccodes-python)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'eccodes-python') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.eccodes-python_matrix) }}
@@ -1222,7 +1227,7 @@ jobs:
     needs:
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.ecflow_matrix && (needs.setup.outputs.ecbuild || needs.setup.outputs.ecflow) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.ecflow_matrix && (needs.setup.outputs.ecbuild || needs.setup.outputs.ecflow)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'ecflow') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.ecflow_matrix) }}
@@ -1248,7 +1253,7 @@ jobs:
     - eckit
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.ecflow-light_matrix && (needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.ecflow-light) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.ecflow-light_matrix && (needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.ecflow-light)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'ecflow-light') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.ecflow-light_matrix) }}
@@ -1275,7 +1280,7 @@ jobs:
     needs:
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.eckit_matrix && (needs.setup.outputs.ecbuild || needs.setup.outputs.eckit) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.eckit_matrix && (needs.setup.outputs.ecbuild || needs.setup.outputs.eckit)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'eckit') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.eckit_matrix) }}
@@ -1301,7 +1306,7 @@ jobs:
     - eckit
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.fckit_matrix && (needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.fckit) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.fckit_matrix && (needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.fckit)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'fckit') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.fckit_matrix) }}
@@ -1331,7 +1336,7 @@ jobs:
     - eckit
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.fdb_matrix && (needs.setup.outputs.metkit || needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.fdb) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.fdb_matrix && (needs.setup.outputs.metkit || needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.fdb)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'fdb') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.fdb_matrix) }}
@@ -1359,7 +1364,7 @@ jobs:
     name: findlibs
     needs:
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.findlibs_matrix && (needs.setup.outputs.findlibs) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.findlibs_matrix && (needs.setup.outputs.findlibs)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'findlibs') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.findlibs_matrix) }}
@@ -1389,7 +1394,7 @@ jobs:
     - eckit
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.gribjump_matrix && (needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.gribjump) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.gribjump_matrix && (needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.gribjump)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'gribjump') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.gribjump_matrix) }}
@@ -1421,7 +1426,7 @@ jobs:
     - eckit
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.infero_matrix && (needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.infero) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.infero_matrix && (needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.infero)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'infero') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.infero_matrix) }}
@@ -1449,7 +1454,7 @@ jobs:
     needs:
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.kronos_matrix && (needs.setup.outputs.ecbuild || needs.setup.outputs.kronos) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.kronos_matrix && (needs.setup.outputs.ecbuild || needs.setup.outputs.kronos)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'kronos') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.kronos_matrix) }}
@@ -1476,7 +1481,7 @@ jobs:
     - eckit
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.metkit_matrix && (needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.metkit) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.metkit_matrix && (needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.metkit)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'metkit') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.metkit_matrix) }}
@@ -1508,7 +1513,7 @@ jobs:
     - eccodes
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.mir_matrix && (needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.mir) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.mir_matrix && (needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.mir)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'mir') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.mir_matrix) }}
@@ -1546,7 +1551,7 @@ jobs:
     - eccodes
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio_matrix && (needs.setup.outputs.atlas-orca || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.multio) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio_matrix && (needs.setup.outputs.atlas-orca || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.multio)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'multio') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.multio_matrix) }}
@@ -1590,7 +1595,7 @@ jobs:
     - eccodes
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio-python_matrix && (needs.setup.outputs.multio || needs.setup.outputs.atlas-orca || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.multio-python) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio-python_matrix && (needs.setup.outputs.multio || needs.setup.outputs.atlas-orca || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.multio-python)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'multio-python') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.multio-python_matrix) }}
@@ -1624,7 +1629,7 @@ jobs:
     name: multiurl
     needs:
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multiurl_matrix && (needs.setup.outputs.multiurl) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multiurl_matrix && (needs.setup.outputs.multiurl)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'multiurl') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.multiurl_matrix) }}
@@ -1650,7 +1655,7 @@ jobs:
     - eckit
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.odc_matrix && (needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.odc) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.odc_matrix && (needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.odc)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'odc') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.odc_matrix) }}
@@ -1679,7 +1684,7 @@ jobs:
     - eccodes
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pdbufr_matrix && (needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.pdbufr) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pdbufr_matrix && (needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.pdbufr)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'pdbufr') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.pdbufr_matrix) }}
@@ -1710,7 +1715,7 @@ jobs:
     - eckit
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.plume_matrix && (needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.plume) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.plume_matrix && (needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.plume)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'plume') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.plume_matrix) }}
@@ -1743,7 +1748,7 @@ jobs:
     - eckit
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pyfdb_matrix && (needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.pyfdb) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pyfdb_matrix && (needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.pyfdb)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'pyfdb') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.pyfdb_matrix) }}
@@ -1775,7 +1780,7 @@ jobs:
     - eckit
     - ecbuild
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pyodc_matrix && (needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.pyodc) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pyodc_matrix && (needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.pyodc)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'pyodc') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.pyodc_matrix) }}
@@ -1802,7 +1807,7 @@ jobs:
     name: skinnywms
     needs:
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.skinnywms_matrix && (needs.setup.outputs.skinnywms) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.skinnywms_matrix && (needs.setup.outputs.skinnywms)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'skinnywms') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.skinnywms_matrix) }}
@@ -1826,7 +1831,7 @@ jobs:
     name: thermofeel
     needs:
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.thermofeel_matrix && (needs.setup.outputs.thermofeel) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.thermofeel_matrix && (needs.setup.outputs.thermofeel)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'thermofeel') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.thermofeel_matrix) }}
@@ -1850,7 +1855,7 @@ jobs:
     name: troika
     needs:
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.troika_matrix && (needs.setup.outputs.troika) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.troika_matrix && (needs.setup.outputs.troika)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'troika') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.troika_matrix) }}
@@ -1874,7 +1879,7 @@ jobs:
     name: cascade
     needs:
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cascade_matrix && (needs.setup.outputs.cascade) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cascade_matrix && (needs.setup.outputs.cascade)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'cascade') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.cascade_matrix) }}
@@ -1898,7 +1903,7 @@ jobs:
     name: covjsonkit
     needs:
     - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.covjsonkit_matrix && (needs.setup.outputs.covjsonkit) }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.covjsonkit_matrix && (needs.setup.outputs.covjsonkit)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'covjsonkit') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.covjsonkit_matrix) }}

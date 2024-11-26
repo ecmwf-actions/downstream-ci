@@ -120,7 +120,7 @@ class Workflow:
     def generate_inputs(self, dep_tree: dict, wf_config: dict):
         wf_spec_inputs: dict = wf_config.get("inputs", {})
         self.inputs.update(wf_spec_inputs)
-
+        self.inputs["ci_group"] = {"required": False, "type": "string"}
         for package, val in dep_tree.items():
             if is_input(package, dep_tree, self.name, self.private):
                 self.inputs[package] = {"required": False, "type": "string"}
@@ -329,6 +329,7 @@ class Workflow:
                 "&& contains(join(needs.*.result, ','), 'success') "
                 f"&& needs.setup.outputs.{package}_matrix "
                 f"&& ({condition_inputs})"
+                f"&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), '{package}')"
                 " }}"
             )
             strategy = {
@@ -535,6 +536,7 @@ class Workflow:
                 "${{ steps.setup.outputs.build_package_hpc_dep_tree }}"
             )
         outputs["use_master"] = "${{ steps.setup.outputs.use_master }}"
+        outputs["ci_group_pkgs"] = "${{ steps.setup.outputs.ci_group_pkgs }}"
         self.inputs.update(
             {
                 "skip_matrix_jobs": {
@@ -632,6 +634,7 @@ class Workflow:
                     wf_config["optional_matrix"], indent=2, default_flow_style=False
                 ),
                 "WORKFLOW_NAME": wf_name,
+                "DOWNSTREAM_CI_GROUP": "${{ inputs.ci_group }}",
             },
             "run": "python setup_downstream_ci.py",
         }
