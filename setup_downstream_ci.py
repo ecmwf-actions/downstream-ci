@@ -249,15 +249,16 @@ print(
 )
 print(f"Python codecov platform: {py_codecov_platform}")
 
+ci_group_pkgs = get_ci_group_pkgs(ci_group, dep_tree)
+print(f"CI group packages: {ci_group_pkgs}")
+
 with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
     print("trigger_repo", trigger_repo, sep="=", file=f)
     print("py_codecov_platform", py_codecov_platform, sep="=", file=f)
     print("use_master", use_master, sep="=", file=f)
 
     print("ci_group_pkgs<<EOF", file=f)
-    print(
-        json.dumps(get_ci_group_pkgs(ci_group, dep_tree), separators=(",", ":")), file=f
-    )
+    print(json.dumps(ci_group_pkgs, separators=(",", ":")), file=f)
     print("EOF", file=f)
 
     print("build_package_dep_tree<<EOF", file=f)
