@@ -55,6 +55,7 @@ skip_jobs = os.getenv("SKIP_MATRIX_JOBS", "").splitlines()
 token = os.getenv("TOKEN", "")
 trigger_ref_name = os.getenv("DISPATCH_REF_NAME") or os.getenv("GITHUB_REF_NAME", "")
 workflow_name = os.getenv("WORKFLOW_NAME", "")
+ci_group = os.getenv("DOWNSTREAM_CI_GROUP", "")
 
 github_repository = os.getenv("DISPATCH_REPOSITORY") or os.getenv(
     "GITHUB_REPOSITORY", ""
@@ -108,6 +109,37 @@ def get_config(owner, repo, ref, path):
         sys.exit(1)
 
     return return_obj
+
+
+def get_ci_group_pkgs(ci_group: str, dep_tree: dict) -> list[str]:
+    if not ci_group:
+        ci_group = "all"
+
+    print(f"CI group: {ci_group}")
+
+    # Special cases
+    # "all" -> all packages
+    # "all_python" -> all python packages
+    # "all_cmake" -> all cmake packages
+
+    if ci_group == "all":
+        return [k for k in dep_tree.keys()]
+    if ci_group == "all_python":
+        return [k for k, v in dep_tree.items() if v.get("type", "") == "python"]
+    if ci_group == "all_cmake":
+        return [k for k, v in dep_tree.items() if v.get("type", "") == "cmake"]
+
+    with open("ci-groups.yml", "r") as f:
+        ci_groups = yaml.safe_load(f)
+
+    if ci_group in ci_groups:
+        return ci_groups[ci_group]
+
+    print(
+        f"::error::CI group {ci_group} not found in "
+        "ecmwf-actions/downstream-ci/ci-groups.yml"
+    )
+    sys.exit(1)
 
 
 if skip_jobs:
@@ -217,10 +249,17 @@ print(
 )
 print(f"Python codecov platform: {py_codecov_platform}")
 
+ci_group_pkgs = get_ci_group_pkgs(ci_group, dep_tree)
+print(f"CI group packages: {ci_group_pkgs}")
+
 with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
     print("trigger_repo", trigger_repo, sep="=", file=f)
     print("py_codecov_platform", py_codecov_platform, sep="=", file=f)
     print("use_master", use_master, sep="=", file=f)
+
+    print("ci_group_pkgs<<EOF", file=f)
+    print(json.dumps(ci_group_pkgs, separators=(",", ":")), file=f)
+    print("EOF", file=f)
 
     print("build_package_dep_tree<<EOF", file=f)
     print(yaml.dump(build_package_dep_tree), file=f)
