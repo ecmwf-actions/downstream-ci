@@ -1,3 +1,7 @@
+# Groups of packages to be tested together
+# Use the `ci_group` input for downstream-ci workflows to select the desired group, has to be one of the below groups
+# Defaults to `all` in no input specified
+
 all: ~ # magic group name, matches all packages
 all_python: ~ # magic group name, matches all python packages
 all_cmake: ~ # magic group name, matches all cmake packages
