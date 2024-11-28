@@ -64,6 +64,12 @@ name: downstream-ci
       anemoi-inference:
         required: false
         type: string
+      cascade:
+        required: false
+        type: string
+      conflator:
+        required: false
+        type: string
       ecbuild:
         required: false
         type: string
@@ -139,9 +145,6 @@ name: downstream-ci
       troika:
         required: false
         type: string
-      cascade:
-        required: false
-        type: string
       covjsonkit:
         required: false
         type: string
@@ -201,6 +204,10 @@ jobs:
       anemoi-training_matrix: ${{ steps.setup.outputs.anemoi-training }}
       anemoi-inference: ${{ steps.prepare-inputs.outputs.anemoi-inference }}
       anemoi-inference_matrix: ${{ steps.setup.outputs.anemoi-inference }}
+      cascade: ${{ steps.prepare-inputs.outputs.cascade }}
+      cascade_matrix: ${{ steps.setup.outputs.cascade }}
+      conflator: ${{ steps.prepare-inputs.outputs.conflator }}
+      conflator_matrix: ${{ steps.setup.outputs.conflator }}
       ecbuild: ${{ steps.prepare-inputs.outputs.ecbuild }}
       ecbuild_matrix: ${{ steps.setup.outputs.ecbuild }}
       eccodes: ${{ steps.prepare-inputs.outputs.eccodes }}
@@ -251,8 +258,6 @@ jobs:
       thermofeel_matrix: ${{ steps.setup.outputs.thermofeel }}
       troika: ${{ steps.prepare-inputs.outputs.troika }}
       troika_matrix: ${{ steps.setup.outputs.troika }}
-      cascade: ${{ steps.prepare-inputs.outputs.cascade }}
-      cascade_matrix: ${{ steps.setup.outputs.cascade }}
       covjsonkit: ${{ steps.prepare-inputs.outputs.covjsonkit }}
       covjsonkit_matrix: ${{ steps.setup.outputs.covjsonkit }}
       dep_tree: ${{ steps.setup.outputs.build_package_dep_tree }}
@@ -280,6 +285,8 @@ jobs:
         echo anemoi-models="${{ inputs.anemoi-models }}" >> $GITHUB_OUTPUT
         echo anemoi-training="${{ inputs.anemoi-training }}" >> $GITHUB_OUTPUT
         echo anemoi-inference="${{ inputs.anemoi-inference }}" >> $GITHUB_OUTPUT
+        echo cascade="${{ inputs.cascade }}" >> $GITHUB_OUTPUT
+        echo conflator="${{ inputs.conflator }}" >> $GITHUB_OUTPUT
         echo ecbuild="${{ inputs.ecbuild }}" >> $GITHUB_OUTPUT
         echo eccodes="${{ inputs.eccodes }}" >> $GITHUB_OUTPUT
         echo eccodes-python="${{ inputs.eccodes-python }}" >> $GITHUB_OUTPUT
@@ -305,7 +312,6 @@ jobs:
         echo skinnywms="${{ inputs.skinnywms }}" >> $GITHUB_OUTPUT
         echo thermofeel="${{ inputs.thermofeel }}" >> $GITHUB_OUTPUT
         echo troika="${{ inputs.troika }}" >> $GITHUB_OUTPUT
-        echo cascade="${{ inputs.cascade }}" >> $GITHUB_OUTPUT
         echo covjsonkit="${{ inputs.covjsonkit }}" >> $GITHUB_OUTPUT
     - name: checkout reusable wfs repo
       uses: actions/checkout@v4
@@ -428,6 +434,20 @@ jobs:
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.anemoi-inference }}
+            optional_matrix: null
+          ecmwf/cascade:
+            path: ''
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.cascade }}
+            optional_matrix: null
+          ecmwf/conflator:
+            path: ''
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.conflator }}
             optional_matrix: null
           ecmwf/ecbuild:
             path: .github/ci-config.yml
@@ -606,13 +626,6 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.troika }}
-            optional_matrix: null
-          ecmwf/cascade:
-            path: ''
-            python: true
-            master_branch: main
-            develop_branch: develop
-            input: ${{ steps.prepare-inputs.outputs.cascade }}
             optional_matrix: null
           ecmwf/covjsonkit:
             path: ''
@@ -1273,6 +1286,46 @@ jobs:
         test_cmd: |
           python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
           python -m coverage report
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
+  cascade:
+    name: cascade
+    needs:
+    - setup
+    - python-qa
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cascade_matrix && (needs.setup.outputs.cascade)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'cascade') }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.cascade_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        checkout: true
+        python_dependencies: ''
+        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
+  conflator:
+    name: conflator
+    needs:
+    - setup
+    - python-qa
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.conflator_matrix && (needs.setup.outputs.conflator)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'conflator') }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.conflator_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        checkout: true
+        python_dependencies: ''
         codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   ecbuild:
@@ -1974,26 +2027,6 @@ jobs:
         test_cmd: |
           pytest --cov=./ --cov-report=xml --basetemp=$RUNNER_TEMP/pytest_tmp
           python -m coverage report
-        codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
-        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
-  cascade:
-    name: cascade
-    needs:
-    - setup
-    - python-qa
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cascade_matrix && (needs.setup.outputs.cascade)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'cascade') }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.cascade_matrix) }}
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: ${{ matrix.labels }}
-    steps:
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
-      with:
-        repository: ${{ matrix.owner_repo_ref }}
-        checkout: true
-        python_dependencies: ''
         codecov_upload: ${{ needs.setup.outputs.trigger_repo == github.job && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   covjsonkit:

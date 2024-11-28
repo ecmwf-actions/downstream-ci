@@ -60,6 +60,12 @@ name: downstream-ci-hpc
       anemoi-inference:
         required: false
         type: string
+      cascade:
+        required: false
+        type: string
+      conflator:
+        required: false
+        type: string
       ecbuild:
         required: false
         type: string
@@ -135,9 +141,6 @@ name: downstream-ci-hpc
       troika:
         required: false
         type: string
-      cascade:
-        required: false
-        type: string
       covjsonkit:
         required: false
         type: string
@@ -185,6 +188,10 @@ jobs:
       anemoi-training_matrix: ${{ steps.setup.outputs.anemoi-training }}
       anemoi-inference: ${{ steps.prepare-inputs.outputs.anemoi-inference }}
       anemoi-inference_matrix: ${{ steps.setup.outputs.anemoi-inference }}
+      cascade: ${{ steps.prepare-inputs.outputs.cascade }}
+      cascade_matrix: ${{ steps.setup.outputs.cascade }}
+      conflator: ${{ steps.prepare-inputs.outputs.conflator }}
+      conflator_matrix: ${{ steps.setup.outputs.conflator }}
       ecbuild: ${{ steps.prepare-inputs.outputs.ecbuild }}
       ecbuild_matrix: ${{ steps.setup.outputs.ecbuild }}
       eccodes: ${{ steps.prepare-inputs.outputs.eccodes }}
@@ -235,8 +242,6 @@ jobs:
       thermofeel_matrix: ${{ steps.setup.outputs.thermofeel }}
       troika: ${{ steps.prepare-inputs.outputs.troika }}
       troika_matrix: ${{ steps.setup.outputs.troika }}
-      cascade: ${{ steps.prepare-inputs.outputs.cascade }}
-      cascade_matrix: ${{ steps.setup.outputs.cascade }}
       covjsonkit: ${{ steps.prepare-inputs.outputs.covjsonkit }}
       covjsonkit_matrix: ${{ steps.setup.outputs.covjsonkit }}
       dep_tree: ${{ steps.setup.outputs.build_package_hpc_dep_tree }}
@@ -262,6 +267,8 @@ jobs:
         echo anemoi-models="${{ inputs.anemoi-models }}" >> $GITHUB_OUTPUT
         echo anemoi-training="${{ inputs.anemoi-training }}" >> $GITHUB_OUTPUT
         echo anemoi-inference="${{ inputs.anemoi-inference }}" >> $GITHUB_OUTPUT
+        echo cascade="${{ inputs.cascade }}" >> $GITHUB_OUTPUT
+        echo conflator="${{ inputs.conflator }}" >> $GITHUB_OUTPUT
         echo ecbuild="${{ inputs.ecbuild }}" >> $GITHUB_OUTPUT
         echo eccodes="${{ inputs.eccodes }}" >> $GITHUB_OUTPUT
         echo eccodes-python="${{ inputs.eccodes-python }}" >> $GITHUB_OUTPUT
@@ -287,7 +294,6 @@ jobs:
         echo skinnywms="${{ inputs.skinnywms }}" >> $GITHUB_OUTPUT
         echo thermofeel="${{ inputs.thermofeel }}" >> $GITHUB_OUTPUT
         echo troika="${{ inputs.troika }}" >> $GITHUB_OUTPUT
-        echo cascade="${{ inputs.cascade }}" >> $GITHUB_OUTPUT
         echo covjsonkit="${{ inputs.covjsonkit }}" >> $GITHUB_OUTPUT
     - name: checkout reusable wfs repo
       uses: actions/checkout@v4
@@ -410,6 +416,20 @@ jobs:
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.anemoi-inference }}
+            optional_matrix: null
+          ecmwf/cascade:
+            path: .github/ci-hpc-config.yml
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.cascade }}
+            optional_matrix: null
+          ecmwf/conflator:
+            path: .github/ci-hpc-config.yml
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.conflator }}
             optional_matrix: null
           ecmwf/ecbuild:
             path: .github/ci-hpc-config.yml
@@ -588,13 +608,6 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.troika }}
-            optional_matrix: null
-          ecmwf/cascade:
-            path: .github/ci-hpc-config.yml
-            python: true
-            master_branch: main
-            develop_branch: develop
-            input: ${{ steps.prepare-inputs.outputs.cascade }}
             optional_matrix: null
           ecmwf/covjsonkit:
             path: .github/ci-hpc-config.yml
@@ -1144,6 +1157,54 @@ jobs:
           ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-utils@main') || 'ecmwf/anemoi-utils@develop' }}
           ${{ needs.setup.outputs.anemoi-transform || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-transform@main') || 'ecmwf/anemoi-transform@develop' }}
         python_toml_opt_dep_sections: all,tests
+  cascade:
+    name: cascade
+    needs:
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cascade_matrix && (needs.setup.outputs.cascade)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'cascade') }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.cascade_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
+  conflator:
+    name: conflator
+    needs:
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.conflator_matrix && (needs.setup.outputs.conflator)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'conflator') }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.conflator_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: ''
+        python_dependencies: ''
   ecbuild:
     name: ecbuild
     needs:
@@ -1859,30 +1920,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.troika_matrix) }}
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on:
-    - self-hosted
-    - linux
-    - hpc
-    steps:
-    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
-      with:
-        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
-        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
-        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
-        repository: ${{ matrix.owner_repo_ref }}
-        build_config: ${{ matrix.config_path }}
-        dependencies: ''
-        python_dependencies: ''
-  cascade:
-    name: cascade
-    needs:
-    - setup
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cascade_matrix && (needs.setup.outputs.cascade)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'cascade') }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.cascade_matrix) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on:
