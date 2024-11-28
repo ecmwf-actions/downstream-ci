@@ -166,6 +166,18 @@ anemoi-inference:
       python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
       python -m coverage report
 
+cascade:
+  type: python
+  master_branch: main
+  downstream-ci:
+    config_path: ""
+
+conflator:
+  type: python
+  master_branch: main
+  downstream-ci:
+    config_path: ""
+
 ecbuild:
   type: cmake
 
@@ -371,12 +383,6 @@ troika:
     test_cmd: |
       pytest --cov=./ --cov-report=xml --basetemp=$RUNNER_TEMP/pytest_tmp
       python -m coverage report
-
-cascade:
-  type: python
-  master_branch: main
-  downstream-ci:
-    config_path: ""
 
 covjsonkit:
   type: python
