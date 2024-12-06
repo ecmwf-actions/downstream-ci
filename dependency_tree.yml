@@ -202,6 +202,7 @@ eccodes-python:
 
 ecflow:
   type: cmake
+  master_branch: main
   deps:
     - ecbuild
   optional_matrix:
@@ -215,6 +216,7 @@ ecflow:
 
 ecflow-light:
   type: cmake
+  master_branch: main
   deps:
     - eckit
 
