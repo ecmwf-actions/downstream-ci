@@ -165,7 +165,7 @@ name: downstream-ci
         type: string
         required: false
 concurrency:
-  group: ${{ github.workflow }}-${{ (github.event_name == 'repository_dispatch' && (github.event.client_payload.repository + '-' + github.event.client_payload.ref_name)) || github.ref }}-downstream-ci
+  group: ${{ github.workflow }}-${{ (github.event_name == 'repository_dispatch' && format('{0}-{1}', github.event.client_payload.repository, github.event.client_payload.ref_name)) || github.ref }}-downstream-ci
   cancel-in-progress: true
 jobs:
   setup:
