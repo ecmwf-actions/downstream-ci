@@ -129,7 +129,8 @@ class Workflow:
     # will result in all but the latest ci workflows being cancelled
     def concurrency(self) -> object:
         c = {
-            "group": "${{ github.workflow }}-${{ github.ref }}-" + self.name,
+            "group": "${{ github.workflow }}-${{ (github.event_name == 'repository_dispatch' && (github.event.client_payload.repository + '-' + github.event.client_payload.ref_name)) || github.ref }}-"
+            + self.name,
             "cancel-in-progress": True,
         }
 
