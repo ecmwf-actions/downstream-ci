@@ -254,6 +254,12 @@ gribjump:
     modules:
       - aec
 
+pygribjump:
+  type: python
+  repo: ecmwf/gribjump
+  deps:
+    - gribjump
+
 infero:
   type: cmake
   master_branch: master

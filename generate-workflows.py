@@ -285,7 +285,6 @@ class Workflow:
                 for dep in get_type_deps(package, dep_tree, self.name, "cmake")
                 if is_input(dep, dep_tree, self.name, self.private)
             ]
-
             python_deps = []
             for dep in get_type_deps(package, dep_tree, self.name, "python"):
                 if is_input(dep, dep_tree, self.name, self.private):
@@ -298,13 +297,22 @@ class Workflow:
                     develop_branch = tree_get_package_var(
                         "develop_branch", dep_tree, dep, self.name, "develop"
                     )
+                    dep_repo = tree_get_package_var(
+                        "repo",
+                        dep_tree,
+                        dep,
+                        self.name,
+                        dep,
+                    )
+                    if not dep_repo.startswith("ecmwf/"):
+                        dep_repo = f"ecmwf/{dep_repo}"
 
                     python_deps.append(
                         "${{ "
                         + f"needs.setup.outputs.{dep} || "
                         + "(needs.setup.outputs.use_master == 'True' && "
-                        + f"'ecmwf/{dep}@{master_branch}') || "
-                        + f"'ecmwf/{dep}@{develop_branch}'"
+                        + f"'{dep}:{dep_repo}@{master_branch}') || "
+                        + f"'{dep}:ecmwf/{dep_repo}@{develop_branch}'"
                         + " }}"
                     )
 
@@ -583,8 +591,10 @@ class Workflow:
                 )
                 if config_path is None:
                     config_path = default_config_path
-
-                setup_config[f"ecmwf/{dep}"] = {
+                dep_repo = dep_tree[dep].get("repo", dep)
+                if not dep_repo.startswith("ecmwf/"):
+                    dep_repo = f"ecmwf/{dep_repo}"
+                setup_config[f"{dep}:{dep_repo}"] = {
                     "path": config_path,
                     "python": dep_tree[dep].get("type", "cmake") == "python",
                     "master_branch": tree_get_package_var(
