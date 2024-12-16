@@ -181,7 +181,7 @@ for owner_repo, val in ci_config.items():
         _, ref = package_input.split("@")
 
     path = val.get("path", "")
-    config = get_config(owner, repo, ref, path)
+    config = get_config(owner, repo, pkg_name, ref, path)
 
     if not config["setup_matrix"]:
         continue
