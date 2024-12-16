@@ -511,7 +511,7 @@ jobs:
             input: ${{ steps.prepare-inputs.outputs.gribjump }}
             optional_matrix: null
           pygribjump:ecmwf/gribjump:
-            path: .github/ci-hpc-config.yml
+            path: .github/ci-hpc-config-pygribjump.yml
             python: true
             master_branch: master
             develop_branch: develop
