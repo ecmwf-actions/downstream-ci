@@ -259,6 +259,10 @@ pygribjump:
   repo: ecmwf/gribjump
   deps:
     - gribjump
+  downstream-ci:
+    config_path: ".github/ci-config-pygribjump.yml"
+  downstream-ci-hpc:
+    config_path: ".github/ci-hpc-config-pygribjump.yml"
 
 infero:
   type: cmake
