@@ -71,6 +71,14 @@ with open("dependency_tree.yml", "r") as f:
     dep_tree = yaml.safe_load(f)
 
 
+trigger_pkgs = [
+    k
+    for k, v in dep_tree.items()
+    if v.get("repo", k) in [github_repository, trigger_repo]
+]
+print(f"Trigger packages: {trigger_pkgs}")
+
+
 def tree_get_package_var(var_name: str, dep_tree: dict, package: str, wf_name: str):
     """Get package variable from dep tree. Prefers vars set for given workflow name."""
     wf_spec = dep_tree[package].get(wf_name, {})
@@ -104,7 +112,7 @@ def get_config(owner, repo, pkg_name, ref, path):
     print(f"::warning::Config for {owner}/{repo}@{ref} not found.")
     print(response.status_code, response.content)
 
-    if trigger_repo == pkg_name:
+    if pkg_name in trigger_pkgs:
         print("::error::Config file for triggering repository not found")
         sys.exit(1)
 
@@ -222,7 +230,7 @@ for owner_repo, val in ci_config.items():
             matrices[pkg_name]["include"] = [
                 d for d in matrices[pkg_name]["include"] if d["name"] in python_jobs
             ]
-        if pkg_name == trigger_repo:
+        if pkg_name in trigger_pkgs:
             py_codecov_platform = (
                 matrices[pkg_name]["name"][0] if len(matrices[pkg_name]["name"]) else ""
             )
@@ -266,6 +274,7 @@ print(f"CI group packages: {ci_group_pkgs}")
 
 with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
     print("trigger_repo", trigger_repo, sep="=", file=f)
+    print("trigger_pkgs", trigger_pkgs, sep="=", file=f)
     print("py_codecov_platform", py_codecov_platform, sep="=", file=f)
     print("use_master", use_master, sep="=", file=f)
 

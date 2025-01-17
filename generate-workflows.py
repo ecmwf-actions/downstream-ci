@@ -382,8 +382,8 @@ class Workflow:
                             "codecov_token"
                         ] = "${{ secrets.CODECOV_UPLOAD_TOKEN }}"
                         s["with"]["codecov_upload"] = (
-                            "${{ needs.setup.outputs.trigger_repo "
-                            "== github.job && inputs.codecov_upload }}"
+                            "${{ contains(needs.setup.outputs.trigger_pkgs, "
+                            "github.job) && inputs.codecov_upload }}"
                         )
                     else:
                         s["with"]["github_token"] = "${{ secrets.GH_REPO_READ_TOKEN }}"
@@ -446,8 +446,8 @@ class Workflow:
                             ci_python_step["with"]["conda_install"] = conda_deps
                         if not self.private:
                             ci_python_step["with"]["codecov_upload"] = (
-                                "${{ needs.setup.outputs.trigger_repo == "
-                                "github.job && inputs.codecov_upload "
+                                "${{ contains(needs.setup.outputs.trigger_pkgs, "
+                                "github.job) && inputs.codecov_upload "
                                 "&& needs.setup.outputs.py_codecov_platform "
                                 "== matrix.name }}"
                             )
@@ -483,8 +483,8 @@ class Workflow:
                             ci_python_step["with"]["conda_install"] = conda_deps
                         if not self.private:
                             ci_python_step["with"]["codecov_upload"] = (
-                                "${{ needs.setup.outputs.trigger_repo == "
-                                "github.job && inputs.codecov_upload "
+                                "${{ contains(needs.setup.outputs.trigger_pkgs, "
+                                "github.job) && inputs.codecov_upload "
                                 "&& needs.setup.outputs.py_codecov_platform "
                                 "== matrix.name }}"
                             )
@@ -537,6 +537,7 @@ class Workflow:
         if self.wf_type == "build-package":
             outputs["dep_tree"] = "${{ steps.setup.outputs.build_package_dep_tree }}"
             outputs["trigger_repo"] = "${{ steps.setup.outputs.trigger_repo }}"
+            outputs["trigger_pkgs"] = "${{ steps.setup.outputs.trigger_pkgs }}"
             outputs["py_codecov_platform"] = (
                 "${{ steps.setup.outputs.py_codecov_platform }}"
             )
