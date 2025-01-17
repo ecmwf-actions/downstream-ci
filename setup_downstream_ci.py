@@ -178,6 +178,7 @@ for owner_repo, val in ci_config.items():
     if owner_repo.count("/") > 1:
         owner, repo, subdir = owner_repo.split("/", maxsplit=2)
     else:
+        subdir = ""
         owner, repo = owner_repo.split("/", maxsplit=1)
 
     if not pkg_name:
