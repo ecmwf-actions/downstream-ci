@@ -257,6 +257,7 @@ gribjump:
 pygribjump:
   type: python
   repo: ecmwf/gribjump
+  toml_opt_dep_sections: dev
   deps:
     - gribjump
   downstream-ci:
