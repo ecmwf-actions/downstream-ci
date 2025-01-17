@@ -113,7 +113,9 @@ def get_config(owner, repo, pkg_name, ref, path):
     print(response.status_code, response.content)
 
     if pkg_name in trigger_pkgs:
-        print("::error::Config file for triggering repository not found")
+        print(
+            f"::error::Config file {path} for triggering package {pkg_name} not found"
+        )
         sys.exit(1)
 
     return return_obj
