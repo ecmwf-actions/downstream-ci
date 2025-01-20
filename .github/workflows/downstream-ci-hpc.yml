@@ -96,6 +96,9 @@ name: downstream-ci-hpc
       gribjump:
         required: false
         type: string
+      pygribjump:
+        required: false
+        type: string
       infero:
         required: false
         type: string
@@ -212,6 +215,8 @@ jobs:
       findlibs_matrix: ${{ steps.setup.outputs.findlibs }}
       gribjump: ${{ steps.prepare-inputs.outputs.gribjump }}
       gribjump_matrix: ${{ steps.setup.outputs.gribjump }}
+      pygribjump: ${{ steps.prepare-inputs.outputs.pygribjump }}
+      pygribjump_matrix: ${{ steps.setup.outputs.pygribjump }}
       infero: ${{ steps.prepare-inputs.outputs.infero }}
       infero_matrix: ${{ steps.setup.outputs.infero }}
       kronos: ${{ steps.prepare-inputs.outputs.kronos }}
@@ -279,6 +284,7 @@ jobs:
         echo fdb="${{ inputs.fdb }}" >> $GITHUB_OUTPUT
         echo findlibs="${{ inputs.findlibs }}" >> $GITHUB_OUTPUT
         echo gribjump="${{ inputs.gribjump }}" >> $GITHUB_OUTPUT
+        echo pygribjump="${{ inputs.pygribjump }}" >> $GITHUB_OUTPUT
         echo infero="${{ inputs.infero }}" >> $GITHUB_OUTPUT
         echo kronos="${{ inputs.kronos }}" >> $GITHUB_OUTPUT
         echo metkit="${{ inputs.metkit }}" >> $GITHUB_OUTPUT
@@ -305,154 +311,154 @@ jobs:
       env:
         TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
         CONFIG: |
-          ecmwf/atlas:
+          atlas:ecmwf/atlas:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.atlas }}
             optional_matrix: null
-          ecmwf/atlas-orca:
+          atlas-orca:ecmwf/atlas-orca:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.atlas-orca }}
             optional_matrix: null
-          ecmwf/cfgrib:
+          cfgrib:ecmwf/cfgrib:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
             develop_branch: master
             input: ${{ steps.prepare-inputs.outputs.cfgrib }}
             optional_matrix: null
-          ecmwf/earthkit:
+          earthkit:ecmwf/earthkit:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.earthkit }}
             optional_matrix: null
-          ecmwf/earthkit-data:
+          earthkit-data:ecmwf/earthkit-data:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.earthkit-data }}
             optional_matrix: null
-          ecmwf/earthkit-geo:
+          earthkit-geo:ecmwf/earthkit-geo:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.earthkit-geo }}
             optional_matrix: null
-          ecmwf/earthkit-meteo:
+          earthkit-meteo:ecmwf/earthkit-meteo:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.earthkit-meteo }}
             optional_matrix: null
-          ecmwf/earthkit-regrid:
+          earthkit-regrid:ecmwf/earthkit-regrid:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.earthkit-regrid }}
             optional_matrix: null
-          ecmwf/earthkit-time:
+          earthkit-time:ecmwf/earthkit-time:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.earthkit-time }}
             optional_matrix: null
-          ecmwf/anemoi-datasets:
+          anemoi-datasets:ecmwf/anemoi-datasets:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.anemoi-datasets }}
             optional_matrix: null
-          ecmwf/anemoi-utils:
+          anemoi-utils:ecmwf/anemoi-utils:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.anemoi-utils }}
             optional_matrix: null
-          ecmwf/anemoi-transform:
+          anemoi-transform:ecmwf/anemoi-transform:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.anemoi-transform }}
             optional_matrix: null
-          ecmwf/anemoi-graphs:
+          anemoi-graphs:ecmwf/anemoi-graphs:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.anemoi-graphs }}
             optional_matrix: null
-          ecmwf/anemoi-models:
+          anemoi-models:ecmwf/anemoi-models:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.anemoi-models }}
             optional_matrix: null
-          ecmwf/anemoi-training:
+          anemoi-training:ecmwf/anemoi-training:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.anemoi-training }}
             optional_matrix: null
-          ecmwf/anemoi-inference:
+          anemoi-inference:ecmwf/anemoi-inference:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.anemoi-inference }}
             optional_matrix: null
-          ecmwf/cascade:
+          cascade:ecmwf/cascade:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.cascade }}
             optional_matrix: null
-          ecmwf/conflator:
+          conflator:ecmwf/conflator:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.conflator }}
             optional_matrix: null
-          ecmwf/ecbuild:
+          ecbuild:ecmwf/ecbuild:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.ecbuild }}
             optional_matrix: null
-          ecmwf/eccodes:
+          eccodes:ecmwf/eccodes:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.eccodes }}
             optional_matrix: null
-          ecmwf/eccodes-python:
+          eccodes-python:ecmwf/eccodes-python:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.eccodes-python }}
             optional_matrix: null
-          ecmwf/ecflow:
+          ecflow:ecmwf/ecflow:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: main
@@ -462,154 +468,161 @@ jobs:
             - clang@macos-13-arm
             - clang@macos-13-x86
             - gnu@debian-12
-          ecmwf/ecflow-light:
+          ecflow-light:ecmwf/ecflow-light:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.ecflow-light }}
             optional_matrix: null
-          ecmwf/eckit:
+          eckit:ecmwf/eckit:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.eckit }}
             optional_matrix: null
-          ecmwf/fckit:
+          fckit:ecmwf/fckit:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.fckit }}
             optional_matrix: null
-          ecmwf/fdb:
+          fdb:ecmwf/fdb:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.fdb }}
             optional_matrix: null
-          ecmwf/findlibs:
+          findlibs:ecmwf/findlibs:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.findlibs }}
             optional_matrix: null
-          ecmwf/gribjump:
+          gribjump:ecmwf/gribjump:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.gribjump }}
             optional_matrix: null
-          ecmwf/infero:
+          pygribjump:ecmwf/gribjump:
+            path: .github/ci-hpc-config-pygribjump.yml
+            python: true
+            master_branch: master
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.pygribjump }}
+            optional_matrix: null
+          infero:ecmwf/infero:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.infero }}
             optional_matrix: null
-          ecmwf/kronos:
+          kronos:ecmwf/kronos:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.kronos }}
             optional_matrix: null
-          ecmwf/metkit:
+          metkit:ecmwf/metkit:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.metkit }}
             optional_matrix: null
-          ecmwf/mir:
+          mir:ecmwf/mir:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.mir }}
             optional_matrix: null
-          ecmwf/multio:
+          multio:ecmwf/multio:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.multio }}
             optional_matrix: null
-          ecmwf/multio-python:
+          multio-python:ecmwf/multio-python:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.multio-python }}
             optional_matrix: null
-          ecmwf/multiurl:
+          multiurl:ecmwf/multiurl:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
             develop_branch: main
             input: ${{ steps.prepare-inputs.outputs.multiurl }}
             optional_matrix: null
-          ecmwf/odc:
+          odc:ecmwf/odc:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.odc }}
             optional_matrix: null
-          ecmwf/pdbufr:
+          pdbufr:ecmwf/pdbufr:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.pdbufr }}
             optional_matrix: null
-          ecmwf/plume:
+          plume:ecmwf/plume:
             path: .github/ci-hpc-config.yml
             python: false
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.plume }}
             optional_matrix: null
-          ecmwf/pyfdb:
+          pyfdb:ecmwf/pyfdb:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.pyfdb }}
             optional_matrix: null
-          ecmwf/pyodc:
+          pyodc:ecmwf/pyodc:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.pyodc }}
             optional_matrix: null
-          ecmwf/skinnywms:
+          skinnywms:ecmwf/skinnywms:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.skinnywms }}
             optional_matrix: null
-          ecmwf/thermofeel:
+          thermofeel:ecmwf/thermofeel:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.thermofeel }}
             optional_matrix: null
-          ecmwf/troika:
+          troika:ecmwf/troika:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.troika }}
             optional_matrix: null
-          ecmwf/covjsonkit:
+          covjsonkit:ecmwf/covjsonkit:
             path: .github/ci-hpc-config.yml
             python: true
             master_branch: main
@@ -762,7 +775,7 @@ jobs:
         dependencies: |-
           ${{ needs.setup.outputs.eccodes }}
           ${{ needs.setup.outputs.ecbuild }}
-        python_dependencies: ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'ecmwf/eccodes-python@master') || 'ecmwf/eccodes-python@develop' }}
+        python_dependencies: ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'eccodes-python:ecmwf/eccodes-python@master') || 'eccodes-python:ecmwf/ecmwf/eccodes-python@develop' }}
         python_requirements: ci/requirements-tests.in
   earthkit:
     name: earthkit
@@ -805,15 +818,15 @@ jobs:
           ${{ needs.setup.outputs.eckit }}
           ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: |-
-          ${{ needs.setup.outputs.earthkit-data || (needs.setup.outputs.use_master == 'True' && 'ecmwf/earthkit-data@main') || 'ecmwf/earthkit-data@develop' }}
-          ${{ needs.setup.outputs.cfgrib || (needs.setup.outputs.use_master == 'True' && 'ecmwf/cfgrib@master') || 'ecmwf/cfgrib@master' }}
-          ${{ needs.setup.outputs.multiurl || (needs.setup.outputs.use_master == 'True' && 'ecmwf/multiurl@main') || 'ecmwf/multiurl@main' }}
-          ${{ needs.setup.outputs.pdbufr || (needs.setup.outputs.use_master == 'True' && 'ecmwf/pdbufr@master') || 'ecmwf/pdbufr@develop' }}
-          ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'ecmwf/eccodes-python@master') || 'ecmwf/eccodes-python@develop' }}
-          ${{ needs.setup.outputs.pyodc || (needs.setup.outputs.use_master == 'True' && 'ecmwf/pyodc@master') || 'ecmwf/pyodc@develop' }}
-          ${{ needs.setup.outputs.earthkit-geo || (needs.setup.outputs.use_master == 'True' && 'ecmwf/earthkit-geo@main') || 'ecmwf/earthkit-geo@develop' }}
-          ${{ needs.setup.outputs.earthkit-meteo || (needs.setup.outputs.use_master == 'True' && 'ecmwf/earthkit-meteo@main') || 'ecmwf/earthkit-meteo@develop' }}
-          ${{ needs.setup.outputs.earthkit-regrid || (needs.setup.outputs.use_master == 'True' && 'ecmwf/earthkit-regrid@main') || 'ecmwf/earthkit-regrid@develop' }}
+          ${{ needs.setup.outputs.earthkit-data || (needs.setup.outputs.use_master == 'True' && 'earthkit-data:ecmwf/earthkit-data@main') || 'earthkit-data:ecmwf/ecmwf/earthkit-data@develop' }}
+          ${{ needs.setup.outputs.cfgrib || (needs.setup.outputs.use_master == 'True' && 'cfgrib:ecmwf/cfgrib@master') || 'cfgrib:ecmwf/ecmwf/cfgrib@master' }}
+          ${{ needs.setup.outputs.multiurl || (needs.setup.outputs.use_master == 'True' && 'multiurl:ecmwf/multiurl@main') || 'multiurl:ecmwf/ecmwf/multiurl@main' }}
+          ${{ needs.setup.outputs.pdbufr || (needs.setup.outputs.use_master == 'True' && 'pdbufr:ecmwf/pdbufr@master') || 'pdbufr:ecmwf/ecmwf/pdbufr@develop' }}
+          ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'eccodes-python:ecmwf/eccodes-python@master') || 'eccodes-python:ecmwf/ecmwf/eccodes-python@develop' }}
+          ${{ needs.setup.outputs.pyodc || (needs.setup.outputs.use_master == 'True' && 'pyodc:ecmwf/pyodc@master') || 'pyodc:ecmwf/ecmwf/pyodc@develop' }}
+          ${{ needs.setup.outputs.earthkit-geo || (needs.setup.outputs.use_master == 'True' && 'earthkit-geo:ecmwf/earthkit-geo@main') || 'earthkit-geo:ecmwf/ecmwf/earthkit-geo@develop' }}
+          ${{ needs.setup.outputs.earthkit-meteo || (needs.setup.outputs.use_master == 'True' && 'earthkit-meteo:ecmwf/earthkit-meteo@main') || 'earthkit-meteo:ecmwf/ecmwf/earthkit-meteo@develop' }}
+          ${{ needs.setup.outputs.earthkit-regrid || (needs.setup.outputs.use_master == 'True' && 'earthkit-regrid:ecmwf/earthkit-regrid@main') || 'earthkit-regrid:ecmwf/ecmwf/earthkit-regrid@develop' }}
         python_requirements: tests/downstream-ci-requirements.txt
   earthkit-data:
     name: earthkit-data
@@ -852,11 +865,11 @@ jobs:
           ${{ needs.setup.outputs.eckit }}
           ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: |-
-          ${{ needs.setup.outputs.cfgrib || (needs.setup.outputs.use_master == 'True' && 'ecmwf/cfgrib@master') || 'ecmwf/cfgrib@master' }}
-          ${{ needs.setup.outputs.multiurl || (needs.setup.outputs.use_master == 'True' && 'ecmwf/multiurl@main') || 'ecmwf/multiurl@main' }}
-          ${{ needs.setup.outputs.pdbufr || (needs.setup.outputs.use_master == 'True' && 'ecmwf/pdbufr@master') || 'ecmwf/pdbufr@develop' }}
-          ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'ecmwf/eccodes-python@master') || 'ecmwf/eccodes-python@develop' }}
-          ${{ needs.setup.outputs.pyodc || (needs.setup.outputs.use_master == 'True' && 'ecmwf/pyodc@master') || 'ecmwf/pyodc@develop' }}
+          ${{ needs.setup.outputs.cfgrib || (needs.setup.outputs.use_master == 'True' && 'cfgrib:ecmwf/cfgrib@master') || 'cfgrib:ecmwf/ecmwf/cfgrib@master' }}
+          ${{ needs.setup.outputs.multiurl || (needs.setup.outputs.use_master == 'True' && 'multiurl:ecmwf/multiurl@main') || 'multiurl:ecmwf/ecmwf/multiurl@main' }}
+          ${{ needs.setup.outputs.pdbufr || (needs.setup.outputs.use_master == 'True' && 'pdbufr:ecmwf/pdbufr@master') || 'pdbufr:ecmwf/ecmwf/pdbufr@develop' }}
+          ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'eccodes-python:ecmwf/eccodes-python@master') || 'eccodes-python:ecmwf/ecmwf/eccodes-python@develop' }}
+          ${{ needs.setup.outputs.pyodc || (needs.setup.outputs.use_master == 'True' && 'pyodc:ecmwf/pyodc@master') || 'pyodc:ecmwf/ecmwf/pyodc@develop' }}
         python_toml_opt_dep_sections: all,test,ci
   earthkit-geo:
     name: earthkit-geo
@@ -983,8 +996,8 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: |-
-          ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-utils@main') || 'ecmwf/anemoi-utils@develop' }}
-          ${{ needs.setup.outputs.anemoi-transform || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-transform@main') || 'ecmwf/anemoi-transform@develop' }}
+          ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'anemoi-utils:ecmwf/anemoi-utils@main') || 'anemoi-utils:ecmwf/ecmwf/anemoi-utils@develop' }}
+          ${{ needs.setup.outputs.anemoi-transform || (needs.setup.outputs.use_master == 'True' && 'anemoi-transform:ecmwf/anemoi-transform@main') || 'anemoi-transform:ecmwf/ecmwf/anemoi-transform@develop' }}
         python_toml_opt_dep_sections: all,tests
   anemoi-utils:
     name: anemoi-utils
@@ -1063,9 +1076,9 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: |-
-          ${{ needs.setup.outputs.anemoi-datasets || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-datasets@main') || 'ecmwf/anemoi-datasets@develop' }}
-          ${{ needs.setup.outputs.anemoi-transform || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-transform@main') || 'ecmwf/anemoi-transform@develop' }}
-          ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-utils@main') || 'ecmwf/anemoi-utils@develop' }}
+          ${{ needs.setup.outputs.anemoi-datasets || (needs.setup.outputs.use_master == 'True' && 'anemoi-datasets:ecmwf/anemoi-datasets@main') || 'anemoi-datasets:ecmwf/ecmwf/anemoi-datasets@develop' }}
+          ${{ needs.setup.outputs.anemoi-transform || (needs.setup.outputs.use_master == 'True' && 'anemoi-transform:ecmwf/anemoi-transform@main') || 'anemoi-transform:ecmwf/ecmwf/anemoi-transform@develop' }}
+          ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'anemoi-utils:ecmwf/anemoi-utils@main') || 'anemoi-utils:ecmwf/ecmwf/anemoi-utils@develop' }}
         python_toml_opt_dep_sections: all,tests
   anemoi-models:
     name: anemoi-models
@@ -1091,7 +1104,7 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         build_config: ${{ matrix.config_path }}
         dependencies: ''
-        python_dependencies: ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-utils@main') || 'ecmwf/anemoi-utils@develop' }}
+        python_dependencies: ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'anemoi-utils:ecmwf/anemoi-utils@main') || 'anemoi-utils:ecmwf/ecmwf/anemoi-utils@develop' }}
         python_toml_opt_dep_sections: all,tests
   anemoi-training:
     name: anemoi-training
@@ -1122,11 +1135,11 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: |-
-          ${{ needs.setup.outputs.anemoi-models || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-models@main') || 'ecmwf/anemoi-models@develop' }}
-          ${{ needs.setup.outputs.anemoi-graphs || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-graphs@main') || 'ecmwf/anemoi-graphs@develop' }}
-          ${{ needs.setup.outputs.anemoi-datasets || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-datasets@main') || 'ecmwf/anemoi-datasets@develop' }}
-          ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-utils@main') || 'ecmwf/anemoi-utils@develop' }}
-          ${{ needs.setup.outputs.anemoi-transform || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-transform@main') || 'ecmwf/anemoi-transform@develop' }}
+          ${{ needs.setup.outputs.anemoi-models || (needs.setup.outputs.use_master == 'True' && 'anemoi-models:ecmwf/anemoi-models@main') || 'anemoi-models:ecmwf/ecmwf/anemoi-models@develop' }}
+          ${{ needs.setup.outputs.anemoi-graphs || (needs.setup.outputs.use_master == 'True' && 'anemoi-graphs:ecmwf/anemoi-graphs@main') || 'anemoi-graphs:ecmwf/ecmwf/anemoi-graphs@develop' }}
+          ${{ needs.setup.outputs.anemoi-datasets || (needs.setup.outputs.use_master == 'True' && 'anemoi-datasets:ecmwf/anemoi-datasets@main') || 'anemoi-datasets:ecmwf/ecmwf/anemoi-datasets@develop' }}
+          ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'anemoi-utils:ecmwf/anemoi-utils@main') || 'anemoi-utils:ecmwf/ecmwf/anemoi-utils@develop' }}
+          ${{ needs.setup.outputs.anemoi-transform || (needs.setup.outputs.use_master == 'True' && 'anemoi-transform:ecmwf/anemoi-transform@main') || 'anemoi-transform:ecmwf/ecmwf/anemoi-transform@develop' }}
         python_toml_opt_dep_sections: all,tests
   anemoi-inference:
     name: anemoi-inference
@@ -1154,8 +1167,8 @@ jobs:
         build_config: ${{ matrix.config_path }}
         dependencies: ''
         python_dependencies: |-
-          ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-utils@main') || 'ecmwf/anemoi-utils@develop' }}
-          ${{ needs.setup.outputs.anemoi-transform || (needs.setup.outputs.use_master == 'True' && 'ecmwf/anemoi-transform@main') || 'ecmwf/anemoi-transform@develop' }}
+          ${{ needs.setup.outputs.anemoi-utils || (needs.setup.outputs.use_master == 'True' && 'anemoi-utils:ecmwf/anemoi-utils@main') || 'anemoi-utils:ecmwf/ecmwf/anemoi-utils@develop' }}
+          ${{ needs.setup.outputs.anemoi-transform || (needs.setup.outputs.use_master == 'True' && 'anemoi-transform:ecmwf/anemoi-transform@main') || 'anemoi-transform:ecmwf/ecmwf/anemoi-transform@develop' }}
         python_toml_opt_dep_sections: all,tests
   cascade:
     name: cascade
@@ -1480,6 +1493,43 @@ jobs:
           ${{ needs.setup.outputs.eckit }}
           ${{ needs.setup.outputs.ecbuild }}
         python_dependencies: ''
+  pygribjump:
+    name: pygribjump
+    needs:
+    - gribjump
+    - fdb
+    - metkit
+    - eccodes
+    - eckit
+    - ecbuild
+    - setup
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pygribjump_matrix && (needs.setup.outputs.gribjump || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.eccodes || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.pygribjump)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'pygribjump') }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.pygribjump_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on:
+    - self-hosted
+    - linux
+    - hpc
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-hpc@v2
+      with:
+        github_user: ${{ secrets.BUILD_PACKAGE_HPC_GITHUB_USER }}
+        github_token: ${{ secrets.GH_REPO_READ_TOKEN }}
+        troika_user: ${{ secrets.HPC_CI_SSH_USER }}
+        repository: ${{ matrix.owner_repo_ref }}
+        build_config: ${{ matrix.config_path }}
+        dependencies: |-
+          ${{ needs.setup.outputs.gribjump }}
+          ${{ needs.setup.outputs.fdb }}
+          ${{ needs.setup.outputs.metkit }}
+          ${{ needs.setup.outputs.eccodes }}
+          ${{ needs.setup.outputs.eckit }}
+          ${{ needs.setup.outputs.ecbuild }}
+        python_dependencies: ''
+        python_toml_opt_dep_sections: dev
   infero:
     name: infero
     needs:
@@ -1766,7 +1816,7 @@ jobs:
         dependencies: |-
           ${{ needs.setup.outputs.eccodes }}
           ${{ needs.setup.outputs.ecbuild }}
-        python_dependencies: ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'ecmwf/eccodes-python@master') || 'ecmwf/eccodes-python@develop' }}
+        python_dependencies: ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'eccodes-python:ecmwf/eccodes-python@master') || 'eccodes-python:ecmwf/ecmwf/eccodes-python@develop' }}
         python_requirements: tests/downstream-ci-requirements.txt
   plume:
     name: plume

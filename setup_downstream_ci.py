@@ -71,6 +71,14 @@ with open("dependency_tree.yml", "r") as f:
     dep_tree = yaml.safe_load(f)
 
 
+trigger_pkgs = [
+    k
+    for k, v in dep_tree.items()
+    if v.get("repo", k) in [github_repository, trigger_repo]
+]
+print(f"Trigger packages: {trigger_pkgs}")
+
+
 def tree_get_package_var(var_name: str, dep_tree: dict, package: str, wf_name: str):
     """Get package variable from dep tree. Prefers vars set for given workflow name."""
     wf_spec = dep_tree[package].get(wf_name, {})
@@ -83,11 +91,11 @@ def tree_get_package_var(var_name: str, dep_tree: dict, package: str, wf_name: s
 
 
 # Get build-pacakge(-hpc) config for each repo
-def get_config(owner, repo, ref, path):
-    print(f"Getting config for {owner}/{repo}@{ref}")
-    return_obj = {"repo": repo, "matrix": [], "setup_matrix": False}
+def get_config(owner, repo, pkg_name, ref, path):
+    print(f"Getting config for {pkg_name}:{owner}/{repo}@{ref}")
+    return_obj = {"pkg_name": pkg_name, "matrix": [], "setup_matrix": False}
     if not path:
-        print(f"Config path not provided for {repo}")
+        print(f"Config path not provided for {pkg_name}")
         return_obj["setup_matrix"] = True
         return return_obj
 
@@ -104,8 +112,10 @@ def get_config(owner, repo, ref, path):
     print(f"::warning::Config for {owner}/{repo}@{ref} not found.")
     print(response.status_code, response.content)
 
-    if trigger_repo == return_obj["repo"]:
-        print("::error::Config file for triggering repository not found")
+    if pkg_name in trigger_pkgs:
+        print(
+            f"::error::Config file {path} for triggering package {pkg_name} not found"
+        )
         sys.exit(1)
 
     return return_obj
@@ -161,7 +171,18 @@ use_master = (
 print("use_master: ", use_master)
 
 for owner_repo, val in ci_config.items():
-    owner, repo = owner_repo.split("/")
+    pkg_name = None
+    if ":" in owner_repo:
+        pkg_name, owner_repo = owner_repo.split(":")
+
+    if owner_repo.count("/") > 1:
+        owner, repo, subdir = owner_repo.split("/", maxsplit=2)
+    else:
+        subdir = ""
+        owner, repo = owner_repo.split("/", maxsplit=1)
+
+    if not pkg_name:
+        pkg_name = repo
 
     master_branch_name = val.get("master_branch", DEFAULT_MASTER_BRANCH_NAME)
     develop_branch_name = val.get("develop_branch", DEFAULT_DEVELOP_BRANCH_NAME)
@@ -171,48 +192,50 @@ for owner_repo, val in ci_config.items():
         _, ref = package_input.split("@")
 
     path = val.get("path", "")
-    config = get_config(owner, repo, ref, path)
+    config = get_config(owner, repo, pkg_name, ref, path)
 
     if not config["setup_matrix"]:
         continue
 
-    matrices[repo] = copy.deepcopy(matrix)
+    matrices[pkg_name] = copy.deepcopy(matrix)
 
     for opt in optional_matrix.get("name", []):
         if val.get("optional_matrix", []) and opt in val.get("optional_matrix", []):
-            matrices[repo]["name"].append(opt)
-            matrices[repo]["include"].extend(
+            matrices[pkg_name]["name"].append(opt)
+            matrices[pkg_name]["include"].extend(
                 [d for d in optional_matrix.get("include") if d["name"] == opt]
             )
 
     if config["matrix"]:
-        matrices[repo]["config"] = config["matrix"]
+        matrices[pkg_name]["config"] = config["matrix"]
 
-    repo_skip = tree_get_package_var("skip", dep_tree, repo, workflow_name) or []
-    if repo_skip:
-        matrices[repo]["name"] = [
-            name for name in matrices[repo]["name"] if name not in repo_skip
+    pkg_skip = tree_get_package_var("skip", dep_tree, pkg_name, workflow_name) or []
+    if pkg_skip:
+        matrices[pkg_name]["name"] = [
+            name for name in matrices[pkg_name]["name"] if name not in pkg_skip
         ]
-        matrices[repo]["include"] = [
-            d for d in matrices[repo]["include"] if d["name"] not in repo_skip
+        matrices[pkg_name]["include"] = [
+            d for d in matrices[pkg_name]["include"] if d["name"] not in pkg_skip
         ]
-
-    for index, item in enumerate(matrices[repo]["include"]):
-        matrices[repo]["include"][index]["owner_repo_ref"] = f"{owner}/{repo}@{ref}"
-        matrices[repo]["include"][index]["config_path"] = path
+    repo_subdir = f"{repo}/{subdir}" if subdir else repo
+    for index, item in enumerate(matrices[pkg_name]["include"]):
+        matrices[pkg_name]["include"][index][
+            "owner_repo_ref"
+        ] = f"{pkg_name}:{owner}/{repo_subdir}@{ref}"
+        matrices[pkg_name]["include"][index]["config_path"] = path
 
     if val.get("python", False) is True:
-        matrices[repo]["python_version"] = python_versions
+        matrices[pkg_name]["python_version"] = python_versions
         if python_jobs:
-            matrices[repo]["name"] = [
-                name for name in matrices[repo]["name"] if name in python_jobs
+            matrices[pkg_name]["name"] = [
+                name for name in matrices[pkg_name]["name"] if name in python_jobs
             ]
-            matrices[repo]["include"] = [
-                d for d in matrices[repo]["include"] if d["name"] in python_jobs
+            matrices[pkg_name]["include"] = [
+                d for d in matrices[pkg_name]["include"] if d["name"] in python_jobs
             ]
-        if repo == trigger_repo:
+        if pkg_name in trigger_pkgs:
             py_codecov_platform = (
-                matrices[repo]["name"][0] if len(matrices[repo]["name"]) else ""
+                matrices[pkg_name]["name"][0] if len(matrices[pkg_name]["name"]) else ""
             )
 
 
@@ -254,6 +277,7 @@ print(f"CI group packages: {ci_group_pkgs}")
 
 with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
     print("trigger_repo", trigger_repo, sep="=", file=f)
+    print("trigger_pkgs", trigger_pkgs, sep="=", file=f)
     print("py_codecov_platform", py_codecov_platform, sep="=", file=f)
     print("use_master", use_master, sep="=", file=f)
 

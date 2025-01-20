@@ -254,6 +254,17 @@ gribjump:
     modules:
       - aec
 
+pygribjump:
+  type: python
+  repo: ecmwf/gribjump
+  toml_opt_dep_sections: dev
+  deps:
+    - gribjump
+  downstream-ci:
+    config_path: ".github/ci-config-pygribjump.yml"
+  downstream-ci-hpc:
+    config_path: ".github/ci-hpc-config-pygribjump.yml"
+
 infero:
   type: cmake
   master_branch: master
