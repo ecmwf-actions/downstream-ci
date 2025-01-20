@@ -305,7 +305,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: ecmwf-actions/downstream-ci
-        ref: monorepos
+        ref: main
     - name: Run setup script
       id: setup
       env:
