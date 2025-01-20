@@ -312,7 +312,7 @@ class Workflow:
                         + f"needs.setup.outputs.{dep} || "
                         + "(needs.setup.outputs.use_master == 'True' && "
                         + f"'{dep}:{dep_repo}@{master_branch}') || "
-                        + f"'{dep}:ecmwf/{dep_repo}@{develop_branch}'"
+                        + f"'{dep}:{dep_repo}@{develop_branch}'"
                         + " }}"
                     )
 
