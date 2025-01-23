@@ -118,7 +118,7 @@ name: downstream-ci
       multio:
         required: false
         type: string
-      multio-python:
+      pymultio:
         required: false
         type: string
       multiurl:
@@ -243,8 +243,8 @@ jobs:
       mir_matrix: ${{ steps.setup.outputs.mir }}
       multio: ${{ steps.prepare-inputs.outputs.multio }}
       multio_matrix: ${{ steps.setup.outputs.multio }}
-      multio-python: ${{ steps.prepare-inputs.outputs.multio-python }}
-      multio-python_matrix: ${{ steps.setup.outputs.multio-python }}
+      pymultio: ${{ steps.prepare-inputs.outputs.pymultio }}
+      pymultio_matrix: ${{ steps.setup.outputs.pymultio }}
       multiurl: ${{ steps.prepare-inputs.outputs.multiurl }}
       multiurl_matrix: ${{ steps.setup.outputs.multiurl }}
       odc: ${{ steps.prepare-inputs.outputs.odc }}
@@ -309,7 +309,7 @@ jobs:
         echo metkit="${{ inputs.metkit }}" >> $GITHUB_OUTPUT
         echo mir="${{ inputs.mir }}" >> $GITHUB_OUTPUT
         echo multio="${{ inputs.multio }}" >> $GITHUB_OUTPUT
-        echo multio-python="${{ inputs.multio-python }}" >> $GITHUB_OUTPUT
+        echo pymultio="${{ inputs.pymultio }}" >> $GITHUB_OUTPUT
         echo multiurl="${{ inputs.multiurl }}" >> $GITHUB_OUTPUT
         echo odc="${{ inputs.odc }}" >> $GITHUB_OUTPUT
         echo pdbufr="${{ inputs.pdbufr }}" >> $GITHUB_OUTPUT
@@ -571,12 +571,12 @@ jobs:
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.multio }}
             optional_matrix: null
-          multio-python:ecmwf/multio-python:
-            path: .github/ci-config.yml
+          pymultio:ecmwf/multio:
+            path: .github/ci-config-pymultio.yml
             python: true
-            master_branch: main
+            master_branch: master
             develop_branch: develop
-            input: ${{ steps.prepare-inputs.outputs.multio-python }}
+            input: ${{ steps.prepare-inputs.outputs.pymultio }}
             optional_matrix: null
           multiurl:ecmwf/multiurl:
             path: ''
@@ -1783,8 +1783,8 @@ jobs:
           ${{ needs.setup.outputs.ecbuild }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
         codecov_upload: ${{ contains(needs.setup.outputs.trigger_pkgs, github.job) && inputs.codecov_upload }}
-  multio-python:
-    name: multio-python
+  pymultio:
+    name: pymultio
     needs:
     - multio
     - atlas-orca
@@ -1798,10 +1798,10 @@ jobs:
     - ecbuild
     - setup
     - python-qa
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.multio-python_matrix && (needs.setup.outputs.multio || needs.setup.outputs.atlas-orca || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.multio-python)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'multio-python') }}
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pymultio_matrix && (needs.setup.outputs.multio || needs.setup.outputs.atlas-orca || needs.setup.outputs.fdb || needs.setup.outputs.metkit || needs.setup.outputs.mir || needs.setup.outputs.atlas || needs.setup.outputs.fckit || needs.setup.outputs.eckit || needs.setup.outputs.eccodes || needs.setup.outputs.ecbuild || needs.setup.outputs.pymultio)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'pymultio') }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.multio-python_matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.pymultio_matrix) }}
     env:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
@@ -1830,6 +1830,7 @@ jobs:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
         python_dependencies: ''
+        toml_opt_dep_sections: dev
         codecov_upload: ${{ contains(needs.setup.outputs.trigger_pkgs, github.job) && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   multiurl:
