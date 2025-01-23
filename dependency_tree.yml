@@ -317,12 +317,16 @@ multio:
     - metkit
     - mir
 
-multio-python:
+pymultio:
   type: python
-  master_branch: main
-  develop_branch: develop
+  repo: ecmwf/multio
+  toml_opt_dep_sections: dev
   deps:
     - multio
+  downstream-ci:
+    config_path: ".github/ci-config-pymultio.yml"
+  downstream-ci-hpc:
+    config_path: ".github/ci-hpc-config-pymultio.yml"
 
 multiurl:
   type: python
