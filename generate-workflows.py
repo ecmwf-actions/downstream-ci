@@ -525,7 +525,9 @@ class Workflow:
                 steps.append(s)
             self.add_job(Job(package, needs, condition, strategy, env, runs_on, steps))
 
-    def generate_setup_job(self, dep_tree: dict, wf_config: dict):
+    def generate_setup_job(
+        self, dep_tree: dict, wf_config: dict, downstream_ci_ref: str
+    ):
         outputs = {}
         deps = [
             dep for dep in dep_tree if is_input(dep, dep_tree, self.name, self.private)
@@ -576,7 +578,10 @@ class Workflow:
             {
                 "name": "checkout reusable wfs repo",
                 "uses": "actions/checkout@v4",
-                "with": {"repository": "ecmwf-actions/downstream-ci", "ref": "main"},
+                "with": {
+                    "repository": "ecmwf-actions/downstream-ci",
+                    "ref": downstream_ci_ref,
+                },
             }
         )
         setup_config = {}
@@ -677,6 +682,9 @@ def main():
         ),
         required=True,
     )
+    parser.add_argument(
+        "--ref", help="Downstream-ci repo ref", required=False, default="main"
+    )
     parser.add_argument("workflows", nargs="*")
     args = parser.parse_args()
 
@@ -695,7 +703,7 @@ def main():
             private=config[name].get("private", False),
         )
         wf.generate_inputs(dep_tree, config[name])
-        wf.generate_setup_job(dep_tree, config[name])
+        wf.generate_setup_job(dep_tree, config[name], args.ref)
         if config[name].get("python_qa", False):
             wf.add_python_qa_job()
         if config[name].get("clang_format", False):
