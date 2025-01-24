@@ -284,6 +284,10 @@ libaec:
   deps:
     - ecbuild
 
+mars-server-bundle:
+  type: cmake
+  private: true
+
 metkit:
   type: cmake
   deps:
