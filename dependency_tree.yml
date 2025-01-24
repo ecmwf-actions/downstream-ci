@@ -319,7 +319,7 @@ multio:
 
 pymultio:
   type: python
-  repo: ecmwf/multio
+  repo: ecmwf/multio/pymultio
   toml_opt_dep_sections: dev
   deps:
     - multio
