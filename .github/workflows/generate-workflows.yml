@@ -26,7 +26,13 @@ jobs:
       - run: pip install pyyaml
 
       - name: Build
-        run: python generate-workflows.py --config config.yml --dep-tree dependency_tree.yml --output .github/workflows downstream-ci downstream-ci-hpc
+        run: python generate-workflows.py \
+          --config config.yml \
+          --ref ${{ github.ref_name }} \
+          --dep-tree dependency_tree.yml \
+          --output .github/workflows \
+          downstream-ci \
+          downstream-ci-hpc
 
       - name: Check Git status
         id: git_status
