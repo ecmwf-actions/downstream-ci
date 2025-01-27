@@ -904,6 +904,7 @@ jobs:
           ${{ needs.setup.outputs.ecbuild }}
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
+        repository: ${{ matrix.owner_repo_ref }}
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
         python_dependencies: ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'eccodes-python:ecmwf/eccodes-python@master') || 'eccodes-python:ecmwf/eccodes-python@develop' }}
@@ -951,6 +952,7 @@ jobs:
           ${{ needs.setup.outputs.ecbuild }}
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
+        repository: ${{ matrix.owner_repo_ref }}
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
         python_dependencies: |-
@@ -1006,6 +1008,7 @@ jobs:
           ${{ needs.setup.outputs.ecbuild }}
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
+        repository: ${{ matrix.owner_repo_ref }}
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
         python_dependencies: |-
@@ -1414,6 +1417,7 @@ jobs:
           ${{ needs.setup.outputs.ecbuild }}
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
+        repository: ${{ matrix.owner_repo_ref }}
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
         python_dependencies: ''
@@ -1630,6 +1634,7 @@ jobs:
           ${{ needs.setup.outputs.ecbuild }}
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
+        repository: ${{ matrix.owner_repo_ref }}
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
         python_dependencies: ''
@@ -1827,6 +1832,7 @@ jobs:
           ${{ needs.setup.outputs.ecbuild }}
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
+        repository: ${{ matrix.owner_repo_ref }}
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
         python_dependencies: ''
@@ -1906,6 +1912,7 @@ jobs:
           ${{ needs.setup.outputs.ecbuild }}
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
+        repository: ${{ matrix.owner_repo_ref }}
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
         python_dependencies: ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'eccodes-python:ecmwf/eccodes-python@master') || 'eccodes-python:ecmwf/eccodes-python@develop' }}
@@ -1982,6 +1989,7 @@ jobs:
     - run: mkdir -p data/fdb
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
+        repository: ${{ matrix.owner_repo_ref }}
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
         python_dependencies: ''
@@ -2017,6 +2025,7 @@ jobs:
           ${{ needs.setup.outputs.ecbuild }}
     - uses: ecmwf-actions/reusable-workflows/ci-python@v2
       with:
+        repository: ${{ matrix.owner_repo_ref }}
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
         python_dependencies: ''
