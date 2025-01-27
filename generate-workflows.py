@@ -423,6 +423,7 @@ class Workflow:
                         ci_python_step = {
                             "uses": "ecmwf-actions/reusable-workflows/ci-python@v2",
                             "with": {
+                                "repository": "${{ matrix.owner_repo_ref }}",
                                 "lib_path": (
                                     "${{ steps.build-deps.outputs.lib_path }}"
                                 ),
