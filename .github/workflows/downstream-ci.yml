@@ -571,7 +571,7 @@ jobs:
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.multio }}
             optional_matrix: null
-          pymultio:ecmwf/multio/pymultio:
+          pymultio:ecmwf/multio:
             path: .github/ci-config-pymultio.yml
             python: true
             master_branch: master
