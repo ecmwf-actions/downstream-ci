@@ -324,7 +324,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: ecmwf-actions/downstream-ci
-        ref: feature/add_pymultio
+        ref: feature/add_pymultio_subdir
     - name: Run setup script
       id: setup
       env:
