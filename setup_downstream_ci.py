@@ -172,6 +172,7 @@ print("use_master: ", use_master)
 
 for owner_repo, val in ci_config.items():
     pkg_name = None
+    print("inspecting ", owner_repo)
     if ":" in owner_repo:
         pkg_name, owner_repo = owner_repo.split(":")
 
@@ -180,7 +181,7 @@ for owner_repo, val in ci_config.items():
     else:
         subdir = ""
         owner, repo = owner_repo.split("/", maxsplit=1)
-    print("subdir of", owner_repo, "=", subdir)
+    print("  subdir of", owner_repo, "=", subdir)
 
     if not pkg_name:
         pkg_name = repo
