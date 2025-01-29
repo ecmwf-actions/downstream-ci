@@ -172,7 +172,7 @@ print("use_master: ", use_master)
 
 for owner_repo, val in ci_config.items():
     pkg_name = None
-    print("inspecting ", owner_repo)
+    print("inspecting ", owner_repo, val)
     if ":" in owner_repo:
         pkg_name, owner_repo = owner_repo.split(":")
 
