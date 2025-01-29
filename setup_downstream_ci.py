@@ -180,6 +180,7 @@ for owner_repo, val in ci_config.items():
     else:
         subdir = ""
         owner, repo = owner_repo.split("/", maxsplit=1)
+    print("subdir of", owner_repo, "=", subdir)
 
     if not pkg_name:
         pkg_name = repo
@@ -218,6 +219,7 @@ for owner_repo, val in ci_config.items():
             d for d in matrices[pkg_name]["include"] if d["name"] not in pkg_skip
         ]
     repo_subdir = f"{repo}/{subdir}" if subdir else repo
+    print("repo_subdir=", repo_subdir)
     for index, item in enumerate(matrices[pkg_name]["include"]):
         matrices[pkg_name]["include"][index][
             "owner_repo_ref"
