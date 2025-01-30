@@ -85,6 +85,7 @@ earthkit-time:
 anemoi-datasets:
   type: python
   master_branch: main
+  develop_branch: main
   toml_opt_dep_sections: all,tests
   deps:
     - anemoi-utils
@@ -99,6 +100,7 @@ anemoi-datasets:
 anemoi-utils:
   type: python
   master_branch: main
+  develop_branch: main
   toml_opt_dep_sections: all,tests
   downstream-ci:
     config_path: ""
@@ -109,6 +111,7 @@ anemoi-utils:
 anemoi-transform:
   type: python
   master_branch: main
+  develop_branch: main
   toml_opt_dep_sections: all,tests
   downstream-ci:
     config_path: ""
@@ -157,6 +160,7 @@ anemoi-training:
 anemoi-inference:
   type: python
   master_branch: main
+  develop_branch: main
   toml_opt_dep_sections: all,tests
   deps:
     - anemoi-utils
