@@ -8,6 +8,13 @@ atlas:
     - eckit
     - fckit
 
+atlas-orca:
+  type: cmake
+  master_branch: master
+  develop_branch: develop
+  deps:
+    - atlas
+
 cfgrib:
   type: python
   master_branch: master
@@ -16,10 +23,23 @@ cfgrib:
   deps:
     - eccodes-python
 
-earthkit-data:
+earthkit:
   type: python
   master_branch: main
   requirements_path: tests/downstream-ci-requirements.txt
+  downstream-ci:
+    test_cmd: |
+      _EKD_DIR=$(pwd) && cd .. && python -m pytest ${_EKD_DIR} -vv --cov=. --cov-report=html && cd -
+  deps:
+    - earthkit-data
+    - earthkit-geo
+    - earthkit-meteo
+    - earthkit-regrid
+
+earthkit-data:
+  type: python
+  master_branch: main
+  toml_opt_dep_sections: all,test,ci
   deps:
     - cfgrib
     - multiurl
@@ -53,9 +73,113 @@ earthkit-regrid:
   downstream-ci:
     config_path: ""
 
+earthkit-time:
+  type: python
+  master_branch: main
+  downstream-ci:
+    config_path: ""
+    test_cmd: |
+      python -m pytest --cov=./ --cov-report=xml
+      python -m coverage report
+
+anemoi-datasets:
+  type: python
+  master_branch: main
+  toml_opt_dep_sections: all,tests
+  deps:
+    - anemoi-utils
+    - anemoi-transform
+  downstream-ci:
+    env:
+      RUNNER_TYPE: "self-hosted"
+    test_cmd: |
+      python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
+      python -m coverage report
+
+anemoi-utils:
+  type: python
+  master_branch: main
+  toml_opt_dep_sections: all,tests
+  downstream-ci:
+    config_path: ""
+    test_cmd: |
+      python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
+      python -m coverage report
+
+anemoi-transform:
+  type: python
+  master_branch: main
+  toml_opt_dep_sections: all,tests
+  downstream-ci:
+    config_path: ""
+    test_cmd: |
+      python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
+      python -m coverage report
+
+anemoi-graphs:
+  type: python
+  master_branch: main
+  toml_opt_dep_sections: all,tests
+  deps:
+    - anemoi-datasets
+    - anemoi-utils
+  downstream-ci:
+    test_cmd: |
+      python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
+      python -m coverage report
+
+anemoi-models:
+  type: python
+  master_branch: main
+  toml_opt_dep_sections: all,tests
+  deps:
+    - anemoi-utils
+  downstream-ci:
+    test_cmd: |
+      python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
+      python -m coverage report
+
+anemoi-training:
+  type: python
+  master_branch: main
+  toml_opt_dep_sections: all,tests
+  deps:
+    - anemoi-utils
+    - anemoi-models
+    - anemoi-datasets
+    - anemoi-graphs
+    - anemoi-transform
+  downstream-ci:
+    test_cmd: |
+      python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
+      python -m coverage report
+
+anemoi-inference:
+  type: python
+  master_branch: main
+  toml_opt_dep_sections: all,tests
+  deps:
+    - anemoi-utils
+    - anemoi-transform
+  downstream-ci:
+    test_cmd: |
+      python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
+      python -m coverage report
+
+cascade:
+  type: python
+  master_branch: main
+  downstream-ci:
+    config_path: ""
+
+conflator:
+  type: python
+  master_branch: main
+  downstream-ci:
+    config_path: ""
+
 ecbuild:
   type: cmake
-  input: false
 
 eccodes:
   type: cmake
@@ -71,16 +195,28 @@ eccodes:
 
 eccodes-python:
   type: python
+  env:
+    ECCODES_PYTHON_TRACE_LIB_SEARCH: 1
   deps:
     - eccodes
 
 ecflow:
   type: cmake
+  master_branch: main
   deps:
     - ecbuild
+  optional_matrix:
+    - clang@macos-13-arm
+    - clang@macos-13-x86
+    - gnu@debian-12
+  downstream-ci-hpc:
+    skip:
+      - nvidia-22.11
+      - intel-2021.4.0
 
 ecflow-light:
   type: cmake
+  master_branch: main
   deps:
     - eckit
 
@@ -88,6 +224,10 @@ eckit:
   type: cmake
   deps:
     - ecbuild
+
+ecmwf-toolbox:
+  type: cmake
+  private: true
 
 fckit:
   type: cmake
@@ -99,11 +239,54 @@ fdb:
   deps:
     - metkit
 
+findlibs:
+  type: python
+  master_branch: master
+  requirements_path: tests/downstream-ci-requirements.txt
+  downstream-ci:
+    config_path: ""
+
+gribjump:
+  type: cmake
+  deps:
+    - fdb
+  downstream-ci-hpc:
+    modules:
+      - aec
+
+pygribjump:
+  type: python
+  repo: ecmwf/gribjump
+  toml_opt_dep_sections: dev
+  deps:
+    - gribjump
+  downstream-ci:
+    config_path: ".github/ci-config-pygribjump.yml"
+  downstream-ci-hpc:
+    config_path: ".github/ci-hpc-config-pygribjump.yml"
+
+infero:
+  type: cmake
+  master_branch: master
+  develop_branch: develop
+  deps:
+    - eckit
+    - fckit
+
+kronos:
+  type: cmake
+  deps:
+    - ecbuild
+
 libaec:
   type: cmake
   input: false
   deps:
     - ecbuild
+
+mars-server-bundle:
+  type: cmake
+  private: true
 
 metkit:
   type: cmake
@@ -117,6 +300,29 @@ mir:
     - eckit
     - atlas
     - eccodes
+
+multio:
+  type: cmake
+  master_branch: master
+  develop_branch: develop
+  env:
+    CTEST_PARALLEL_LEVEL: 1
+  deps:
+    - atlas
+    - atlas-orca
+    - eccodes
+    - eckit
+    - fckit
+    - fdb
+    - metkit
+    - mir
+
+multio-python:
+  type: python
+  master_branch: main
+  develop_branch: develop
+  deps:
+    - multio
 
 multiurl:
   type: python
@@ -133,21 +339,32 @@ odc:
 pdbufr:
   type: python
   master_branch: master
-  develop_branch: master
   requirements_path: tests/downstream-ci-requirements.txt
+  downstream-ci:
+    test_cmd: |
+      python -m pytest --cov=./ --cov-report=xml -k 'not test_notebooks'
+      python -m pytest -v -k 'test_notebooks'
   deps:
     - eccodes-python
 
 pgen:
   type: cmake
-  input: false
+  private: true
   deps:
     - mir
     - metkit
+  downstream-ci-hpc:
+    skip:
+      - nvidia-22.11
+
+pgen-bundle:
+  type: cmake
+  private: true
 
 plume:
   type: cmake
   deps:
+    - eckit
     - atlas
     - fckit
 
@@ -178,5 +395,19 @@ thermofeel:
 
 conflator:
   type: python
+  downstream-ci:
+    config_path: ""
+
+troika:
+  type: python
+  downstream-ci:
+    config_path: ""
+    test_cmd: |
+      pytest --cov=./ --cov-report=xml --basetemp=$RUNNER_TEMP/pytest_tmp
+      python -m coverage report
+
+covjsonkit:
+  type: python
+  master_branch: main
   downstream-ci:
     config_path: ""
