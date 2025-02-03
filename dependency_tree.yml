@@ -91,6 +91,7 @@ anemoi-datasets:
     - anemoi-utils
     - anemoi-transform
   downstream-ci:
+    config_path: ""
     env:
       RUNNER_TYPE: "self-hosted"
     test_cmd: |
@@ -127,6 +128,7 @@ anemoi-graphs:
     - anemoi-datasets
     - anemoi-utils
   downstream-ci:
+    config_path: ""
     test_cmd: |
       python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
       python -m coverage report
@@ -138,6 +140,7 @@ anemoi-models:
   deps:
     - anemoi-utils
   downstream-ci:
+    config_path: ""
     test_cmd: |
       python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
       python -m coverage report
@@ -153,6 +156,7 @@ anemoi-training:
     - anemoi-graphs
     - anemoi-transform
   downstream-ci:
+    config_path: ""
     test_cmd: |
       python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
       python -m coverage report
@@ -166,6 +170,7 @@ anemoi-inference:
     - anemoi-utils
     - anemoi-transform
   downstream-ci:
+    config_path: ""
     test_cmd: |
       python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
       python -m coverage report
