@@ -151,6 +151,9 @@ name: downstream-ci
       covjsonkit:
         required: false
         type: string
+      danu:
+        required: false
+        type: string
       skip_matrix_jobs:
         description: List of matrix jobs to be skipped.
         required: false
@@ -265,6 +268,8 @@ jobs:
       troika_matrix: ${{ steps.setup.outputs.troika }}
       covjsonkit: ${{ steps.prepare-inputs.outputs.covjsonkit }}
       covjsonkit_matrix: ${{ steps.setup.outputs.covjsonkit }}
+      danu: ${{ steps.prepare-inputs.outputs.danu }}
+      danu_matrix: ${{ steps.setup.outputs.danu }}
       dep_tree: ${{ steps.setup.outputs.build_package_dep_tree }}
       trigger_repo: ${{ steps.setup.outputs.trigger_repo }}
       trigger_pkgs: ${{ steps.setup.outputs.trigger_pkgs }}
@@ -320,11 +325,12 @@ jobs:
         echo thermofeel="${{ inputs.thermofeel }}" >> $GITHUB_OUTPUT
         echo troika="${{ inputs.troika }}" >> $GITHUB_OUTPUT
         echo covjsonkit="${{ inputs.covjsonkit }}" >> $GITHUB_OUTPUT
+        echo danu="${{ inputs.danu }}" >> $GITHUB_OUTPUT
     - name: checkout reusable wfs repo
       uses: actions/checkout@v4
       with:
         repository: ecmwf-actions/downstream-ci
-        ref: main
+        ref: feature/danu
     - name: Run setup script
       id: setup
       env:
@@ -647,6 +653,13 @@ jobs:
             master_branch: main
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.covjsonkit }}
+            optional_matrix: null
+          danu:ecmwf/danu:
+            path: ''
+            python: true
+            master_branch: main
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.danu }}
             optional_matrix: null
         PYTHON_VERSIONS: |+
           - '3.10'
@@ -2112,5 +2125,28 @@ jobs:
         repository: ${{ matrix.owner_repo_ref }}
         checkout: true
         python_dependencies: ''
+        codecov_upload: ${{ contains(needs.setup.outputs.trigger_pkgs, github.job) && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
+  danu:
+    name: danu
+    needs:
+    - setup
+    - python-qa
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.danu_matrix && (needs.setup.outputs.danu)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'danu') }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.danu_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        checkout: true
+        python_dependencies: ''
+        requirements_path: requirements.txt
+        test_cmd: python -m pytest
+        conda_install: '''numpy<2'' scipy pcraster gdal netCDF4 pandas dask lz4 eccodes magics'
         codecov_upload: ${{ contains(needs.setup.outputs.trigger_pkgs, github.job) && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
