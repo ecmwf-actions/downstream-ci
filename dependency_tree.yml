@@ -415,3 +415,14 @@ covjsonkit:
   master_branch: main
   downstream-ci:
     config_path: ""
+
+danu:
+   type: python
+   master_branch: main
+   requirements_path: requirements.txt
+   test_cmd: "python -m pytest"
+   conda_deps: "'numpy<2' scipy pcraster gdal netCDF4 pandas dask lz4 eccodes magics"
+   downstream-ci:
+     config_path: ""
+   downstream-ci-hpc:
+     config_path: ".github/ci-hpc-config.yml" 
