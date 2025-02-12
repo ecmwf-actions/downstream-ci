@@ -233,9 +233,9 @@ class Workflow:
                 - name: Install clang-format
                   run: |
                     wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-                    sudo add-apt-repository deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main
+                    sudo add-apt-repository deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-19 main
                     sudo apt update
-                    sudo apt install -y clang-format-16
+                    sudo apt install -y clang-format-19
 
                 - name: Run clang-format
                   shell: bash {0}
@@ -252,7 +252,7 @@ class Workflow:
                     fi
 
                     for file in $files; do
-                        clang-format-16 --dry-run --Werror --style=file --fallback-style=none $file
+                        clang-format-19 --dry-run --Werror --style=file --fallback-style=none $file
                         if [ $? -ne 0 ]; then
                             ((errors++))
                         fi
