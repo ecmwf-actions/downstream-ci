@@ -324,7 +324,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: ecmwf-actions/downstream-ci
-        ref: update-clang-format
+        ref: main
     - name: Run setup script
       id: setup
       env:
