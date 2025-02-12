@@ -122,7 +122,9 @@ anemoi-transform:
 
 anemoi-graphs:
   type: python
+  repo: ecmwf/anemoi-core/graphs
   master_branch: main
+  develop_branch: main
   toml_opt_dep_sections: all,tests
   deps:
     - anemoi-datasets
@@ -135,7 +137,9 @@ anemoi-graphs:
 
 anemoi-models:
   type: python
+  repo: ecmwf/anemoi-core/models
   master_branch: main
+  develop_branch: main
   toml_opt_dep_sections: all,tests
   deps:
     - anemoi-utils
@@ -147,7 +151,9 @@ anemoi-models:
 
 anemoi-training:
   type: python
+  repo: ecmwf/anemoi-core/training
   master_branch: main
+  develop_branch: main
   toml_opt_dep_sections: all,tests
   deps:
     - anemoi-utils
