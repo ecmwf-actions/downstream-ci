@@ -136,6 +136,12 @@ name: downstream-ci
       pyfdb:
         required: false
         type: string
+      pyflow:
+        required: false
+        type: string
+      pyflow-wellies:
+        required: false
+        type: string
       pyodc:
         required: false
         type: string
@@ -258,6 +264,10 @@ jobs:
       plume_matrix: ${{ steps.setup.outputs.plume }}
       pyfdb: ${{ steps.prepare-inputs.outputs.pyfdb }}
       pyfdb_matrix: ${{ steps.setup.outputs.pyfdb }}
+      pyflow: ${{ steps.prepare-inputs.outputs.pyflow }}
+      pyflow_matrix: ${{ steps.setup.outputs.pyflow }}
+      pyflow-wellies: ${{ steps.prepare-inputs.outputs.pyflow-wellies }}
+      pyflow-wellies_matrix: ${{ steps.setup.outputs.pyflow-wellies }}
       pyodc: ${{ steps.prepare-inputs.outputs.pyodc }}
       pyodc_matrix: ${{ steps.setup.outputs.pyodc }}
       skinnywms: ${{ steps.prepare-inputs.outputs.skinnywms }}
@@ -320,6 +330,8 @@ jobs:
         echo pdbufr="${{ inputs.pdbufr }}" >> $GITHUB_OUTPUT
         echo plume="${{ inputs.plume }}" >> $GITHUB_OUTPUT
         echo pyfdb="${{ inputs.pyfdb }}" >> $GITHUB_OUTPUT
+        echo pyflow="${{ inputs.pyflow }}" >> $GITHUB_OUTPUT
+        echo pyflow-wellies="${{ inputs.pyflow-wellies }}" >> $GITHUB_OUTPUT
         echo pyodc="${{ inputs.pyodc }}" >> $GITHUB_OUTPUT
         echo skinnywms="${{ inputs.skinnywms }}" >> $GITHUB_OUTPUT
         echo thermofeel="${{ inputs.thermofeel }}" >> $GITHUB_OUTPUT
@@ -330,7 +342,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: ecmwf-actions/downstream-ci
-        ref: main
+        ref: feature/pyflow
     - name: Run setup script
       id: setup
       env:
@@ -618,6 +630,20 @@ jobs:
             master_branch: master
             develop_branch: develop
             input: ${{ steps.prepare-inputs.outputs.pyfdb }}
+            optional_matrix: null
+          pyflow:ecmwf/pyflow:
+            path: .github/ci-config.yml
+            python: true
+            master_branch: master
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.pyflow }}
+            optional_matrix: null
+          pyflow-wellies:ecmwf/pyflow-wellies:
+            path: .github/ci-config.yml
+            python: true
+            master_branch: master
+            develop_branch: develop
+            input: ${{ steps.prepare-inputs.outputs.pyflow-wellies }}
             optional_matrix: null
           pyodc:ecmwf/pyodc:
             path: .github/ci-config.yml
@@ -2006,6 +2032,75 @@ jobs:
         lib_path: ${{ steps.build-deps.outputs.lib_path }}
         bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
         python_dependencies: ''
+        codecov_upload: ${{ contains(needs.setup.outputs.trigger_pkgs, github.job) && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
+  pyflow:
+    name: pyflow
+    needs:
+    - ecflow
+    - ecbuild
+    - setup
+    - python-qa
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pyflow_matrix && (needs.setup.outputs.ecflow || needs.setup.outputs.ecbuild || needs.setup.outputs.pyflow)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'pyflow') }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.pyflow_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+    - name: Build dependencies
+      id: build-deps
+      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        codecov_upload: false
+        build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
+        build_config: ${{ matrix.config_path }}
+        build_dependencies: |-
+          ${{ needs.setup.outputs.ecflow }}
+          ${{ needs.setup.outputs.ecbuild }}
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        lib_path: ${{ steps.build-deps.outputs.lib_path }}
+        bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
+        python_dependencies: ''
+        codecov_upload: ${{ contains(needs.setup.outputs.trigger_pkgs, github.job) && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
+        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
+  pyflow-wellies:
+    name: pyflow-wellies
+    needs:
+    - pyflow
+    - ecflow
+    - ecbuild
+    - setup
+    - python-qa
+    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.pyflow-wellies_matrix && (needs.setup.outputs.pyflow || needs.setup.outputs.ecflow || needs.setup.outputs.ecbuild || needs.setup.outputs.pyflow-wellies)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'pyflow-wellies') }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.pyflow-wellies_matrix) }}
+    env:
+      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
+    runs-on: ${{ matrix.labels }}
+    steps:
+    - name: Build dependencies
+      id: build-deps
+      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        codecov_upload: false
+        build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
+        build_config: ${{ matrix.config_path }}
+        build_dependencies: |-
+          ${{ needs.setup.outputs.ecflow }}
+          ${{ needs.setup.outputs.ecbuild }}
+    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
+      with:
+        repository: ${{ matrix.owner_repo_ref }}
+        lib_path: ${{ steps.build-deps.outputs.lib_path }}
+        bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
+        python_dependencies: ${{ needs.setup.outputs.pyflow || (needs.setup.outputs.use_master == 'True' && 'pyflow:ecmwf/pyflow@master') || 'pyflow:ecmwf/pyflow@develop' }}
         codecov_upload: ${{ contains(needs.setup.outputs.trigger_pkgs, github.job) && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   pyodc:
