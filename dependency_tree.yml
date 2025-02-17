@@ -86,7 +86,6 @@ earthkit-hydro:
   type: python
   master_branch: main
   toml_opt_dep_sections: all
-  private: true
   deps:
     - earthkit-data
   downstream-ci:
