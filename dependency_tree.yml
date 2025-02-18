@@ -88,8 +88,6 @@ earthkit-hydro:
   toml_opt_dep_sections: all
   deps:
     - earthkit-data
-  downstream-ci:
-    config_path: ""
 
 anemoi-datasets:
   type: python
