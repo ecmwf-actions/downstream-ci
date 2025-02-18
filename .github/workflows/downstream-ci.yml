@@ -406,7 +406,7 @@ jobs:
             input: ${{ steps.prepare-inputs.outputs.earthkit-time }}
             optional_matrix: null
           earthkit-hydro:ecmwf/earthkit-hydro:
-            path: ''
+            path: .github/ci-config.yml
             python: true
             master_branch: main
             develop_branch: develop
