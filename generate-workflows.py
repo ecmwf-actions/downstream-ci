@@ -366,7 +366,7 @@ class Workflow:
                     s = {
                         "uses": (
                             "ecmwf-actions/reusable-workflows/"
-                            "build-package-with-config@v2"
+                            "build-package-with-config@ecmwf-migration"
                         ),
                         "with": {
                             "repository": "${{ matrix.owner_repo_ref }}",
@@ -399,7 +399,7 @@ class Workflow:
                             "id": "build-deps",
                             "uses": (
                                 "ecmwf-actions/reusable-workflows/"
-                                "build-package-with-config@v2"
+                                "build-package-with-config@ecmwf-migration"
                             ),
                             "with": {
                                 "repository": "${{ matrix.owner_repo_ref }}",
