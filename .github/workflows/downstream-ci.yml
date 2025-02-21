@@ -330,7 +330,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: ecmwf-actions/downstream-ci
-        ref: main
+        ref: ecmwf-migration
     - name: Run setup script
       id: setup
       env:
@@ -848,7 +848,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -876,7 +876,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -906,7 +906,7 @@ jobs:
     steps:
     - name: Build dependencies
       id: build-deps
-      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         codecov_upload: false
@@ -952,7 +952,7 @@ jobs:
     steps:
     - name: Build dependencies
       id: build-deps
-      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         codecov_upload: false
@@ -1008,7 +1008,7 @@ jobs:
     steps:
     - name: Build dependencies
       id: build-deps
-      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         codecov_upload: false
@@ -1371,7 +1371,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -1393,7 +1393,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -1419,7 +1419,7 @@ jobs:
     steps:
     - name: Build dependencies
       id: build-deps
-      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         codecov_upload: false
@@ -1450,7 +1450,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -1473,7 +1473,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -1497,7 +1497,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -1520,7 +1520,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -1547,7 +1547,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -1598,7 +1598,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -1632,7 +1632,7 @@ jobs:
     steps:
     - name: Build dependencies
       id: build-deps
-      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         codecov_upload: false
@@ -1670,7 +1670,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -1695,7 +1695,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -1719,7 +1719,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -1748,7 +1748,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -1784,7 +1784,7 @@ jobs:
       CTEST_PARALLEL_LEVEL: 1
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -1826,7 +1826,7 @@ jobs:
     steps:
     - name: Build dependencies
       id: build-deps
-      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         codecov_upload: false
@@ -1886,7 +1886,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -1914,7 +1914,7 @@ jobs:
     steps:
     - name: Build dependencies
       id: build-deps
-      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         codecov_upload: false
@@ -1952,7 +1952,7 @@ jobs:
       DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
     runs-on: ${{ matrix.labels }}
     steps:
-    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+    - uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
@@ -1987,7 +1987,7 @@ jobs:
     steps:
     - name: Build dependencies
       id: build-deps
-      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         codecov_upload: false
@@ -2026,7 +2026,7 @@ jobs:
     steps:
     - name: Build dependencies
       id: build-deps
-      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
+      uses: ecmwf-actions/reusable-workflows/build-package-with-config@ecmwf-migration
       with:
         repository: ${{ matrix.owner_repo_ref }}
         codecov_upload: false

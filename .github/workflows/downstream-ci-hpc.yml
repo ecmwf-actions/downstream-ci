@@ -311,7 +311,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: ecmwf-actions/downstream-ci
-        ref: main
+        ref: ecmwf-migration
     - name: Run setup script
       id: setup
       env:
