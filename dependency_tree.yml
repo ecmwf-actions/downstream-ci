@@ -88,6 +88,12 @@ earthkit-hydro:
   toml_opt_dep_sections: all
   deps:
     - earthkit-data
+  downstream-ci:
+    test_cmd: | 
+      echo pwd
+      python -m pytest --cov-report term --cov-report xml:coverage.xml --cov ./
+      python -m coverage report
+
 
 anemoi-datasets:
   type: python
