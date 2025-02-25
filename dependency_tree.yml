@@ -90,7 +90,7 @@ earthkit-hydro:
     - earthkit-data
   downstream-ci:
     test_cmd: | 
-      echo pwd
+      echo $(pwd)
       python -m pytest --cov-report term --cov-report xml:coverage.xml --cov ./
       python -m coverage report
 
