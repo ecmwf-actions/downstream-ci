@@ -1187,7 +1187,7 @@ jobs:
           ${{ needs.setup.outputs.pyodc || (needs.setup.outputs.use_master == 'True' && 'pyodc:ecmwf/pyodc@master') || 'pyodc:ecmwf/pyodc@develop' }}
         toml_opt_dep_sections: all
         test_cmd: |
-          echo pwd
+          echo $(pwd)
           python -m pytest --cov-report term --cov-report xml:coverage.xml --cov ./
           python -m coverage report
         codecov_upload: ${{ contains(needs.setup.outputs.trigger_pkgs, github.job) && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
