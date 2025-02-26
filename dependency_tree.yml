@@ -187,6 +187,8 @@ cascade:
   toml_opt_dep_sections: tests
   downstream-ci:
     config_path: ""
+  deps:
+    - earthkit-data
 
 conflator:
   type: python
