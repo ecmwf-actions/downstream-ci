@@ -1,3 +1,6 @@
+> [!CAUTION]
+> This repository was moved to https://github.com/ecmwf/downstream-ci. Do not update!
+
 # Downstream CI Workflows
 
 GitHub workflows to run CI for downstream repos.
