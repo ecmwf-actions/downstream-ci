@@ -64,9 +64,6 @@ name: downstream-ci
       anemoi-inference:
         required: false
         type: string
-      cascade:
-        required: false
-        type: string
       conflator:
         required: false
         type: string
@@ -210,8 +207,6 @@ jobs:
       anemoi-training_matrix: ${{ steps.setup.outputs.anemoi-training }}
       anemoi-inference: ${{ steps.prepare-inputs.outputs.anemoi-inference }}
       anemoi-inference_matrix: ${{ steps.setup.outputs.anemoi-inference }}
-      cascade: ${{ steps.prepare-inputs.outputs.cascade }}
-      cascade_matrix: ${{ steps.setup.outputs.cascade }}
       conflator: ${{ steps.prepare-inputs.outputs.conflator }}
       conflator_matrix: ${{ steps.setup.outputs.conflator }}
       ecbuild: ${{ steps.prepare-inputs.outputs.ecbuild }}
@@ -296,7 +291,6 @@ jobs:
         echo anemoi-models="${{ inputs.anemoi-models }}" >> $GITHUB_OUTPUT
         echo anemoi-training="${{ inputs.anemoi-training }}" >> $GITHUB_OUTPUT
         echo anemoi-inference="${{ inputs.anemoi-inference }}" >> $GITHUB_OUTPUT
-        echo cascade="${{ inputs.cascade }}" >> $GITHUB_OUTPUT
         echo conflator="${{ inputs.conflator }}" >> $GITHUB_OUTPUT
         echo ecbuild="${{ inputs.ecbuild }}" >> $GITHUB_OUTPUT
         echo eccodes="${{ inputs.eccodes }}" >> $GITHUB_OUTPUT
@@ -330,7 +324,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: ecmwf-actions/downstream-ci
-        ref: main
+        ref: cascade-private
     - name: Run setup script
       id: setup
       env:
@@ -447,13 +441,6 @@ jobs:
             master_branch: main
             develop_branch: main
             input: ${{ steps.prepare-inputs.outputs.anemoi-inference }}
-            optional_matrix: null
-          cascade:ecmwf/cascade:
-            path: ''
-            python: true
-            master_branch: main
-            develop_branch: develop
-            input: ${{ steps.prepare-inputs.outputs.cascade }}
             optional_matrix: null
           conflator:ecmwf/conflator:
             path: ''
@@ -1316,57 +1303,6 @@ jobs:
         test_cmd: |
           python -m pytest -vv -m 'not notebook and not no_cache_init' --cov=. --cov-report=xml
           python -m coverage report
-        codecov_upload: ${{ contains(needs.setup.outputs.trigger_pkgs, github.job) && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
-        codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
-  cascade:
-    name: cascade
-    needs:
-    - earthkit-data
-    - cfgrib
-    - multiurl
-    - pdbufr
-    - eccodes-python
-    - eccodes
-    - pyodc
-    - odc
-    - eckit
-    - ecbuild
-    - setup
-    - python-qa
-    if: ${{ (always() && !cancelled()) && contains(join(needs.*.result, ','), 'success') && needs.setup.outputs.cascade_matrix && (needs.setup.outputs.earthkit-data || needs.setup.outputs.cfgrib || needs.setup.outputs.multiurl || needs.setup.outputs.pdbufr || needs.setup.outputs.eccodes-python || needs.setup.outputs.eccodes || needs.setup.outputs.pyodc || needs.setup.outputs.odc || needs.setup.outputs.eckit || needs.setup.outputs.ecbuild || needs.setup.outputs.cascade)&& contains(fromJson(needs.setup.outputs.ci_group_pkgs), 'cascade') }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.cascade_matrix) }}
-    env:
-      DEP_TREE: ${{ needs.setup.outputs.dep_tree }}
-    runs-on: ${{ matrix.labels }}
-    steps:
-    - name: Build dependencies
-      id: build-deps
-      uses: ecmwf-actions/reusable-workflows/build-package-with-config@v2
-      with:
-        repository: ${{ matrix.owner_repo_ref }}
-        codecov_upload: false
-        build_package_inputs: 'repository: ${{ matrix.owner_repo_ref }}'
-        build_config: ${{ matrix.config_path }}
-        build_dependencies: |-
-          ${{ needs.setup.outputs.eccodes }}
-          ${{ needs.setup.outputs.odc }}
-          ${{ needs.setup.outputs.eckit }}
-          ${{ needs.setup.outputs.ecbuild }}
-    - uses: ecmwf-actions/reusable-workflows/ci-python@v2
-      with:
-        repository: ${{ matrix.owner_repo_ref }}
-        lib_path: ${{ steps.build-deps.outputs.lib_path }}
-        bin_paths: ${{ steps.build-deps.outputs.bin_paths }}
-        python_dependencies: |-
-          ${{ needs.setup.outputs.earthkit-data || (needs.setup.outputs.use_master == 'True' && 'earthkit-data:ecmwf/earthkit-data@main') || 'earthkit-data:ecmwf/earthkit-data@develop' }}
-          ${{ needs.setup.outputs.cfgrib || (needs.setup.outputs.use_master == 'True' && 'cfgrib:ecmwf/cfgrib@master') || 'cfgrib:ecmwf/cfgrib@master' }}
-          ${{ needs.setup.outputs.multiurl || (needs.setup.outputs.use_master == 'True' && 'multiurl:ecmwf/multiurl@main') || 'multiurl:ecmwf/multiurl@main' }}
-          ${{ needs.setup.outputs.pdbufr || (needs.setup.outputs.use_master == 'True' && 'pdbufr:ecmwf/pdbufr@master') || 'pdbufr:ecmwf/pdbufr@develop' }}
-          ${{ needs.setup.outputs.eccodes-python || (needs.setup.outputs.use_master == 'True' && 'eccodes-python:ecmwf/eccodes-python@master') || 'eccodes-python:ecmwf/eccodes-python@develop' }}
-          ${{ needs.setup.outputs.pyodc || (needs.setup.outputs.use_master == 'True' && 'pyodc:ecmwf/pyodc@master') || 'pyodc:ecmwf/pyodc@develop' }}
-        toml_opt_dep_sections: tests
         codecov_upload: ${{ contains(needs.setup.outputs.trigger_pkgs, github.job) && inputs.codecov_upload && needs.setup.outputs.py_codecov_platform == matrix.name }}
         codecov_token: ${{ secrets.CODECOV_UPLOAD_TOKEN }}
   conflator:
