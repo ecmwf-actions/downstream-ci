@@ -184,6 +184,7 @@ anemoi-inference:
 cascade:
   type: python
   master_branch: main
+  private: true
   toml_opt_dep_sections: tests
   downstream-ci:
     config_path: ""
