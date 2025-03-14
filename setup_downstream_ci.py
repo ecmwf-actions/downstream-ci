@@ -219,9 +219,9 @@ for owner_repo, val in ci_config.items():
         ]
     repo_subdir = f"{repo}/{subdir}" if subdir else repo
     for index, item in enumerate(matrices[pkg_name]["include"]):
-        matrices[pkg_name]["include"][index][
-            "owner_repo_ref"
-        ] = f"{pkg_name}:{owner}/{repo_subdir}@{ref}"
+        matrices[pkg_name]["include"][index]["owner_repo_ref"] = (
+            f"{pkg_name}:{owner}/{repo_subdir}@{ref}"
+        )
         matrices[pkg_name]["include"][index]["config_path"] = path
 
     if val.get("python", False) is True:
@@ -297,3 +297,15 @@ with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
         print(f"{key}<<EOF", file=f)
         print(json.dumps(value, separators=(",", ":")), file=f)
         print("EOF", file=f)
+
+with open(os.getenv("GITHUB_STEP_SUMMARY"), "a") as f:
+    print("# Deprecation warning :warning:", file=f)
+    print(
+        "Downstream CI was moved from ecmwf-actions to ecmwf organization at https://github.com/ecmwf/downstream-ci.",
+        file=f,
+    )
+    print("This workflow is now deprecated, please switch to the new one.", file=f)
+    print(
+        "Contact your GitHub administrator for help if needed.",
+        file=f,
+    )
