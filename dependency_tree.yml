@@ -432,3 +432,15 @@ danu:
      config_path: ""
    downstream-ci-hpc:
      config_path: ".github/ci-hpc-config.yml" 
+
+hermes-server:
+  type: cmake
+  master_branch: develop
+  develop_branch: develop
+  private: true
+  deps:
+    - eckit
+    - dhskit
+    - eccodes
+    - metkit
+    - mars_client_cpp
